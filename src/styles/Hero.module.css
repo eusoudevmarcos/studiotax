@@ -1,0 +1,30 @@
+.hero {
+  background: url('/hero-commerce.jpg') center/cover no-repeat;
+  padding: 160px 0;
+  text-align: center;
+  color: white;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.cta {
+  background: var(--color-primary);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.cta:hover {
+  background: #b88e09;
+}
