@@ -1,8 +1,13 @@
 .hero {
-  background: url('/hero-commerce.jpg') center/cover no-repeat;
+  background: url(/image/hero-commerce.jpg);
   padding: 160px 0;
   text-align: center;
   color: white;
+  max-height: 90vh;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .title {

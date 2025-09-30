@@ -1,7 +1,10 @@
 .sectors {
-  padding: 80px 0;
+  padding: 10% 4%;
   background: white;
   text-align: center;
+  margin: 0 auto;
+  max-width: 1420px;
+  border-radius: 16px;
 }
 
 .title {
@@ -19,24 +22,25 @@
 .card {
   background: var(--color-bg);
   border-radius: 8px;
-  padding: 20px;
   transition: 0.3s;
+  background-color: #c9c9c950;
+  padding-bottom: 14px;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card img {
   width: 100%;
   height: 160px;
   object-fit: cover;
-  border-radius: 6px;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
   margin-bottom: 1rem;
 }
 
 .card p {
   font-weight: 600;
 }
-
