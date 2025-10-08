@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "../styles/About.module.css";
 
 export default function About() {
@@ -83,10 +84,8 @@ export default function About() {
           </p>
         </div>
 
-        {/* Bloco da Imagem */}
         <div style={{ flex: 1, minWidth: "300px", textAlign: "right" }}>
-          {/* A imagem original foi simulada. Você deve usar a URL real da imagem aqui. */}
-          <img
+          <Image
             src="/video.png" // Substitua pela URL da sua imagem (Home 4.jpg)
             alt="Dois colaboradores analisando dados em um computador"
             style={{

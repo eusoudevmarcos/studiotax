@@ -1,3 +1,6 @@
+import Link from "next/link";
+import Image from "next/image";
+
 export default function Header() {
   return (
     <header
@@ -8,15 +11,15 @@ export default function Header() {
         className="flex justify-between items-center max-w-[1440px] mx-auto"
         style={{ height: "60px", padding: "4px 20px" }}
       >
-        <a href="/">
-          <img
+        <Link href="/">
+          <Image
             src="/logo.png"
             alt="Studio Tax"
             className="text-[1.5rem] font-bold text-[var(--color-secondary)]"
             width={200}
             height={40}
           />
-        </a>
+        </Link>
         <nav className="flex gap-4">
           <ul
             className="flex  list-none flex items-center m-0 p-0"
@@ -64,7 +67,7 @@ export default function Header() {
             </li>
           </ul>
         </nav>
-        <a
+        <Link
           href="https://wa.me/556195524666"
           target="_blank"
           rel="noopener noreferrer"
@@ -72,7 +75,7 @@ export default function Header() {
           style={{ padding: "10px 30px", borderRadius: "12px", color: "white" }}
         >
           Contato
-        </a>
+        </Link>
       </div>
     </header>
   );

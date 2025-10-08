@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Sectors() {
@@ -97,7 +98,7 @@ export default function Sectors() {
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
           >
-            <img src={sector.img} alt={sector.name} style={imgStyle} />
+            <Image src={sector.img} alt={sector.name} style={imgStyle} />
             <p style={pStyle}>{sector.name}</p>
           </div>
         ))}
