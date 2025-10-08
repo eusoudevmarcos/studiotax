@@ -2,19 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#__next,
+main,
+.container {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  color: var(--color-text, #333);
+}
+
+// body {
+//   padding-top: 80px;
+// }
+
+/* Ajuste: scroll-behavior smooth aplicado no html para funcionar globalmente */
+html {
+  scroll-behavior: smooth !important;
+}
+
 :root {
   --color-primary: #d1a00a;
   --color-secondary: #545454;
   --color-bg: #f9f9f9;
   --color-text: #333;
   --color-bg2: #362404;
-}
-
-body {
-  font-family: "Inter", sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text);
-  padding-top: 100px;
 }
 
 /* Links */
@@ -24,11 +39,4 @@ a {
 }
 a:hover {
   color: var(--color-primary);
-}
-
-/* Containers */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }

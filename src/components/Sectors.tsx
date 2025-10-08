@@ -3,10 +3,10 @@ import { useState } from "react";
 
 export default function Sectors() {
   const sectors = [
-    { name: "Bares e Restaurantes", img: "image/setor-bar.jpg" },
-    { name: "Lanchonetes e Cafés", img: "image/setor-cafe.jpg" },
-    { name: "Mercados", img: "image/setor-mercado.jpg" },
-    { name: "Casas de Carnes", img: "image/acougue.jpg" },
+    { name: "Bares e Restaurantes", img: "/image/setor-bar.jpg" },
+    { name: "Lanchonetes e Cafés", img: "/image/setor-cafe.jpg" },
+    { name: "Mercados", img: "/image/setor-mercado.jpg" },
+    { name: "Casas de Carnes", img: "/image/acougue.jpg" },
   ];
 
   // Inline styles converted from Sectors.module.css
@@ -98,7 +98,13 @@ export default function Sectors() {
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
           >
-            <Image src={sector.img} alt={sector.name} style={imgStyle} />
+            <Image
+              src={sector.img}
+              alt={sector.name}
+              style={imgStyle}
+              width={200}
+              height={200}
+            />
             <p style={pStyle}>{sector.name}</p>
           </div>
         ))}
@@ -117,11 +123,13 @@ export default function Sectors() {
         style={{
           display: "flex",
           flexDirection: "row",
+          flexWrap: "wrap",
           gap: "10px",
           alignItems: "center",
           justifyContent: "center",
           margin: "48px 0",
         }}
+        className=""
       >
         {cards.map((card, idx) => (
           <div

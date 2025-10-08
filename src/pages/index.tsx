@@ -12,12 +12,28 @@ export default function Page() {
 
   return (
     <>
+      <style>
+        {`
+            .first-label{
+              font-size: 1.4rem;
+              padding: 98px 10px;
+            }
+
+            @media screen and (max-width: 1200px) {
+            .first-label{
+              padding: 60px 10px;
+              font-size: 1rem
+            }
+          }
+          `}
+      </style>
+
       <Hero />
 
       <div className="bg-[#362404]">
         <div
-          className="flex max-w-[1440px] mx-auto text-center text-[24px]"
-          style={{ color: "white", padding: "98px 10px", fontWeight: "bold" }}
+          className="flex max-w-[1440px] mx-auto text-center first-label"
+          style={{ color: "white", fontWeight: "bold" }}
         >
           Somos especialistas renomados com +15 anos de experiéncia no setor do
           Comércio, trabalhando tributagäo e ajustando seus produtos para näo

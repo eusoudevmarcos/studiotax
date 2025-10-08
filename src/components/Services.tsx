@@ -102,16 +102,8 @@ projetando para o ano seguinte.`,
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             transition: 0.3s;
-
-            &.card:nth-child(2),
-            &.card:nth-child(5) {
-              width: 400px;
-            }
-
-            @media screen and (max-width: 900px){
-                width: initial !important;
-            }
           }
+
           .card.hovered {
             transform: translateY(-5px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.1);
@@ -119,16 +111,21 @@ projetando para o ano seguinte.`,
 
           .grid{
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 2fr 3fr 2fr;
             gap: 1.5rem;
+            margin: 0 auto;
+            max-width: 1200px; 
 
             @media screen and (max-width: 900px){
                grid-template-columns: repeat(1, 1fr);
             }
+            @media screen and (min-width: 901px) and (max-width: 1250px) {
+                 grid-template-columns: 2fr 2.5fr 2fr;
+            }
           }
         `}
       </style>
-      <div className="container">
+      <div className="mx-auto max-w-[1200px]">
         <h2 style={titleStyle}>Nossos Serviços</h2>
         <div className="grid">
           {services.map((service, i) => (

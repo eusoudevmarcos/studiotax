@@ -1,8 +1,9 @@
+import Link from "next/link";
 import styles from "../styles/CTA.module.css";
 
 export default function CTA() {
   return (
-    <section className={styles.ctaSection}>
+    <section id="cases" className={styles.ctaSection}>
       <h2 className={styles.title}>
         Pronto para reduzir seus impostos e aumentar seus lucros?
       </h2>
@@ -10,14 +11,14 @@ export default function CTA() {
         Entre em contato agora mesmo e receba uma consultoria personalizada para
         o seu negócio.
       </p>
-      <a
+      <Link
         href="https://wa.me/556195524666"
         target="_blank"
         rel="noopener noreferrer"
         className={styles.ctaButton}
       >
         Fale no WhatsApp
-      </a>
+      </Link>
     </section>
   );
 }

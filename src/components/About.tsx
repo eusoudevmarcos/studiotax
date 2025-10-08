@@ -4,6 +4,7 @@ import styles from "../styles/About.module.css";
 export default function About() {
   return (
     <div
+      id="quemSomos"
       style={{
         fontFamily: "Arial, sans-serif",
         padding: "40px 20px",
@@ -86,6 +87,8 @@ export default function About() {
 
         <div style={{ flex: 1, minWidth: "300px", textAlign: "right" }}>
           <Image
+            width={200}
+            height={200}
             src="/video.png" // Substitua pela URL da sua imagem (Home 4.jpg)
             alt="Dois colaboradores analisando dados em um computador"
             style={{
