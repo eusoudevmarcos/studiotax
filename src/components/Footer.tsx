@@ -1,116 +1,189 @@
-import styles from "../styles/Footer.module.css";
+import React from "react";
 
-export default function Footer() {
+const StudioTaxFooter = () => {
+  // Cor de fundo principal do rodapé, ajustada para ser um cinza escuro
+  const bgColor = "#4A4A4A";
+  // Cor do texto de corpo e links
+  const textColor = "#CCCCCC";
+  // Cor dos títulos
+  const titleColor = "#FFFFFF";
+  // Cor do rodapé inferior (copyright)
+  const copyrightColor = "#A0A0A0";
+
   return (
-    <footer className={styles.footer}>
-      <div className="container">
-        <div className={styles.columns}>
-          <div className={styles.col}>
-            <h4 className={styles.heading}>Studio Tax</h4>
-            <p className={styles.text}>
-              Plataforma e consultoria para economia tributária no varejo de
-              alimentos. Otimizamos tributos para bares, restaurantes, cafés,
-              mercados e açougues.
-            </p>
-          </div>
-          <nav className={styles.col} aria-label="Sessões da página">
-            <h4 className={styles.heading}>Sessões</h4>
-            <ul className={styles.list}>
-              <li>
-                <a className={styles.link} href="#sectors">
-                  Setores
-                </a>
-              </li>
-              <li>
-                <a className={styles.link} href="#services">
-                  Serviços
-                </a>
-              </li>
-              <li>
-                <a className={styles.link} href="#about">
-                  Sobre
-                </a>
-              </li>
-              <li>
-                <a className={styles.link} href="#top">
-                  Início
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <div className={styles.col}>
-            <h4 className={styles.heading}>Contato</h4>
-            <ul className={styles.list}>
-              <li>
-                <a
-                  className={styles.button}
-                  href="https://wa.me/55SEUNUMERO"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Falar no WhatsApp"
-                >
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <a className={styles.link} href="mailto:contato@studiotax.com">
-                  E-mail
-                </a>
-              </li>
-              <li>
-                <a className={styles.link} href="tel:+550000000000">
-                  Telefone
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className={styles.col}>
-            <h4 className={styles.heading}>Redes sociais</h4>
-            <ul className={styles.socials}>
-              <li>
-                <a
-                  className={styles.socialLink}
-                  href="https://www.instagram.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a
-                  className={styles.socialLink}
-                  href="https://www.linkedin.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LinkedIn
-                </a>
-              </li>
-              <li>
-                <a
-                  className={styles.socialLink}
-                  href="https://www.facebook.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Facebook
-                </a>
-              </li>
-            </ul>
-          </div>
+    <footer
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        fontFamily: "Arial, sans-serif",
+        paddingTop: "40px",
+        paddingBottom: "15px",
+        fontSize: "14px",
+      }}
+    >
+      {/* SEÇÃO PRINCIPAL (4 COLUNAS) */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          maxWidth: "1000px",
+          margin: "0 auto",
+          padding: "0 20px",
+          gap: "30px", // Espaçamento entre as colunas
+        }}
+      >
+        {/* COLUNA 1: Studio Tax (Sobre) */}
+        <div style={{ flexBasis: "25%", minWidth: "250px" }}>
+          <p
+            style={{
+              color: titleColor,
+              fontWeight: "bold",
+              fontSize: "16px",
+              marginBottom: "15px",
+              marginTop: 0,
+            }}
+          >
+            Studio Tax
+          </p>
+          <p style={{ lineHeight: "1.6", margin: 0 }}>
+            Plataforma e consultoria para economia tributária no varejo de
+            alimentos. Otimizamos tributos para bares, restaurantes, cafés,
+            mercados e açougues.
+          </p>
         </div>
 
-        <div className={styles.bottom}>
-          <p className={styles.copy}>
-            © {new Date().getFullYear()} Studio Tax. Todos os direitos
-            reservados.
+        {/* COLUNA 2: Sessões */}
+        <div style={{ flexBasis: "25%", minWidth: "100px" }}>
+          <p
+            style={{
+              color: titleColor,
+              fontWeight: "bold",
+              fontSize: "16px",
+              marginBottom: "15px",
+              marginTop: 0,
+            }}
+          >
+            Sessões
           </p>
-          <p className={styles.meta}>
-            Código desta landing estruturado em Next.js 14 + CSS Modules.
+          {["Setores", "Serviços", "Sobre", "Início"].map((item) => (
+            <p key={item} style={{ margin: "8px 0", lineHeight: "1.2" }}>
+              <a href="#" style={{ color: textColor, textDecoration: "none" }}>
+                {item}
+              </a>
+            </p>
+          ))}
+        </div>
+
+        {/* COLUNA 3: Contato */}
+        <div style={{ flexBasis: "25%", minWidth: "150px" }}>
+          <p
+            style={{
+              color: titleColor,
+              fontWeight: "bold",
+              fontSize: "16px",
+              marginBottom: "15px",
+              marginTop: 0,
+            }}
+          >
+            Contato
+          </p>
+
+          {/* Botão WhatsApp */}
+          <a
+            href="https://wa.me/556195524666"
+            style={{
+              backgroundColor: "#4CAF50",
+              color: "#FFFFFF",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              textDecoration: "none",
+              display: "inline-block",
+              fontWeight: "bold",
+              marginBottom: "15px",
+            }}
+          >
+            WhatsApp
+          </a>
+
+          {/* Links de Contato */}
+          <p style={{ margin: "8px 0", lineHeight: "1.2" }}>E-mail</p>
+          <p style={{ margin: "8px 0", lineHeight: "1.2" }}>Telefone</p>
+        </div>
+
+        {/* COLUNA 4: Redes sociais */}
+        <div style={{ flexBasis: "25%", minWidth: "100px" }}>
+          <p
+            style={{
+              color: titleColor,
+              fontWeight: "bold",
+              fontSize: "16px",
+              marginBottom: "15px",
+              marginTop: 0,
+            }}
+          >
+            Redes sociais
+          </p>
+          <p style={{ margin: "8px 0", lineHeight: "1.2" }}>
+            <a
+              href="#"
+              style={{
+                color: textColor,
+                textDecoration: "none",
+                marginRight: "15px",
+              }}
+            >
+              Instagram
+            </a>
+            <a
+              href="#"
+              style={{
+                color: textColor,
+                textDecoration: "none",
+                marginRight: "15px",
+              }}
+            >
+              LinkedIn
+            </a>
+            <a href="#" style={{ color: textColor, textDecoration: "none" }}>
+              Facebook
+            </a>
           </p>
         </div>
       </div>
+
+      {/* DIVISOR */}
+      <div
+        style={{
+          borderTop: "1px solid #5C5C5C",
+          margin: "30px auto 15px auto",
+          maxWidth: "1000px",
+          width: "calc(100% - 40px)", // Ajusta a largura do divisor
+        }}
+      ></div>
+
+      {/* SEÇÃO INFERIOR (COPYRIGHT) */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          maxWidth: "1000px",
+          margin: "0 auto",
+          padding: "0 20px",
+          fontSize: "12px",
+          color: copyrightColor,
+          flexWrap: "wrap",
+        }}
+      >
+        <p style={{ margin: "5px 0" }}>
+          © 2025 Studio Tax. Todos os direitos reservados.
+        </p>
+        <p style={{ margin: "5px 0", textAlign: "right" }}>
+          Código desta landing estruturado em NextJs 14 + CSS Modules.
+        </p>
+      </div>
     </footer>
   );
-}
+};
+
+export default StudioTaxFooter;

@@ -1,27 +1,48 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    /* ✅ Alvo de compilação moderno, mas compatível */
+    "target": "ES2020",
+
+    /* ✅ Bibliotecas padrão */
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+
+    /* ✅ JS e TS juntos */
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* ✅ Não gera saída (Next cuida da build) */
     "noEmit": true,
+
+    /* ✅ Importação mais compatível com CommonJS */
     "esModuleInterop": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "allowSyntheticDefaultImports": true,
+
+    /* ⚙️ Importante — use CommonJS */
+    "module": "CommonJS",
+
+    /* ✅ Resolução padrão do Node */
+    "moduleResolution": "Node",
+
+    /* ✅ Suporte para imports absolutos */
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./*"]
+    },
+
+    /* ✅ JSX mantido para o Next.js */
+    "jsx": "preserve",
+
+    /* ✅ Compilação incremental */
+    "incremental": true,
+
+    /* ✅ Permitir JSON */
+    "resolveJsonModule": true,
+
+    /* ✅ Isolamento para evitar conflitos em builds */
+    "isolatedModules": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "global.d.ts", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

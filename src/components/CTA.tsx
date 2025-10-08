@@ -11,7 +11,7 @@ export default function CTA() {
         o seu negócio.
       </p>
       <a
-        href="https://wa.me/55SEUNUMERO"
+        href="https://wa.me/556195524666"
         target="_blank"
         rel="noopener noreferrer"
         className={styles.ctaButton}
