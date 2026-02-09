@@ -1,12 +1,10 @@
-// frontend/components/Header/Header.tsx
-import logo from '@/assets/logo.svg';
-import { usePlano, useUser } from '@/context/AuthContext';
-import styles from '@/styles/header.module.css'; // Importa o módulo CSS
-import { getFirstLetter } from '@/utils/getFirstLetter';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
-import { BellIcon, SearchIcon } from '../icons'; // Importa os ícones
+import logo from "@/assets/logo.svg";
+import { usePlano, useUser } from "@/context/AuthContext";
+import { getFirstLetter } from "@/utils/getFirstLetter";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+import { BellIcon, SearchIcon } from "../icons"; // Importa os ícones
 
 // Ícone de menu hamburguer simples (pode ser substituído por um SVG melhor)
 const BurgerIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -44,28 +42,25 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
         setIsMenuOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <header className="fixed bg-white w-full p-4 shadow-md z-50">
-      <section className="flex justify-between items-center mx-auto max-w-[1440px] gap-2">
-        <Link href="/atividades/agendas">
-          <Image height={0} width={50} src={logo} alt="Logo Aura" />
+    <header className="bg-white border-b border-[#eee] fixed top-0 w-full z-[1000]">
+      <section className="flex justify-between items-center mx-auto max-w-[1440px] py-4 px-4 gap-2">
+        <Link href="/atividades/agendas" className="flex items-center">
+          <Image
+            height={40}
+            width={200}
+            src="/logo.png"
+            alt="Logo Aura"
+            className="font-bold text-[var(--color-secondary)]"
+          />
         </Link>
 
         {/* DESKTOP */}
         <div className="hidden md:flex items-center gap-4 flex-1 justify-end">
-          {/* <div className={styles.searchBar}>
-            <SearchIcon className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              className={styles.searchInput}
-            />
-          </div> */}
-
           {/* Exibição de uso restante para clientes */}
           {temPlanoComUso && (
             <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
@@ -83,25 +78,30 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
             </div>
           )}
 
-          <div className={styles.headerActions}>
+          <div className="flex items-center gap-2 ml-4">
             {showBtnTakeIt && (
-              <Link href="/take-it" className="buttonPrimary">
+              <Link
+                href="/take-it"
+                className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
+              >
                 <SearchIcon />
                 TAKE IT
               </Link>
             )}
-            <button className={styles.iconButton}>
+
+            <button className="flex items-center justify-center p-2 rounded-full bg-transparent hover:bg-gray-100 transition">
               <BellIcon />
             </button>
-            <Link href={`/profile`}>
+
+            <Link href={`/profile`} className="ml-2">
               <Image
                 src={`https://placehold.co/40x40/8c53ff/ffffff?text=${getFirstLetter(
-                  user?.nome || user?.razaoSocial || user?.email
+                  user?.nome || user?.razaoSocial || user?.email,
                 )}`}
-                width={30}
-                height={30}
+                width={40}
+                height={40}
                 alt="User Avatar"
-                className={styles.userAvatar}
+                className="rounded-full border border-gray-200"
                 unoptimized
               />
             </Link>
@@ -110,14 +110,14 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
 
         {/* MOBILE */}
         <div className="flex md:hidden items-center">
-          <button className={`${styles.iconButton} max-w-md`}>
+          <button className="flex items-center justify-center p-2 rounded-full bg-transparent hover:bg-gray-100 transition max-w-md">
             <BellIcon />
           </button>
 
           <button
             aria-label="Abrir menu"
             onClick={() => setIsMenuOpen(true)}
-            className="p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+            className="p-2 rounded-md hover:bg-gray-100 focus:outline-none ml-2"
           >
             <BurgerIcon />
           </button>
@@ -125,7 +125,7 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
 
         {/* Menu Mobile Overlay */}
         {isMenuOpen && (
-          <div className="fixed inset-0 z-50 backdrop-blur-sm bg-opacity-40 flex justify-end md:hidden">
+          <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/40 flex justify-end md:hidden">
             <div className="bg-white w-4/5 max-w-xs h-full shadow-lg flex flex-col p-6 relative animate-slide-in-right">
               <button
                 aria-label="Fechar menu"
@@ -144,15 +144,6 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
                 </svg>
               </button>
               <div className="flex flex-col gap-6 mt-8">
-                {/* <div className={styles.searchBar}>
-                  <SearchIcon className={styles.searchIcon} />
-                  <input
-                    type="text"
-                    placeholder="Pesquisar..."
-                    className={styles.searchInput}
-                  />
-                </div> */}
-
                 {/* Exibição de uso restante para clientes - Mobile */}
                 {temPlanoComUso && (
                   <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
@@ -171,7 +162,10 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
                 )}
 
                 {showBtnTakeIt && (
-                  <Link href="/take-it" className="buttonPrimary">
+                  <Link
+                    href="/take-it"
+                    className="flex items-center gap-2 justify-center bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
+                  >
                     <SearchIcon />
                     TAKE IT
                   </Link>
@@ -184,12 +178,12 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
                 >
                   <Image
                     src={`https://placehold.co/40x40/8c53ff/ffffff?text=${getFirstLetter(
-                      user?.nome || user?.razaoSocial || user?.email
+                      user?.nome || user?.razaoSocial || user?.email,
                     )}`}
-                    width={30}
-                    height={30}
+                    width={40}
+                    height={40}
                     alt="User Avatar"
-                    className={styles.userAvatar}
+                    className="rounded-full border border-gray-200"
                     unoptimized
                   />
                 </Link>

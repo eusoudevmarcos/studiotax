@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Header from '@/components/header/HeaderLayout';
-// import Sidebar from '@/components/sidebar/SidebarLayout';
+import Sidebar from '@/components/sidebar/SidebarLayout';
 import 'material-icons/iconfont/material-icons.css';
 import React, { useState } from 'react';
 
@@ -19,7 +19,7 @@ const DashboardLayout: React.FC<DashboardProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* <Sidebar onToggleSidebar={onToggleSidebar} /> */}
+      <Sidebar onToggleSidebar={onToggleSidebar} />
 
       <Header />
 

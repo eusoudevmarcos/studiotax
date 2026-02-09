@@ -1,6 +1,6 @@
 import Header from '@/components/header/HeaderLayout';
 import { KanbanBreadcrumbs } from '@/components/kanban/KanbanBreadcrumbs';
-// import Sidebar from '@/components/sidebar/SidebarLayout';
+import Sidebar from '@/components/sidebar/SidebarLayout';
 import 'material-icons/iconfont/material-icons.css';
 import React, { useState } from 'react';
 
@@ -20,7 +20,7 @@ const KanbanLayout: React.FC<KanbanLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-primary">
-      {/* <Sidebar onToggleSidebar={onToggleSidebar} /> */}
+      <Sidebar onToggleSidebar={onToggleSidebar} />
 
       <Header />
 

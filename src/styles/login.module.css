@@ -76,7 +76,7 @@
 }
 
 .formInput:focus {
-  border-color: #8c53ff;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
@@ -84,7 +84,7 @@
   width: 100%;
   padding: 12px;
   border-radius: 8px;
-  background-color: #8c53ff;
+  background-color: var(--color-primary);
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
@@ -97,13 +97,13 @@
 }
 
 .loginButton:hover {
-  background-color: #8c53ff;
+  background-color: var(--color-primary);
 }
 
 .forgotPassword {
   margin-top: 15px;
   font-size: 14px;
-  color: #8c53ff;
+  color: var(--color-primary);
   text-decoration: none;
 }
 

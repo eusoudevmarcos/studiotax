@@ -145,15 +145,31 @@ export default function Header() {
             ))}
           </ul>
         </nav>
-        <Link
-          href="https://wa.me/556195524666"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="desktop-contact bg-[var(--color-primary)] text-white rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09]"
-          style={{ padding: "10px 30px", borderRadius: "12px", color: "white" }}
-        >
-          Contato
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/login"
+            className="text-black rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09]"
+            style={{
+              padding: "10px 30px",
+              borderRadius: "12px",
+            }}
+          >
+            Login
+          </Link>
+          <Link
+            href="https://wa.me/556195524666"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="desktop-contact bg-[var(--color-primary)] text-white rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09]"
+            style={{
+              padding: "10px 30px",
+              borderRadius: "12px",
+              color: "white",
+            }}
+          >
+            Contato
+          </Link>
+        </div>
       </div>
       {/* Mobile nav menu */}
       {menuOpen && (
