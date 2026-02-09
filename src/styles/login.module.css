@@ -1,0 +1,112 @@
+/* frontend/styles/Login.module.css */
+
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 20px;
+}
+
+.loginBox {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  /* `align-items: center` foi removido para que os inputs e o botão preencham 100% da largura. */
+  /* O box-sizing é adicionado para garantir que padding e bordas não causem estouro de largura. */
+  box-sizing: border-box;
+  /* Importante para que width: 100% funcione como esperado com padding */
+}
+
+.loginForm {
+  width: 100%;
+  box-sizing: border-box;
+  /* Aplica também ao formulário */
+}
+
+.loginLogo {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centraliza a imagem e o texto da logo */
+  gap: 10px;
+  width: 100%;
+  /* Garante que a logo ocupe a largura total para centralização */
+}
+
+.loginLogo img {
+  width: 300px;
+  height: 50px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  /* Aplica também ao grupo de formulário */
+}
+
+.formLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #545454;
+  margin-bottom: 8px;
+}
+
+.formInput {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 16px;
+  color: #545454;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-sizing: border-box;
+  /* Essencial para inputs com padding e borda */
+}
+
+.formInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 20px;
+  box-sizing: border-box;
+  /* Essencial para botões com padding */
+}
+
+.loginButton:hover {
+  background-color: var(--color-primary);
+}
+
+.forgotPassword {
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,17 @@
+input,
+select,
+textarea {
+  border-color: var(--border-primary) !important;
+  accent-color: var(--border-primary) !important;
+}
+
+select:disabled,
+input[type='checkbox']:disabled,
+input:disabled,
+textarea:disabled {
+  background-color: var(--color-neutral); /* primary */
+  color: #00000060;
+  cursor: not-allowed;
+  opacity: 1;
+  border-color: var(--border-primary-light);
+}
