@@ -6,8 +6,8 @@ import ModalSuccess from './ModalSuccess';
 type ModalCandidatoFormProps = {
   isOpen: boolean;
   onClose: () => void;
-  initialValues?: any;
-  onSuccess?: (candidato: any) => void;
+  initialValues?: Record<string, unknown>;
+  onSuccess?: (candidato: Record<string, unknown>) => void;
 };
 
 const ModalCandidatoForm: React.FC<ModalCandidatoFormProps> = ({

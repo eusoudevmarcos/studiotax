@@ -15,7 +15,6 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
   filtros,
   onFiltrosChange,
   criadores,
-  membros,
   totalCards,
 }) => {
   const temFiltrosAtivos = useMemo(() => {
@@ -62,22 +61,11 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
     [filtros, onFiltrosChange]
   );
 
-  const handleMembroChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-      onFiltrosChange({
-        ...filtros,
-        membroIds: selectedOptions.length > 0 ? selectedOptions : undefined,
-      });
-    },
-    [filtros, onFiltrosChange]
-  );
-
   const handleOrdenarPorChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value as 'criadoEm' | 'titulo' | 'ordem' | '';
       if (!value) {
-        const { ordenarPor, ordemDirecao, ...rest } = filtros || {};
+        const { ordenarPor: _ordenarPor, ordemDirecao: _ordemDirecao, ...rest } = filtros || {};
         onFiltrosChange(Object.keys(rest).length > 0 ? rest : null);
       } else {
         // Determinar direção padrão baseada no campo

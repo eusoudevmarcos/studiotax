@@ -1,6 +1,5 @@
 import { CardKanban, VinculoCard } from '@/schemas/kanban.schema';
 import React from 'react';
-import { FiMoreVertical } from 'react-icons/fi';
 
 interface CardKanbanCustomProps {
   id?: string;
@@ -28,6 +27,25 @@ interface CardKanbanCustomProps {
   renderVinculos?: (vinculos: VinculoCard[]) => React.ReactNode;
   onClick?: () => void;
 }
+
+// Material Icons SVG for "more_vert"
+const MoreVertMaterialIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <span className={className} style={{ display: 'inline-flex', verticalAlign: 'middle' }} aria-hidden="true">
+    <svg
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      focusable="false"
+      aria-hidden="true"
+      style={{ fontSize: '1.25rem' }}
+    >
+      <circle cx="12" cy="5" r="1.5" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="12" cy="19" r="1.5" />
+    </svg>
+  </span>
+);
 
 export const CardKanbanCustom: React.FC<CardKanbanCustomProps> = ({
   id,
@@ -121,8 +139,10 @@ export const CardKanbanCustom: React.FC<CardKanbanCustomProps> = ({
               setShowMenu(!showMenu);
             }}
             className="p-1 hover:bg-gray-100 rounded"
+            aria-label="Mais ações"
+            type="button"
           >
-            <FiMoreVertical className="w-4 h-4 text-gray-600" />
+            <MoreVertMaterialIcon className="w-4 h-4 text-gray-600" />
           </button>
           {showMenu && (
             <div
@@ -133,6 +153,7 @@ export const CardKanbanCustom: React.FC<CardKanbanCustomProps> = ({
                 <button
                   onClick={handleEdit}
                   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
+                  type="button"
                 >
                   Editar
                 </button>
@@ -141,6 +162,7 @@ export const CardKanbanCustom: React.FC<CardKanbanCustomProps> = ({
                 <button
                   onClick={handleDelete}
                   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600 rounded-b-md"
+                  type="button"
                 >
                   Excluir
                 </button>

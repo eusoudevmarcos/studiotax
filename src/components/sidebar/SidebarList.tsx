@@ -1,10 +1,5 @@
 import { TipoUsuarioEnum } from "@/schemas/funcionario.schema";
-import {
-  BriefcaseIcon,
-  CalendarIcon,
-  ClipboardCheckIcon,
-  EmployeesIcon,
-} from "../icons";
+import { CalendarIcon } from "../icons";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getNavItems = (user: any) => {

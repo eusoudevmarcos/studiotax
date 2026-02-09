@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/input/FormTextarea.tsx
+
 import { getError } from '@/utils/getError';
 import { TextareaHTMLAttributes } from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';

@@ -52,7 +52,7 @@ export function ModalVagasCliente({
         });
         setVagasCliente(response.data || []);
         setTotalPaginas(response.totalPaginas || 1);
-      } catch (e) {
+      } catch {
         setErro('Cliente não encontrado ou erro ao buscar dados.');
         setVagasCliente([]);
         setTotalPaginas(1);

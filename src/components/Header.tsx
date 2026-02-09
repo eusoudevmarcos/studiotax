@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 
 export default function Header() {
@@ -8,7 +8,7 @@ export default function Header() {
   const router = useRouter();
 
   // Helper to check if the current hash matches the nav item
-  const getActiveHash = () => {
+  const getActiveHash = useCallback(() => {
     if (typeof window !== "undefined") {
       return window.location.hash || "#home";
     }
@@ -16,7 +16,7 @@ export default function Header() {
     return router.asPath.split("#")[1]
       ? "#" + router.asPath.split("#")[1]
       : "#home";
-  };
+  }, [router.asPath]);
 
   // For SSR/CSR compatibility, use state to track hash
   const [activeHash, setActiveHash] = useState(getActiveHash());
@@ -29,7 +29,7 @@ export default function Header() {
     window.addEventListener("hashchange", handleHashChange, false);
     return () =>
       window.removeEventListener("hashchange", handleHashChange, false);
-  }, []);
+  }, [getActiveHash]);
 
   // Desktop nav items
   const navItems = [

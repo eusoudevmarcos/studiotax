@@ -73,7 +73,7 @@ const ModalHistoricoVaga: React.FC<ModalHistoricoVagaProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, vagaId]);
 
-  const formatDate = (dateString: string) => {
+  const _formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString('pt-BR', {
       day: '2-digit',

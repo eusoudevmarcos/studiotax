@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import BtnGroupActions from './BtnGroupActions';
@@ -6,7 +7,7 @@ type TrelloCardProps = {
   id: string;
   title: string;
   label?: string;
-  metadata?: any;
+  metadata?: Record<string, any>;
   onDuplicate?: (id: string) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -82,9 +83,11 @@ export const CardKanbanVagas: React.FC<TrelloCardProps> = ({
 
       <h3 className="font-semibold text-gray-800 mb-2">{title}</h3>
 
-      {label && <p className="text-xs text-gray-500 mb-2">{label}</p>}
+      {typeof label === "string" && label && (
+        <p className="text-xs text-gray-500 mb-2">{label}</p>
+      )}
 
-      {metadata?.categoria && (
+      {metadata?.categoria && typeof metadata.categoria === "string" && (
         <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded mb-2">
           {metadata.categoria}
         </span>

@@ -78,11 +78,11 @@ export default async function handler(
     }
 
     return res.status(200).json({ date, available });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Erro ao buscar horários:', err);
     return res.status(500).json({
       message: 'Erro ao consultar horários disponíveis.',
-      details: err.message,
+      details: err instanceof Error ? err.message : String(err),
     });
   }
 }

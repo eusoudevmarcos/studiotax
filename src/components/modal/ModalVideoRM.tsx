@@ -10,23 +10,13 @@ type ModalVideoRMProps = {
 };
 
 export function ModalVideoRM({ isOpen, onClose }: ModalVideoRMProps) {
-  const [selectedPlan, setSelectedPlan] = useState<null | {
+  const [_selectedPlan, setSelectedPlan] = useState<null | {
     name: string;
     price: string;
   }>(null);
 
-  const {
-    isOpen: isPlansModalOpen,
-    openModal: openPlansModal,
-    closeModal: closePlansModal,
-  } = useModal();
-
-  const {
-    isOpen: isVideoModalOpen,
-    openModal: openVideoModal,
-    closeModal: closeVideoModal,
-  } = useModal();
-
+  useModal(); // plans modal (unused in UI but may be used later)
+  const { closeModal: closeVideoModal } = useModal();
   const {
     isOpen: isModalPlans,
     openModal: openModalPlans,

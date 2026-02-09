@@ -1,5 +1,6 @@
-import { InputProps, MaskProps } from '@/type/formInput.type';
-import { SelectProps } from '@/type/formSelect.type';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { InputProps, MaskProps } from '@/types/formInput.type';
+import { SelectProps } from '@/types/formSelect.type';
 import React, { useRef, useState } from 'react';
 import { PrimaryButton } from '../button/PrimaryButton';
 import { FormInput } from '../input/FormInput';

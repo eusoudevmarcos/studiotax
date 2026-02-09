@@ -1,8 +1,20 @@
 import React from 'react';
 
+interface LaneCard {
+  id: string;
+  title: string;
+  [key: string]: unknown;
+}
+
+interface Lane {
+  id: string;
+  title: string;
+  cards?: LaneCard[];
+}
+
 interface TrelloBoardWrapperProps {
   data: {
-    lanes: any[];
+    lanes: Lane[];
     total?: number;
     page?: number;
     pageSize?: number;
@@ -16,7 +28,7 @@ interface TrelloBoardWrapperProps {
     targetLaneId: string
   ) => void;
   components?: {
-    Card?: React.ComponentType<any>;
+    Card?: React.ComponentType<{ data: LaneCard }>;
   };
 }
 
@@ -25,7 +37,6 @@ export const TrelloBoardWrapper: React.FC<TrelloBoardWrapperProps> = ({
   data,
   style,
   laneStyle,
-  onCardMoveAcrossLanes,
   components,
 }) => {
   // TODO: Implementar com react-trello Board ou substituir por componente customizado
@@ -33,10 +44,10 @@ export const TrelloBoardWrapper: React.FC<TrelloBoardWrapperProps> = ({
 
   return (
     <div style={style}>
-      {data.lanes.map((lane: any) => (
+      {data.lanes.map((lane: Lane) => (
         <div key={lane.id} style={laneStyle}>
           <h3>{lane.title}</h3>
-          {lane.cards?.map((card: any) => {
+          {lane.cards?.map((card: LaneCard) => {
             const CardComponent =
               components?.Card || (() => <div>{card.title}</div>);
             return <CardComponent key={card.id} data={card} />;

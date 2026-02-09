@@ -1,5 +1,6 @@
 // pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from 'next-auth';
+import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
@@ -55,7 +56,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT) {
   try {
     const url = 'https://oauth2.googleapis.com/token';
 

@@ -30,7 +30,7 @@ const ClientePage: React.FC<{
 
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [, setPaginaAtual] = useState(1);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showVagasForm, setShowVagasForm] = useState(false);
   const [modalPlanosCliente, setModalPlanosCliente] = useState(false);
@@ -39,14 +39,12 @@ const ClientePage: React.FC<{
     initialValues ?? null
   );
 
-  const [clienteCarregado, setClienteCarregado] = useState<boolean>(
+  const [, setClienteCarregado] = useState<boolean>(
     !!initialValues
   );
 
   // Variável para controlar aba ativa do Tab
   const [tab, setTab] = useState<string>('cliente');
-
-  const isAdmin = useAdmin();
 
   useEffect(() => {
     if (!uuid || initialValues) {
@@ -65,7 +63,7 @@ const ClientePage: React.FC<{
         // cliente.vagas = { ...vagas };
         setCliente(cliente);
         setClienteCarregado(true);
-      } catch (_) {
+      } catch {
         setErro('Cliente não encontrado ou erro ao buscar dados.');
         setCliente(null);
         setClienteCarregado(false);
@@ -172,7 +170,7 @@ const ClientePage: React.FC<{
           onClose={() => {
             setModalPlanosCliente(false);
           }}
-          planos={cliente.planos as any}
+          planos={cliente.planos ?? []}
         />
       )}
 
@@ -200,12 +198,10 @@ const ClientePage: React.FC<{
           title={`Vaga do cliente`}
         >
           <VagaForm
-            onSuccess={vaga => {
+            onSuccess={() => {
               setShowVagasForm(false);
-              // Atualizar as vagas após cadastrar uma nova vaga
-              // refetchVagas({ search: cliente.id });
             }}
-            initialValues={{ cliente } as any}
+            initialValues={{ cliente }}
             isBtnDelete={false}
             isBtnView={false}
             showInput={false}

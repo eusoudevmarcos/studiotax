@@ -9,7 +9,7 @@ interface DashboardProps {
 }
 
 const DashboardLayout: React.FC<DashboardProps> = ({ children }) => {
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, _setActiveSection] = useState('');
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 

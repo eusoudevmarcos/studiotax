@@ -28,7 +28,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
         <div className="flex gap-2">
           <button
             className="mt-6 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-primary/90 transition-colors"
-            onClick={e => {
+            onClick={() => {
               if (onClickConfirm) onClickConfirm();
               setLoading(prev => !prev);
             }}

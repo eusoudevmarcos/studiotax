@@ -1,13 +1,13 @@
 import Card from '@/components/Card';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function AtividadeLayout({ children }: any) {
+export default function AtividadeLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [activeSubMenu, setActiveSubMenu] = useState('');
 
   useEffect(() => {
-    if (router && router.asPath) {
+    if (router?.asPath) {
       const pathParts = router.asPath.split('/').filter(Boolean);
       if (pathParts.length > 1) {
         setActiveSubMenu(
@@ -17,7 +17,7 @@ export default function AtividadeLayout({ children }: any) {
         setActiveSubMenu('');
       }
     }
-  }, [router.asPath]);
+  }, [router, router?.asPath]);
 
   const handleSubMenuClick = (item: string) => {
     const lower = item.toLowerCase();

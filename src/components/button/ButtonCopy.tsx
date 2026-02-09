@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { PrimaryButton } from './PrimaryButton';
 
-export default function ButtonCopy({ value, className }: any) {
+interface ButtonCopyProps {
+  value: string;
+  className?: string;
+}
+export default function ButtonCopy({ value, className }: ButtonCopyProps) {
   const [copiado, setCopiado] = useState(false);
 
   const handleCopy = (e: React.MouseEvent) => {

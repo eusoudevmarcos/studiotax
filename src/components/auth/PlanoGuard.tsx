@@ -15,7 +15,7 @@ const PlanoGuard: React.FC<PlanoGuardProps> = ({
   requiredPlano,
   requireUso = false,
 }) => {
-  const { planos, podeConsultarProfissionais, usosDisponiveis } = usePlano();
+  const { planos, podeConsultarProfissionais } = usePlano();
 
   // Se não tem planos, não pode acessar
   if (planos.length === 0) {

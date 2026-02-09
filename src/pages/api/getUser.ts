@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextApiRequest, NextApiResponse } from "next";
 import { verify } from "jsonwebtoken";
 import { parse } from "cookie";
@@ -12,7 +11,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).json({ error: "Não autenticado" });
     }
 
-    const user = verify(token, process.env.NUXT_PUBLIC_JWT_SECRET || "") as any;
+    const user = verify(token, process.env.NUXT_PUBLIC_JWT_SECRET || "") as Record<string, unknown>;
     return res.status(200).json({ user });
   } catch (_) {
     return res.status(401).json({ error: "Token inválido" });

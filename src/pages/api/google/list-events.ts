@@ -29,8 +29,8 @@ export default async function handler(
     });
 
     return res.status(200).json(response.data.items || []);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log('Erro ao listar eventos:', error);
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error instanceof Error ? error.message : String(error) });
   }
 }

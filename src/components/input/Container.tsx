@@ -1,4 +1,4 @@
-import { ContainerProps } from '@/type/formInput.type';
+import { ContainerProps } from '@/types/formInput.type';
 
 export const Container: React.FC<ContainerProps> = ({
   children,
