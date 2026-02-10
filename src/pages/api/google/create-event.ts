@@ -120,7 +120,7 @@ export default async function handler(
     }
     res.status(500).json({
       message: 'Erro interno ao criar o evento.',
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     });
   }
 }

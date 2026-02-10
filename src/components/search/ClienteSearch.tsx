@@ -38,6 +38,52 @@ const ClienteSearch = ({
       return;
     }
 
+    const handleSearch = async (append: boolean) => {
+      if (!searchQuery || searchQuery.trim() === "") {
+        setError("Digite um valor para pesquisar.");
+        setInitialValues(null);
+        setSearchQueryList([]);
+        setShowAutocomplete(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      if (!append) setInitialValues(null);
+
+      try {
+        const params: any = {
+          page,
+          pageSize,
+          search: searchQuery,
+        };
+
+        const response = await api.get("/api/externalWithAuth/cliente", {
+          params,
+        });
+
+        const data = response.data.data ?? [];
+        if (data.length > 0) {
+          setSearchQueryList((prev) => (append ? [...prev, ...data] : data));
+          setShowAutocomplete(true);
+        } else if (!append) {
+          setError("Cliente não encontrado.");
+          setSearchQueryList([]);
+          setShowAutocomplete(false);
+        }
+      } catch (err: any) {
+        setError(
+          err?.response?.data?.message ||
+            "Erro ao buscar cliente. Tente novamente.",
+        );
+        if (!append) {
+          setSearchQueryList([]);
+          setShowAutocomplete(false);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
     const delayDebounce = setTimeout(() => {
       if (searchQuery && searchQuery.trim() !== "") {
         // reinicia paginação ao novo termo
@@ -52,60 +98,14 @@ const ClienteSearch = ({
     }, 600);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
+  }, [page, pageSize, searchQuery]);
 
   // Paginação incremental ao chegar no fim do scroll
   useEffect(() => {
     if (page > 1 && searchQuery.length >= 3) {
       handleSearch(true);
     }
-  }, [page]);
-
-  const handleSearch = async (append: boolean) => {
-    if (!searchQuery || searchQuery.trim() === "") {
-      setError("Digite um valor para pesquisar.");
-      setInitialValues(null);
-      setSearchQueryList([]);
-      setShowAutocomplete(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    if (!append) setInitialValues(null);
-
-    try {
-      const params: any = {
-        page,
-        pageSize,
-        search: searchQuery,
-      };
-
-      const response = await api.get("/api/externalWithAuth/cliente", {
-        params,
-      });
-
-      const data = response.data.data ?? [];
-      if (data.length > 0) {
-        setSearchQueryList((prev) => (append ? [...prev, ...data] : data));
-        setShowAutocomplete(true);
-      } else if (!append) {
-        setError("Cliente não encontrado.");
-        setSearchQueryList([]);
-        setShowAutocomplete(false);
-      }
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "Erro ao buscar cliente. Tente novamente.",
-      );
-      if (!append) {
-        setSearchQueryList([]);
-        setShowAutocomplete(false);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [page, searchQuery.length]);
 
   const handleSelectCliente = (cliente: any) => {
     setSearchQuery("");
@@ -240,3 +240,7 @@ const ClienteSearch = ({
 };
 
 export default ClienteSearch;
+function handleSearch(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+

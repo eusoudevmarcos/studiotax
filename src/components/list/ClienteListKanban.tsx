@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/axios';
 import { getCliente, patchClienteStatus } from '@/axios/cliente.axios';
 import { TrelloBoardWrapper } from '@/components/kanban/TrelloBoardWrapper';
@@ -89,6 +90,7 @@ const ClienteList: React.FC<{
     : searchRazao.trim();
 
   // KanbanData state inicial (baseado no VagaList)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const resetKanbanClienteData: KanbanClienteResponse = {
     lanes: [],
     total: 0,
@@ -161,7 +163,7 @@ const ClienteList: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [page, searchValue, onlyProspects]);
+  }, [categoriaQuery, searchQuery, page, pageSize, resetKanbanClienteData]);
 
   const handleSearch = () => {
     setPage(1);
@@ -219,7 +221,7 @@ const ClienteList: React.FC<{
               classNameContainer: 'w-full',
               disabled: loading,
             }}
-            onChange={e => setSearchRazao(e?.target?.value ?? e)}
+            onChange={value => setSearchRazao(value)}
           />
 
           <FormInput
@@ -232,7 +234,7 @@ const ClienteList: React.FC<{
               classNameContainer: 'w-full',
               disabled: loading,
             }}
-            onChange={e => setSearchCnpj(e?.target?.value ?? e)}
+            onChange={value => setSearchCnpj(value)}
           />
 
           <PrimaryButton

@@ -135,15 +135,7 @@ export function FormInput<T extends FieldValues>({
       }
 
       if (onChange) {
-        if (maskProps?.mask) {
-          (onChange as FormInputOnChange)(processedValue);
-        } else {
-          const syntheticEvent = {
-            target: { value: processedValue, name: name.toString() },
-            currentTarget: { value: processedValue, name: name.toString() },
-          } as React.ChangeEvent<HTMLInputElement>;
-          (onChange as FormInputOnChange)(syntheticEvent);
-        }
+        onChange(processedValue);
       }
     };
 
@@ -185,15 +177,7 @@ export function FormInput<T extends FieldValues>({
       setInternalValue('');
     }
     if (onChange) {
-      if (maskProps?.mask) {
-        (onChange as FormInputOnChange)('');
-      } else {
-        const syntheticEvent = {
-          target: { value: '', name: name.toString() },
-          currentTarget: { value: '', name: name.toString() },
-        } as React.ChangeEvent<HTMLInputElement>;
-        (onChange as FormInputOnChange)(syntheticEvent);
-      }
+      onChange('');
     }
   };
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
@@ -98,7 +99,7 @@ export default function ConvidadosTable({
           name="email"
           noControl
           value={email}
-          onChange={(e: any) => setEmail(e.target.value)}
+          onChange={value => setEmail(value)}
           placeholder="email@exemplo.com"
         />
         <PrimaryButton

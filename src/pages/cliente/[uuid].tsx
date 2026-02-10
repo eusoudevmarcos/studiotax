@@ -1,25 +1,23 @@
 // pages/cliente/[uuid].tsx
-import api from '@/axios';
-import { getClienteById } from '@/axios/cliente.axios';
-import { PrimaryButton } from '@/components/button/PrimaryButton';
-import Card from '@/components/Card';
-import ClienteInfo from '@/components/cliente/ClienteInfo';
-import VagaForm from '@/components/form/VagaForm';
-import { Tab } from '@/components/global/tab/Tab';
-import { PlusIcon } from '@/components/icons';
-import VagaList from '@/components/list/VagaList';
-import Modal from '@/components/modal/Modal';
-import ModalClienteForm from '@/components/modal/ModalClienteForm';
-import { ModalPlanoCliente } from '@/components/modal/ModalPlanoCliente';
-import { ModalVagasCliente } from '@/components/modal/ModalVagasCliente';
-import { useAdmin } from '@/context/AuthContext';
-import { ClienteWithEmpresaAndVagaInput } from '@/schemas/cliente.schema';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import api from "@/axios";
+import { getClienteById } from "@/axios/cliente.axios";
+import { PrimaryButton } from "@/components/button/PrimaryButton";
+import Card from "@/components/Card";
+import ClienteInfo from "@/components/cliente/ClienteInfo";
+import VagaForm from "@/components/form/VagaForm";
+import { Tab } from "@/components/global/tab/Tab";
+import { PlusIcon } from "@/components/icons";
+import Modal from "@/components/modal/Modal";
+import ModalClienteForm from "@/components/modal/ModalClienteForm";
+import { ModalPlanoCliente } from "@/components/modal/ModalPlanoCliente";
+import { useAdmin } from "@/context/AuthContext";
+import { ClienteWithEmpresaAndVagaInput } from "@/schemas/cliente.schema";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 const TAB_OPCOES = [
-  { label: 'Sobre Cliente', value: 'cliente' },
-  { label: 'Ver Vagas', value: 'vagas' },
+  { label: "Sobre Cliente", value: "cliente" },
+  { label: "Ver Vagas", value: "vagas" },
 ];
 
 const ClientePage: React.FC<{
@@ -36,15 +34,13 @@ const ClientePage: React.FC<{
   const [modalPlanosCliente, setModalPlanosCliente] = useState(false);
   const [modalVagasCliente, setModalVagasCliente] = useState(false);
   const [cliente, setCliente] = useState<ClienteWithEmpresaAndVagaInput | null>(
-    initialValues ?? null
+    initialValues ?? null,
   );
 
-  const [, setClienteCarregado] = useState<boolean>(
-    !!initialValues
-  );
+  const [, setClienteCarregado] = useState<boolean>(!!initialValues);
 
   // Variável para controlar aba ativa do Tab
-  const [tab, setTab] = useState<string>('cliente');
+  const [tab, setTab] = useState<string>("cliente");
 
   useEffect(() => {
     if (!uuid || initialValues) {
@@ -64,7 +60,7 @@ const ClientePage: React.FC<{
         setCliente(cliente);
         setClienteCarregado(true);
       } catch {
-        setErro('Cliente não encontrado ou erro ao buscar dados.');
+        setErro("Cliente não encontrado ou erro ao buscar dados.");
         setCliente(null);
         setClienteCarregado(false);
       } finally {
@@ -77,16 +73,16 @@ const ClientePage: React.FC<{
 
   const handleTrash = async () => {
     if (!cliente) return;
-    if (confirm('Tem certeza que deseja excluir este cliente?')) {
+    if (confirm("Tem certeza que deseja excluir este cliente?")) {
       try {
         const response = await api.delete(`/api/externalWithAuth/cliente`, {
           data: { id: cliente.id },
         });
         if (response.data) {
-          await router.push('/clientes');
+          await router.push("/clientes");
         }
       } catch {
-        alert('Erro ao excluir cliente.');
+        alert("Erro ao excluir cliente.");
       }
     }
   };
@@ -131,7 +127,7 @@ const ClientePage: React.FC<{
         />
       </section>
 
-      {tab === 'cliente' && (
+      {tab === "cliente" && (
         <Card>
           <ClienteInfo
             cliente={cliente}
@@ -144,7 +140,7 @@ const ClientePage: React.FC<{
         </Card>
       )}
 
-      {tab === 'vagas' && (
+      {tab === "vagas" && (
         <>
           <div className="flex justify-center relative mb-2">
             <h3 className="text-2xl font-bold text-center text-primary w-full max-w-md wrap-break-word">
@@ -159,32 +155,16 @@ const ClientePage: React.FC<{
               <p className="hidden md:block">Cadastrar Vaga</p>
             </PrimaryButton>
           </div>
-
-          <VagaList />
         </>
-      )}
-
-      {cliente?.planos && (
-        <ModalPlanoCliente
-          isOpen={modalPlanosCliente}
-          onClose={() => {
-            setModalPlanosCliente(false);
-          }}
-          planos={cliente.planos ?? []}
-        />
-      )}
-
-      {modalVagasCliente && (
-        <ModalVagasCliente open={modalVagasCliente} uuid={uuid as string} />
       )}
 
       {showModalEdit && (
         <ModalClienteForm
           isOpen={showModalEdit}
           onClose={() => setShowModalEdit(false)}
-          initialValues={cliente}
-          onSuccess={clienteAtualizado => {
-            setCliente(clienteAtualizado);
+          initialValues={cliente ?? undefined}
+          onSuccess={(clienteAtualizado) => {
+            setCliente(clienteAtualizado as typeof cliente);
           }}
         />
       )}

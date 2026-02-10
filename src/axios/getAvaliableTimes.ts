@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSession } from 'next-auth/react';
 
 export default async function getAvailableTimes(date: string) {
   const session = await getSession();
-  const accessToken = session?.accessToken;
+  // Some session objects may not contain accessToken directly. Use 'any' for safe extraction.
+  const accessToken = (session as any)?.accessToken;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

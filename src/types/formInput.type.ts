@@ -11,10 +11,8 @@ export type MaskProps = Omit<
   blocks?: Record<string, unknown>;
 };
 
-/** Handler de mudança: aceita evento nativo ou valor string (ex.: máscara) */
-export type FormInputOnChange = (
-  e: React.ChangeEvent<HTMLInputElement> | string
-) => void;
+/** Handler de mudança: FormInput sempre chama com o valor (string) já extraído */
+export type FormInputOnChange = (value: string) => void;
 
 export type FormInputOnFocus = (e: React.FocusEvent<HTMLInputElement>) => void;
 

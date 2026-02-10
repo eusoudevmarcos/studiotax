@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSession } from 'next-auth/react';
 
 export default async function postCalendar(rest: any) {
   const session = await getSession();
-  const accessToken = session?.accessToken;
+   
+  const accessToken = (session as any)?.accessToken;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
