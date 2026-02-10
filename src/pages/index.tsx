@@ -6,10 +6,6 @@ import CTA from "../components/CTA";
 import Maintenance from "../components/Maintenance";
 
 export default function Page() {
-  // Array para gerar 10 caixas
-  const numberOfLogos = 10;
-  const logos = Array(numberOfLogos).fill(null);
-
   return (
     <>
       <style>

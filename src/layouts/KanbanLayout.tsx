@@ -11,7 +11,7 @@ interface KanbanLayoutProps {
 }
 
 const KanbanLayout: React.FC<KanbanLayoutProps> = ({ children }) => {
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, _setActiveSection] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   const onToggleSidebar = (collapsedState: boolean) => {

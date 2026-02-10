@@ -7,7 +7,7 @@ interface CreateCardInlineProps {
   columnId: string;
   onSave: () => void;
   onCancel: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
 }
 
 export const CreateCardInline: React.FC<CreateCardInlineProps> = ({
@@ -42,7 +42,7 @@ export const CreateCardInline: React.FC<CreateCardInlineProps> = ({
     } catch (error) {
       console.log('Erro ao criar card:', error);
       if (onError) {
-        onError(error);
+        onError(error as Error);
       }
     } finally {
       setIsSaving(false);

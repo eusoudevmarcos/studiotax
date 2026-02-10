@@ -1,4 +1,3 @@
-import logo from "@/assets/logo.svg";
 import { usePlano, useUser } from "@/context/AuthContext";
 import { getFirstLetter } from "@/utils/getFirstLetter";
 import Image from "next/image";

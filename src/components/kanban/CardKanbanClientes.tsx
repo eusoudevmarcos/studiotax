@@ -7,7 +7,7 @@ type TrelloCardProps = {
   id: string;
   title: string;
   label?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   onDuplicate?: (id: string) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -85,9 +85,9 @@ export const CardKanbanClientes: React.FC<TrelloCardProps> = ({
         {title && title.length > 40 ? title.slice(0, 40) + '…' : title}
       </h3>
 
-      {label && <p className="text-xs text-gray-500 mb-2">{mask(label)}</p>}
+      {label && <p className="text-xs text-gray-500 mb-2">{typeof label === 'string' ? mask(label) : ''}</p>}
 
-      {metadata?.categoria && (
+      {typeof metadata?.categoria === 'string' && (
         <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded mb-2">
           {metadata.categoria}
         </span>

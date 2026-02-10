@@ -1,4 +1,6 @@
 import { ClienteWithEmpresaAndPlanosSchema } from '@/schemas/cliente.schema';
+import { EmpresaInput } from '@/schemas/empresa.schema';
+import { PessoaInput } from '@/schemas/pessoa.schema';
 import React, { useEffect, useRef, useState } from 'react';
 import { AdminGuard } from '../auth/AdminGuard';
 import { LabelController } from '../global/label/LabelController';
@@ -36,7 +38,7 @@ const EmailLabel = ({
   />
 );
 
-const EmpresaInfo = ({ empresa }: { empresa: any }) => (
+const EmpresaInfo = ({ empresa }: { empresa: EmpresaInput }) => (
   <>
     {empresa.razaoSocial && (
       <LabelController
@@ -72,7 +74,7 @@ const EmpresaInfo = ({ empresa }: { empresa: any }) => (
   </>
 );
 
-const RepresentanteInfo = ({ representante }: { representante: any }) => (
+const RepresentanteInfo = ({ representante }: { representante: PessoaInput }) => (
   <div className="mb-2" key={representante.nome}>
     <LabelController label="CPF:" value={representante.cpf} />
     <LabelController label="Nome:" value={representante.nome} />
@@ -85,12 +87,11 @@ const RepresentanteInfo = ({ representante }: { representante: any }) => (
   </div>
 );
 
-// eslint-disable-next-line
 const ActionMenu: React.FC<{
   onEdit?: () => void;
   onDelete?: () => void;
   onPlanos?: () => void;
-}> = ({ onEdit, onDelete, onPlanos }) => {
+}> = ({ onEdit, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -135,7 +136,7 @@ const ActionMenu: React.FC<{
             title="Editar"
             onClick={() => {
               setShowMenu(false);
-              onEdit && onEdit();
+              onEdit?.();
             }}
             className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-50 text-gray-700 bg-white border-0"
           >
@@ -146,7 +147,7 @@ const ActionMenu: React.FC<{
             title="Deletar"
             onClick={() => {
               setShowMenu(false);
-              onDelete && onDelete();
+              onDelete?.();
             }}
             className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-red-50 text-red-600 bg-white border-0"
           >
@@ -248,7 +249,7 @@ const ClienteInfo: React.FC<ClienteInfoProps> = ({
               <h3 className="text-lg text-primary font-bold mb-2">
                 Dados do representante
               </h3>
-              {cliente.empresa.representantes.map((representante: any) => (
+              {cliente.empresa.representantes.map((representante: PessoaInput) => (
                 <RepresentanteInfo
                   representante={representante}
                   key={representante.nome}

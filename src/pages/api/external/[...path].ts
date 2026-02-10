@@ -60,12 +60,13 @@ export default async function handler(
     }
 
     res.status(externalResponse.status).json(externalResponse.data);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error);
-    const statusCode = error.response?.status || 500;
+    const err = error as { response?: { status?: number; data?: unknown }; message?: string };
+    const statusCode = err.response?.status || 500;
     res.status(statusCode).json({
       error: 'Erro ao se comunicar com a API externa.',
-      details: error.response?.data || error.message,
+      details: err.response?.data || err.message,
     });
   }
 }

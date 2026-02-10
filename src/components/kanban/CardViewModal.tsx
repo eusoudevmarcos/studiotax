@@ -17,7 +17,7 @@ import {
 } from '@/schemas/kanban.schema';
 import { getUsuarioNome } from '@/utils/kanban';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-// Removido: import { FiEdit, FiLoader, FiTag } from 'react-icons/fi';
+// REMOVIDO: import { FiEdit, FiLoader, FiTag } from 'react-icons/fi';
 import Modal from '../modal/Modal';
 import { ChecklistKanban } from './painel/ChecklistKanban';
 import { DatesKanban } from './painel/DatesKanban';
@@ -31,25 +31,6 @@ interface CardViewModalProps {
   onUpdate?: () => void;
   columnName: string;
 }
-
-// Material icons helpers
-const MaterialEditIcon = ({ className = '', style = {} }) => (
-  <span className={`material-icons ${className}`} style={style}>edit</span>
-);
-const MaterialTagIcon = ({ className = '', style = {} }) => (
-  <span className={`material-icons ${className}`} style={style}>label</span>
-);
-const MaterialLoaderIcon = ({ className = '', style = {} }) => (
-  <span
-    className={`material-icons animate-spin ${className}`}
-    style={{
-      display: 'inline-block',
-      // Simulate spin, if no Tailwind animate-spin fallback (may need custom CSS)
-      animation: 'spin 1s linear infinite',
-      ...style
-    }}
-  >autorenew</span>
-);
 
 export const CardViewModal: React.FC<CardViewModalProps> = ({
   isOpen,
@@ -379,7 +360,10 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
                     onClick={() => setIsEditingTitle(true)}
                   >
                     {card.titulo}
-                    <MaterialEditIcon className="inline-block ml-2 text-gray-500 text-lg align-text-bottom" />
+                    {/* Substitui FiEdit por o ícone Material */}
+                    <span className="material-icons inline-block ml-2 text-gray-500 text-lg align-middle">
+                      edit
+                    </span>
                   </h2>
                 </div>
               </div>
@@ -485,7 +469,10 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
             return etiquetasDoCard.length > 0 ? (
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <MaterialTagIcon className="w-5 h-5 text-gray-400" />
+                  {/* Substitui FiTag pelo material icon */}
+                  <span className="material-icons w-5 h-5 text-gray-400" style={{ fontSize: 20 }}>
+                    local_offer
+                  </span>
                   <h3 className="text-md font-semibold text-gray-700 ">Etiquetas</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -559,7 +546,10 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
                       Clique para adicionar uma descrição...
                     </span>
                   )}
-                  <MaterialEditIcon className="inline-block ml-2 text-gray-500" />
+                  {/* Substitui FiEdit por o ícone Material */}
+                  <span className="material-icons inline-block ml-2 text-gray-500 align-middle">
+                    edit
+                  </span>
                 </div>
               )}
             </div>
@@ -589,7 +579,9 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
                       className="text-red-500 hover:text-red-700 ml-2"
                       title="Remover vínculo"
                     >
-                      <FiX className="w-4 h-4" />
+                      <span className="material-icons w-4 h-4 align-middle" style={{ fontSize: 18 }}>
+                        close
+                      </span>
                     </button>
                   </div>
                 ))
@@ -641,7 +633,10 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
             >
               {commentSubmitting ? (
                 <>
-                  <MaterialLoaderIcon className="h-4 w-4 animate-spin" />
+                  {/* Substitui FiLoader por material icon com spin */}
+                  <span className="material-icons animate-spin h-4 w-4 align-middle" style={{ fontSize: 16 }}>
+                    autorenew
+                  </span>
                   <span>Adicionando...</span>
                 </>
               ) : (

@@ -1,11 +1,5 @@
 // pages/api/logout.ts
-import axios from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next';
-
-const externalBackendApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  // timeout: 10000,
-});
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,10 +24,11 @@ export default async function handler(
     res
       .status(200)
       .json({ success: true, message: 'Logout realizado com sucesso.' });
-  } catch (err: any) {
-    res.status(err?.response?.status || 500).json({
-      error: err?.response?.data?.error || 'Erro desconhecido no logout.',
-      details: err?.response?.data,
+  } catch (err: unknown) {
+    const e = err as { response?: { status?: number; data?: { error?: string } } };
+    res.status(e?.response?.status || 500).json({
+      error: e?.response?.data?.error || 'Erro desconhecido no logout.',
+      details: e?.response?.data,
     });
   }
 }

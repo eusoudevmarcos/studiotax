@@ -1,5 +1,5 @@
 // src/components/input/FormSelect.tsx
-import { FormSelectProps } from '@/type/formSelect.type';
+import { FormSelectProps } from '@/types/formSelect.type';
 import { getError } from '@/utils/getError';
 import React from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';

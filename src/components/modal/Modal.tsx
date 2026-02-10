@@ -16,7 +16,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   children,
   title,
-  backdropClose = false,
+  backdropClose: _backdropClose = false,
   fit = false,
   classNameBody,
 }) => {
@@ -40,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const handleBackdropClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    _e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     // e.preventDefault();
     // e.stopPropagation();

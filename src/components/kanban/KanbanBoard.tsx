@@ -88,7 +88,7 @@ interface KanbanBoardProps {
 }
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
-  quadroId,
+  quadroId: _quadroId,
   onAddCard,
   onEditCard,
   onDeleteCard,
@@ -97,8 +97,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   renderVinculos,
   canAddCard = true,
   loading = false,
-  onRefresh,
-  animatingItemId,
+  onRefresh: _onRefresh,
+  animatingItemId: _animatingItemId,
   isItemAnimating,
   creatingCardColumnId,
   onCardCreated,
@@ -165,7 +165,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     setActiveId(event.active.id as string);
   }, []);
 
-  const handleDragOver = useCallback((event: DragOverEvent) => {
+  const handleDragOver = useCallback((_event: DragOverEvent) => {
     // O dnd-kit gerencia automaticamente a visualização
   }, []);
 

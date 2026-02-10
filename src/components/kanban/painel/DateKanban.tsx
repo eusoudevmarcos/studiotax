@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { FiCalendar, FiLoader } from "react-icons/fi";
 import { Painel, type popupPositionType } from "./Painel";
+
+// ATENÇÃO: Para usar Material Icons (via fonte), inclua no _app.tsx ou público:
+// <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+// Você pode também criar um componente utilitário para ícones (não incluso aqui).
 
 export interface DateKanbanProps {
     popupPosition: popupPositionType,
@@ -43,7 +46,9 @@ export const DateKanban = ({
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
             >
-                <FiCalendar className="w-4 h-4" />
+                <span className="material-icons w-4 h-4" style={{ fontSize: '1.25rem' }} aria-hidden="true">
+                    calendar_month
+                </span>
                 Datas
             </button>
 
@@ -94,7 +99,10 @@ export const DateKanban = ({
                                 disabled={savingDates}
                                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                             >
-                                {savingDates ? <FiLoader className="animate-spin mx-auto" /> : 'Salvar'}
+                                {savingDates
+                                    ? <span className="material-icons animate-spin mx-auto" style={{ fontSize: '1.25rem' }} aria-hidden="true">autorenew</span>
+                                    : 'Salvar'
+                                }
                             </button>
                             <button
                                 type="button"

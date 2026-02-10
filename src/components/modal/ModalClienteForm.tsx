@@ -6,8 +6,8 @@ import ModalSuccess from './ModalSuccess';
 type ModalClienteFormProps = {
   isOpen: boolean;
   onClose: () => void;
-  initialValues?: any;
-  onSuccess?: (cliente: any) => void;
+  initialValues?: Record<string, unknown>;
+  onSuccess?: (cliente: Record<string, unknown>) => void;
 };
 
 const ModalClienteForm: React.FC<ModalClienteFormProps> = ({

@@ -8,13 +8,7 @@ import {
   toggleChecklistCompleto,
   upsertCardData,
 } from '@/axios/kanban.axios';
-import {
-  CardKanban,
-  CardKanbanInput,
-  ColunaKanban,
-  ColunaKanbanInput,
-  QuadroCompleto,
-} from '@/schemas/kanban.schema';
+import { QuadroCompleto } from '@/schemas/kanban.schema';
 import { arrayMove } from '@dnd-kit/sortable';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 

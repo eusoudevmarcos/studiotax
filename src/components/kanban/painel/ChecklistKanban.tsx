@@ -49,7 +49,7 @@ export const ChecklistKanban = ({
   const [editingItemDescricao, setEditingItemDescricao] = useState<string>('');
   const [savingItem, setSavingItem] = useState<Record<string, boolean>>({});
   // Para identificar a qual checklist pertence o item, assim ao clicar fora fecha corretamente aquele menu
-  const [editingItemChecklistId, setEditingItemChecklistId] = useState<string | null>(null);
+  const [, setEditingItemChecklistId] = useState<string | null>(null);
   const editItemInputRef = useRef<HTMLInputElement | null>(null);
   const editingItemMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -208,7 +208,7 @@ export const ChecklistKanban = ({
     }
   };
 
-  const handleToggleChecklistCompleto = async () => {
+  const _handleToggleChecklistCompleto = async () => {
     const novoEstado = !localChecklistCompleto;
     setLocalChecklistCompleto(novoEstado);
     try {
