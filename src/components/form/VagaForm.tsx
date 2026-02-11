@@ -152,7 +152,7 @@ const VagaForm: React.FC<VagaFormProps> = ({
         <p
           ref={errorLabelRef}
           tabIndex={-1}
-          className="bg-red-500 p-2 text-center text-white"
+          className="bg-red-500 p-2 text-center text-black"
           aria-live="assertive"
         >
           {errorLabel}
@@ -361,7 +361,7 @@ const VagaForm: React.FC<VagaFormProps> = ({
 
         {/* <div className="w-full flex gap-2 items-center col-span-full justify-center">
           <button
-            className="flex items-center bg-primary text-white text-sm px-3 py-1 rounded-lg shadow-md text-nowrap"
+            className="flex items-center bg-primary text-black text-sm px-3 py-1 rounded-lg shadow-md text-nowrap"
             type="button"
             onClick={() => {
               setHabilidadesAllow(!habilidadesAllow);
@@ -370,7 +370,7 @@ const VagaForm: React.FC<VagaFormProps> = ({
             Adicionar Habilidades?
           </button>
           <button
-            className="flex items-center bg-primary text-white text-sm px-3 py-1 rounded-lg shadow-md text-nowrap"
+            className="flex items-center bg-primary text-black text-sm px-3 py-1 rounded-lg shadow-md text-nowrap"
             type="button"
             onClick={() => {
               setBeneficiosAllow(!beneficiosAllow);

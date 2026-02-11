@@ -312,7 +312,7 @@ export const ChecklistKanban = ({
                 type="button"
                 onClick={handleCriarChecklist}
                 disabled={!newChecklistTitulo.trim() || creatingChecklist}
-                className=" bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className=" bg-blue-600 text-black rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 {creatingChecklist ? (
                   // Loading com Material Icons
@@ -601,7 +601,7 @@ export const ChecklistKanban = ({
                           !newItemDescricao[checklist.id]?.trim() ||
                           creatingItem[checklist.id]
                         }
-                        className="rounded bg-gray-600 px-2 py-1 text-xs text-white hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className="rounded bg-gray-600 px-2 py-1 text-xs text-black hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                       >
                         {creatingItem[checklist.id] ? (
                           // Loader com Material Icons

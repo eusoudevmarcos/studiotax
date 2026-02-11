@@ -373,7 +373,7 @@ export const FuncionarioForm = ({
 
         <PrimaryButton
           type="submit"
-          className="w-full text-white font-semibold py-3 rounded-md transition-colors"
+          className="w-full text-black font-semibold py-3 rounded-md transition-colors"
           disabled={loading || !isDirty}
         >
           {loading

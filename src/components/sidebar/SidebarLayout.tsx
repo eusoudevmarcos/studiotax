@@ -93,7 +93,7 @@ const Toolbar = ({ collapsed, user }: any) => {
         <Image
           height={40}
           width={40}
-          src={`https://placehold.co/40x40/8c53ff/ffffff?text=${getFirstLetter(
+          src={`https://placehold.co/40x40/#d1a00a/ffffff?text=${getFirstLetter(
             user?.nome || user?.razaoSocial || user?.email
           )}`}
           alt="User Avatar"
@@ -189,13 +189,13 @@ const SidebarLayout: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
           }`}
         >
           {!collapsed && (
-            <div style={{ width: 100, height: 50, position: 'relative' }}>
+            <div style={{ width: 50, height: 50, position: 'relative', overflow: 'hidden' }}>
               <Image
-                fill
-                src={logo}
-                alt="Logo Aura"
-                style={{ objectFit: 'cover', borderRadius: 6 }}
-                sizes="70px"
+              fill
+              src="/logo.png"
+              alt="Logo Aura"
+              style={{ objectFit: 'cover', objectPosition: 'left' }}
+              sizes="1000px"
               />
             </div>
           )}
@@ -216,8 +216,8 @@ const SidebarLayout: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
                         router.pathname === item.href ||
                         router.pathname.split('/')[1] ===
                           item.href.split('/')[1]
-                          ? 'bg-[#f1eefe] text-[#7839cd] shadow-md'
-                          : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                          ? 'bg-[#f1eefe] text-[var(--color-primary)] shadow-md'
+                          : 'text-gray-400 hover:bg-gray-700 hover:text-black'
                       } ${collapsed ? 'justify-center px-3' : ''}`}
                     >
                       {item?.icon}
@@ -259,8 +259,8 @@ const SidebarLayout: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
                     className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left border-0 cursor-pointer ${
                       router.pathname === item.href ||
                       router.pathname.split('/')[1] === item.href
-                        ? 'bg-[#f1eefe] text-[#7839cd] shadow-md'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                        ? 'bg-[#f1eefe] text-[var(--color-primary)] shadow-md'
+                        : 'text-gray-400 hover:bg-gray-700 hover:text-black'
                     } ${collapsed ? 'justify-center px-0' : ''}`}
                   >
                     {item?.icon}

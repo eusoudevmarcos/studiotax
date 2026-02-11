@@ -78,19 +78,19 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
           )}
 
           <div className="flex items-center gap-2 ml-4">
-            {showBtnTakeIt && (
+            {/* {showBtnTakeIt && (
               <Link
                 href="/take-it"
-                className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
+                className="flex items-center gap-2 bg-[var(--color-primary)] text-black px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
               >
                 <SearchIcon />
                 TAKE IT
               </Link>
-            )}
+            )} */}
 
-            <button className="flex items-center justify-center p-2 rounded-full bg-transparent hover:bg-gray-100 transition">
+            {/* <button className="flex items-center justify-center p-2 rounded-full bg-transparent hover:bg-gray-100 transition">
               <BellIcon />
-            </button>
+            </button> */}
 
             <Link href={`/profile`} className="ml-2">
               <Image
@@ -160,15 +160,15 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
                   </div>
                 )}
 
-                {showBtnTakeIt && (
+                {/* {showBtnTakeIt && (
                   <Link
                     href="/take-it"
-                    className="flex items-center gap-2 justify-center bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
+                    className="flex items-center gap-2 justify-center bg-[var(--color-primary)] text-black px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-[#b88e09]"
                   >
                     <SearchIcon />
                     TAKE IT
                   </Link>
-                )}
+                )} */}
 
                 <Link
                   href={`/profile`}

@@ -432,13 +432,13 @@ export function FormArrayInput({
                   ? item.id
                   : index
               }
-              className="flex items-center bg-primary text-white text-sm px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow"
+              className="flex items-center bg-primary text-black text-sm px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow"
             >
               <span className="mr-2">{renderChipContent(item, index)}</span>
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
-                className="text-white hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary rounded-full p-0.5 transition-colors"
+                className="text-black hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary rounded-full p-0.5 transition-colors"
                 aria-label={`Remover item ${index + 1}`}
               >
                 <svg

@@ -199,7 +199,7 @@ const Pagination: React.FC<PaginationProps> = ({
             key={p}
             className={`px-3 py-1 rounded border text-sm hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed ${
               p === page
-                ? 'text-primary text-white border-primary cursor-pointer'
+                ? 'text-primary text-black border-primary cursor-pointer'
                 : 'text-black border-gray-400 bg-white cursor-pointer'
             }`}
             onClick={() => onPageChange && onPageChange(p)}

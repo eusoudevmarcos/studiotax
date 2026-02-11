@@ -27,7 +27,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
         <p className="text-amber-500">Essa ação não podera mais ser desfeita</p>
         <div className="flex gap-2">
           <button
-            className="mt-6 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="mt-6 px-6 py-2 bg-red-500 text-black rounded-lg hover:bg-primary/90 transition-colors"
             onClick={() => {
               if (onClickConfirm) onClickConfirm();
               setLoading(prev => !prev);
@@ -37,7 +37,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
             CONFIRMAR
           </button>
           <button
-            className="mt-6 px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="mt-6 px-6 py-2 bg-secondary text-black rounded-lg hover:bg-primary/90 transition-colors"
             onClick={onClose}
             disabled={loading}
           >

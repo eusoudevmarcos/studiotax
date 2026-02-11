@@ -160,7 +160,7 @@ export default function Header() {
             href="https://wa.me/556195524666"
             target="_blank"
             rel="noopener noreferrer"
-            className="desktop-contact bg-[var(--color-primary)] text-white rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09]"
+            className="desktop-contact bg-[var(--color-primary)] text-black rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09]"
             style={{
               padding: "10px 30px",
               borderRadius: "12px",
@@ -193,7 +193,7 @@ export default function Header() {
                 href="https://wa.me/556195524666"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-[var(--color-primary)] text-white rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09] text-center mt-2"
+                className="block bg-[var(--color-primary)] text-black rounded-md font-semibold transition-colors duration-300 hover:bg-[#b88e09] text-center mt-2"
                 style={{
                   padding: "12px 0",
                   borderRadius: "12px",

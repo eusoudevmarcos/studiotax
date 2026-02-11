@@ -41,12 +41,12 @@ export const Tab: React.FC<TabProps> = ({
               border-b-2 
               transition-all   
               rounded-md
-              text-white
+              text-black
               ${
                 tab.disabled
                   ? 'text-gray-400 cursor-not-allowed border-b-2 border-transparent'
                   : value === tab.value
-                  ? 'text-white bg-primary'
+                  ? 'text-black bg-primary'
                   : 'bg-secondary opacity-80 border-transparent text-gray-500 hover:text-primary'
               }
               ${tabClassName}

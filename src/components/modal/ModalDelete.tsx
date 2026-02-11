@@ -47,11 +47,11 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
         }`}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center px-6 py-3 text-white bg-primary gap-4 rounded-t-2xl">
+        <div className="flex justify-between items-center px-6 py-3 text-black bg-primary gap-4 rounded-t-2xl">
           {message && <h3 className="text-xl font-semibold">{message}</h3>}
           <button
             onClick={onClose}
-            className="text-white hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
+            className="text-black hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
           >
             &times;
           </button>
@@ -66,7 +66,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
             <div className="flex gap-2">
               {btn?.next && (
                 <button
-                  className="mt-6 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-6 px-6 py-2 bg-red-500 text-black rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={btn?.next?.onClick}
                   disabled={isLoading}
                 >
@@ -74,7 +74,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
                 </button>
               )}
               <button
-                className="mt-6 px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-6 px-6 py-2 bg-secondary text-black rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={onClose}
                 disabled={isLoading}
               >

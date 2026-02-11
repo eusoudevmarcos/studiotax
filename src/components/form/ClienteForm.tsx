@@ -132,7 +132,7 @@ const ClienteForm: React.FC<ClienteFormProps> = ({
           <p
             ref={errorLabelRef}
             tabIndex={-1}
-            className="bg-red-500 p-2 text-center text-white"
+            className="bg-red-500 p-2 text-center text-black"
             aria-live="assertive"
           >
             {errorLabel}

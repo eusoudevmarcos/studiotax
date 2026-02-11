@@ -82,7 +82,7 @@ export default function ConvidadosTable({
       render: (_: any, index: number) => (
         <PrimaryButton
           onClick={() => handleRemove(index)}
-          className="bg-red-500! !hover:bg-red-800 text-white"
+          className="bg-red-500! !hover:bg-red-800 text-black"
           disabled={!!initialValues}
         >
           <span className="material-icons-outlined">delete</span>
@@ -447,7 +447,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
             startMonth={new Date()}
             classNames={{
               today: `border-amber-500`, // Add a border to today's date
-              selected: `bg-primary border-amber-500 text-white`,
+              selected: `bg-primary border-amber-500 text-black`,
             }}
             endMonth={
               new Date(new Date().getFullYear() + 5, new Date().getMonth())
@@ -547,7 +547,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
         <PrimaryButton
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition-colors"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-black font-semibold py-3 rounded-md transition-colors"
           disabled={loadingSubmit}
         >
           {initialValues ? 'Salvar Alterações' : 'Cadastrar Agenda'}

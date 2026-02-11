@@ -261,7 +261,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   if (loading || !quadro) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white">Carregando quadro...</div>
+        <div className="text-black">Carregando quadro...</div>
       </div>
     );
   }

@@ -177,7 +177,7 @@ export const MembersKanban = ({
   const Avatar = ({ membro }: { membro: MembroCard }) => {
     return (
       <div
-        className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2 select-none"
+        className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-black text-xs font-bold mr-2 select-none"
         title={getInfoMembro(membro)}
       >
         {getInfoMembro(membro)

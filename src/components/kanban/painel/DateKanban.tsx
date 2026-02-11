@@ -97,7 +97,7 @@ export const DateKanban = ({
                                     }
                                 }}
                                 disabled={savingDates}
-                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                className="flex-1 px-4 py-2 bg-blue-600 text-black rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                             >
                                 {savingDates
                                     ? <span className="material-icons animate-spin mx-auto" style={{ fontSize: '1.25rem' }} aria-hidden="true">autorenew</span>

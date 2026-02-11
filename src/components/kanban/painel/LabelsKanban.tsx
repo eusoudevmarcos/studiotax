@@ -128,7 +128,7 @@ export const LabelsKanban = ({
                   type="button"
                   onClick={handleCriarEtiqueta}
                   disabled={!newEtiquetaNome.trim() || creatingEtiqueta}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-blue-600 text-black rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {creatingEtiqueta ? (
                     <MaterialIcon
@@ -176,7 +176,7 @@ export const LabelsKanban = ({
                       className="cursor-pointer"
                     />
                     <span
-                      className="flex-1 inline-flex items-center gap-1 rounded px-2 py-1 text-sm font-medium text-white"
+                      className="flex-1 inline-flex items-center gap-1 rounded px-2 py-1 text-sm font-medium text-black"
                       style={{ backgroundColor: etiqueta.cor || '#4b5563' }}
                     >
                       <span

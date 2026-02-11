@@ -32,7 +32,7 @@ const PlanoGuard: React.FC<PlanoGuardProps> = ({
             <p className="text-gray-500 mb-4">
               Você precisa de um plano ativo para acessar esta funcionalidade.
             </p>
-            <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+            <button className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90">
               Ver Planos
             </button>
           </div>
@@ -58,7 +58,7 @@ const PlanoGuard: React.FC<PlanoGuardProps> = ({
               continuar.
             </p>
             <div className="flex gap-2">
-              <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+              <button className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90">
                 Ver Planos
               </button>
               <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
@@ -94,7 +94,7 @@ const PlanoGuard: React.FC<PlanoGuardProps> = ({
                 Esta funcionalidade requer o plano {requiredPlano}. Faça upgrade
                 do seu plano.
               </p>
-              <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+              <button className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90">
                 Fazer Upgrade
               </button>
             </div>
