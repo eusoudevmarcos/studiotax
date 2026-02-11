@@ -17,7 +17,6 @@ import React, { useEffect, useState } from "react";
 
 const TAB_OPCOES = [
   { label: "Sobre Cliente", value: "cliente" },
-  { label: "Ver Vagas", value: "vagas" },
 ];
 
 const ClientePage: React.FC<{
@@ -123,7 +122,6 @@ const ClientePage: React.FC<{
           tabs={TAB_OPCOES}
           value={tab}
           onChange={setTab}
-          tabsOptions={{ vagas: { _count: cliente?.vagas?._count ?? 0 } }}
         />
       </section>
 
@@ -140,24 +138,6 @@ const ClientePage: React.FC<{
         </Card>
       )}
 
-      {tab === "vagas" && (
-        <>
-          <div className="flex justify-center relative mb-2">
-            <h3 className="text-2xl font-bold text-center text-primary w-full max-w-md wrap-break-word">
-              Vagas de {cliente?.empresa.razaoSocial}
-            </h3>
-
-            <PrimaryButton
-              className="float-right flex text-nowrap absolute right-0 top-0"
-              onClick={() => setShowVagasForm(true)}
-            >
-              <PlusIcon />
-              <p className="hidden md:block">Cadastrar Vaga</p>
-            </PrimaryButton>
-          </div>
-        </>
-      )}
-
       {showModalEdit && (
         <ModalClienteForm
           isOpen={showModalEdit}
@@ -167,26 +147,6 @@ const ClientePage: React.FC<{
             setCliente(clienteAtualizado as typeof cliente);
           }}
         />
-      )}
-
-      {showVagasForm && (
-        <Modal
-          isOpen={showVagasForm}
-          onClose={() => {
-            setShowVagasForm(false);
-          }}
-          title={`Vaga do cliente`}
-        >
-          <VagaForm
-            onSuccess={() => {
-              setShowVagasForm(false);
-            }}
-            initialValues={{ cliente }}
-            isBtnDelete={false}
-            isBtnView={false}
-            showInput={false}
-          />
-        </Modal>
       )}
     </div>
   );
