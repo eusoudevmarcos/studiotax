@@ -358,7 +358,7 @@ const ClienteList: React.FC<{
                 Cancelar
               </button>
               <button
-                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
+                className="px-4 py-2 rounded bg-red-500 text-black hover:bg-red-600 transition"
                 onClick={handleRemoverConfirm}
                 disabled={removerLoading}
               >

@@ -68,7 +68,7 @@ export const KanbanBreadcrumbs: React.FC = () => {
   }
 
   return (
-    <nav className="flex items-center space-x-2 text-sm text-white rounded-xl px-4 py-2 mb-2">
+    <nav className="flex items-center space-x-2 text-sm text-black rounded-xl px-4 py-2 mb-2">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         const isClickable = item.href && !isLast;
@@ -83,11 +83,11 @@ export const KanbanBreadcrumbs: React.FC = () => {
                 {item.label}
               </button>
             ) : (
-              <span className={isLast ? 'font-semibold border-b border-white text-white ' : ''}>
+              <span className={isLast ? 'font-semibold border-b border-white text-black ' : ''}>
                 {item.label}
               </span>
             )}
-            {!isLast && <span className="mx-2 text-white">/</span>}
+            {!isLast && <span className="mx-2 text-black">/</span>}
           </div>
         );
       })}

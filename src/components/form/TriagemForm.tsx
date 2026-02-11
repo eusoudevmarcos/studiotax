@@ -74,7 +74,7 @@ const TriagemForm: React.FC<TriagemFormProps> = ({ name = 'triagens' }) => {
         </select>
         <button
           type="button"
-          className={`px-3 py-1 rounded text-white text-sm ${
+          className={`px-3 py-1 rounded text-black text-sm ${
             canAdd ? 'bg-primary' : 'bg-gray-400 cursor-not-allowed'
           }`}
           onClick={handleAdd}

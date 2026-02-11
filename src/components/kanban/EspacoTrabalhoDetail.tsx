@@ -160,14 +160,14 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-3xl font-bold text-black">
                   {espacoTrabalhoAtual.nome}
                 </h1>
 
                 <button
                   onClick={handleEditEspaco}
                   disabled={isSavingEspaco || isDeletingEspaco}
-                  className="p-2 text-white hover:text-gray-800 hover:bg-gray-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 text-black hover:text-gray-800 hover:bg-gray-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Editar espaço de trabalho"
                 >
                   <span className="material-icons w-5 h-5" style={{ fontSize: 20 }}>
@@ -176,7 +176,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                 </button>
               </div>
 
-              <p className="text-sm text-white mt-1">
+              <p className="text-sm text-black mt-1">
                 {espacoTrabalhoAtual.quadros?.length ?? 0} quadro
                 {espacoTrabalhoAtual.quadros?.length !== 1 ? 's' : ''}
               </p>

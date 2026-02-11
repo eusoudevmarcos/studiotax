@@ -196,7 +196,7 @@ export default function ScreenshotGuard({
       >
         <div className="flex flex-col items-center">
           <Image height={80} width={80} src={logo} alt="Logo Aura" />
-          <span className="text-white text-2xl font-bold mt-2">
+          <span className="text-black text-2xl font-bold mt-2">
             PROTEÇÃO DE DADOS ATIVADO
           </span>
         </div>

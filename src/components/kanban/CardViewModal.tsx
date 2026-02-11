@@ -479,7 +479,7 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
                   {etiquetasDoCard.map(etiqueta => (
                     <span
                       key={etiqueta!.id}
-                      className="inline-flex items-center gap-1 rounded px-3 py-1.5 text-sm font-medium text-white"
+                      className="inline-flex items-center gap-1 rounded px-3 py-1.5 text-sm font-medium text-black"
                       style={{ backgroundColor: (etiqueta as any).cor || '#4b5563' }}
                     >
                       <span
@@ -523,7 +523,7 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
                     <button
                       type="button"
                       onClick={handleSaveDescription}
-                      className="rounded bg-blue-600 text-white px-4 py-1.5 hover:bg-blue-700 transition-colors"
+                      className="rounded bg-blue-600 text-black px-4 py-1.5 hover:bg-blue-700 transition-colors"
                     >
                       Salvar
                     </button>
@@ -629,7 +629,7 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
             <button
               onClick={handleAddComment}
               disabled={commentSubmitting || !newComment.trim()}
-              className="mt-2 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
+              className="mt-2 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-black hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {commentSubmitting ? (
                 <>

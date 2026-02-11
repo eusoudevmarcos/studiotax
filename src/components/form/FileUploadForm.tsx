@@ -178,7 +178,7 @@ export const FileUploadForm: React.FC<UploadProps> = ({ name = 'anexos' }) => {
               </span>
             </div>
             <button
-              className="ml-4 px-2 py-1 text-sm rounded text-white bg-red-500 hover:bg-red-600"
+              className="ml-4 px-2 py-1 text-sm rounded text-black bg-red-500 hover:bg-red-600"
               type="button"
               onClick={() => handleRemove(idx)}
             >

@@ -20,7 +20,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
         <h3 className="text-xl font-semibold text-gray-800 ">Sucesso!</h3>
         <p className="text-gray-600 text-lg">{message}</p>
         <button
-          className="mt-6 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          className="mt-6 px-6 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors"
           onClick={onClose}
         >
           Fechar

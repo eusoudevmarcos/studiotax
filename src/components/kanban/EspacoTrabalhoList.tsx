@@ -83,14 +83,14 @@ export const EspacoTrabalhoList: React.FC = () => {
     <>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-black">
             Espaços de Trabalho
           </h1>
           <PrimaryButton variant='white' onClick={handleCreateEspaco} disabled={loading}>
             {loading ? (
               <>
                 <span
-                  className="material-icons animate-spin mr-2 text-white"
+                  className="material-icons animate-spin mr-2 text-black"
                   style={{ fontSize: 20 }}
                 >
                   autorenew

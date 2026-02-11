@@ -85,11 +85,11 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
   }, [onFiltrosChange]);
 
   return (
-    <div className="flex flex-col items-end justify-center rounded-lg px-2 py-1 text-white bg-transparent">
+    <div className="flex flex-col items-end justify-center rounded-lg px-2 py-1 text-black bg-transparent">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 max-w-[1000px]">
         {/* Filtro por Criador */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             Criador
           </label>
           <select
@@ -110,7 +110,7 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
 
         {/* Filtro por Título */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             Título
           </label>
           <input
@@ -124,7 +124,7 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
 
         {/* Filtro por Descrição */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             Descrição
           </label>
           <input
@@ -139,7 +139,7 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
 
         {/* Filtro por Ordenação */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             Ordenar por
           </label>
           <select
@@ -157,14 +157,14 @@ export const KanbanFilters: React.FC<KanbanFiltersProps> = ({
 
       <div className="flex items-center justify-between pt-1 h-4">
         {temFiltrosAtivos && totalCards !== undefined && (
-          <span className="text-sm text-white bg-transparent px-2 py-1 rounded">
+          <span className="text-sm text-black bg-transparent px-2 py-1 rounded">
             {totalCards} {totalCards === 1 ? 'card encontrado' : 'cards encontrados'}
           </span>
         )}
         {temFiltrosAtivos && (
           <button
             onClick={handleLimparFiltros}
-            className="flex items-center gap-1 text-sm text-white hover:text-blue-200 hover:bg-gray-700 rounded transition-colors"
+            className="flex items-center gap-1 text-sm text-black hover:text-blue-200 hover:bg-gray-700 rounded transition-colors"
           >
             <span className="material-icons align-middle text-lg">close</span>
             Limpar filtros

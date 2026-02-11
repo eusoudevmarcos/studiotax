@@ -87,11 +87,11 @@ const Modal: React.FC<ModalProps> = ({
           ${!fit && 'w-full max-w-4xl'}
           ${visible ? 'scale-100' : 'scale-95'}`}
       >
-        <div className="flex justify-between items-center px-6 py-3  text-white bg-primary gap-4 rounded-t-2xl">
+        <div className="flex justify-between items-center px-6 py-3  text-black bg-primary gap-4 rounded-t-2xl">
           {title && <h3 className="text-xl font-semibold ">{title}</h3>}
           <button
             onClick={handleClose}
-            className="text-white hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
+            className="text-black hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
           >
             &times;
           </button>

@@ -322,7 +322,7 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
   return (
     <>
       <div className="flex justify-between items-center p-2 rounded-xl">
-        <h1 className="text-5xl font-bold text-white">{quadro?.titulo ?? 'Quadro Kanban'}</h1>
+        <h1 className="text-5xl font-bold text-black">{quadro?.titulo ?? 'Quadro Kanban'}</h1>
         <div className="flex gap-2">
           <PrimaryButton variant='white' onClick={() => setShowColunaModal(true)}>
             <PlusIcon />

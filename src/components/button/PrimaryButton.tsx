@@ -17,7 +17,7 @@ const PrimaryButton: React.FC<SimpleButtonProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(loadingProp);
   const bg = variant === 'white' ? 'bg-white' : `bg-${variant}`;
-  const text = variant === 'white' ? 'text-primary' : 'text-white';
+  const text = variant === 'white' ? 'text-primary' : 'text-black';
   const newClass = `${bg} hover:bg-${bg} hover:opacity-90 text-${text} py-2 px-3 rounded-md text-sm flex gap-2 border-none cursor-pointer transition-all duration-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] items-center justify-center hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed min-h-[38px] ${className}`;
 
   // Sincroniza loading externo com interno
@@ -35,7 +35,7 @@ const PrimaryButton: React.FC<SimpleButtonProps> = ({
     >
       {loading && (
         <svg
-          className="animate-spin h-5 w-5 text-white"
+          className="animate-spin h-5 w-5 text-black"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

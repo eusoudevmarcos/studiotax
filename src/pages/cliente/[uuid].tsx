@@ -110,7 +110,7 @@ const ClientePage: React.FC<{
       <section className="flex justify-between">
         {!initialValues && (
           <button
-            className="px-2 py-2 text-primary text-white rounded hover:scale-110 cursor-pointer"
+            className="px-2 py-2 text-primary text-black rounded hover:scale-110 cursor-pointer"
             onClick={() => router.back()}
           >
             <span className="material-icons align-middle mr-2">arrow_back</span>
