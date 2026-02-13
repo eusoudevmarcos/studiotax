@@ -86,7 +86,7 @@ export const DatesKanban = ({
         ref={buttonRef}
         type="button"
         onClick={() => setActivePanel(activePanel === 'dates' ? null : 'dates')}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
           activePanel === 'dates'
             ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
