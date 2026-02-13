@@ -273,13 +273,14 @@ export const ChecklistKanban = ({
             ref={buttonRef}
             type="button"
             onClick={() => setActivePanel(activePanel === 'checklist' ? null : 'checklist')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activePanel === 'checklist'
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${activePanel === 'checklist'
               ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
           >
-            {/* Substituição de <FiCheckSquare /> por Material Icons */}
-            <span className="material-icons w-4 h-4 align-middle">check_box</span>
+            <span className="material-icons-outlined"
+              style={{ fontSize: '1.2em', verticalAlign: 'middle', }}
+            >check_box</span>
             Checklist
           </button>
         )
@@ -312,7 +313,7 @@ export const ChecklistKanban = ({
                 type="button"
                 onClick={handleCriarChecklist}
                 disabled={!newChecklistTitulo.trim() || creatingChecklist}
-                className=" bg-blue-600 text-black rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="cursor-pointer bg-blue-600 text-black rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 {creatingChecklist ? (
                   // Loading com Material Icons
@@ -408,10 +409,10 @@ export const ChecklistKanban = ({
                   <button
                     type="button"
                     onClick={() => handleDeletarChecklist(checklist.id)}
-                    className="text-red-300 hover:text-red-700 cursor-pointer opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
+                    className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
                     title="Deletar checklist"
                   >
-                    <span className="material-icons text-red-500">delete_outline</span>
+                    <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
                   </button>
                 </div>
 
@@ -488,11 +489,11 @@ export const ChecklistKanban = ({
 
                             <button
                               type="button"
-                              onClick={() => handleDeletarChecklistItem(checklist.id)}
-                              className="text-red-300 hover:text-red-700 cursor-pointer opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
-                              title="Deletar checklist"
+                              onClick={() => handleDeletarChecklistItem(item.id)}
+                              className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
+                              title="Deletar item"
                             >
-                              <span className="material-icons text-red-500">delete_outline</span>
+                              <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
                             </button>
                           </>
                         )}
@@ -500,14 +501,14 @@ export const ChecklistKanban = ({
                       {editingItemId === item.id && (
                         <div
                           ref={editingItemMenuRef}
-                          className="flex gap-2 p-2"
+                          className="flex gap-2 p-1"
                         >
                           <button
                             type="button"
                             onClick={() =>
                               handleEditItemSave(item.id, checklist.id)
                             }
-                            className="flex items-center underline  text-sm"
+                            className="cursor-pointer flex items-center text-sm bg-primary hover:bg-blue-600 p-2 rounded transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                             disabled={!!savingItem[item.id] || editingItemDescricao.trim() === ""}
                             title="Salvar"
                           >
@@ -520,7 +521,7 @@ export const ChecklistKanban = ({
                           <button
                             type="button"
                             onClick={handleEditItemCancel}
-                            className="flex items-center underline text-sm"
+                            className="cursor-pointer flex items-center text-sm bg-gray-300 hover:bg-gray-400 p-2 rounded transition-colors"
                             title="Cancelar edição"
                           >
                             Cancelar
@@ -530,7 +531,7 @@ export const ChecklistKanban = ({
                             onClick={() =>
                               handleDeletarChecklistItem(item.id)
                             }
-                            className="flex items-center underline text-sm"
+                            className="cursor-pointer flex items-center text-sm bg-red-300 hover:bg-red-400 p-2 rounded transition-colors"
                             title="Deletar item"
                           >
                             Deletar
@@ -546,7 +547,7 @@ export const ChecklistKanban = ({
                   {!showAddItemInput[checklist.id] && (
                     <button
                       type="button"
-                      className="rounded bg-gray-200 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-300 transition"
+                      className="cursor-pointer rounded bg-gray-200 hover:bg-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition-colors"
                       onClick={() =>
                         setShowAddItemInput(prev => ({
                           ...prev,
@@ -601,7 +602,7 @@ export const ChecklistKanban = ({
                           !newItemDescricao[checklist.id]?.trim() ||
                           creatingItem[checklist.id]
                         }
-                        className="rounded bg-gray-600 px-2 py-1 text-xs text-black hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className="cursor-pointer rounded bg-primary hover:bg-blue-600 px-2 py-1 text-xs text-black transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                       >
                         {creatingItem[checklist.id] ? (
                           // Loader com Material Icons
@@ -622,7 +623,7 @@ export const ChecklistKanban = ({
                             [checklist.id]: '',
                           }));
                         }}
-                        className="rounded px-2 py-1 text-xs text-gray-600 hover:text-gray-900"
+                        className="cursor-pointer rounded px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                         title="Cancelar"
                       >
                         Cancelar

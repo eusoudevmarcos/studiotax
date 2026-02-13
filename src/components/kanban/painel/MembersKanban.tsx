@@ -229,7 +229,7 @@ export const MembersKanban = ({
           onClick={() =>
             setActivePanel(activePanel === "members" ? null : "members")
           }
-          className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer ${
             activePanel === "members"
               ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"

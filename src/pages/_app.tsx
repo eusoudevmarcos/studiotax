@@ -108,8 +108,8 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Aura ATS</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Studio TAX</title>
+        <link rel="icon" href="/logo_simbolo.ico" />
         <meta
           name="description"
           content="Aura: O match perfeito para sua empresa. Especialistas em recrutamento médico, TI e vagas executivas com agilidade e efetividade."
