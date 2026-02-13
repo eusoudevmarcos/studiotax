@@ -24,9 +24,9 @@ export default async function postCalendar(rest: any) {
       }`,
       organizer: {
         email: 'aurareslabs@gmail.com',
-        displayName: 'Equipe AURA R&L ATS',
+        displayName: 'Equipe Studio TAX',
       },
-      description: 'Reunião criada via AURA ATS',
+      description: 'Reunião criada via Studio TAX',
       start: rest.dataHora,
       end: new Date(
         new Date(rest.dataHora).getTime() + 60 * 60 * 1000
