@@ -24,6 +24,7 @@ const MaterialIcon = ({
 interface KanbanCardProps {
   card: CardKanban;
   onEdit?: (card: CardKanban) => void;
+  onDuplicate?: (card: CardKanban) => void;
   onDelete?: (card: CardKanban) => void;
   onClick?: (card: CardKanban) => void;
   renderVinculos?: (vinculos: VinculoCard[]) => React.ReactNode;
@@ -33,6 +34,7 @@ interface KanbanCardProps {
 const KanbanCardComponent: React.FC<KanbanCardProps> = ({
   card,
   onEdit,
+  onDuplicate,
   onDelete,
   onClick,
   renderVinculos,
@@ -97,6 +99,14 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
     }
   };
 
+  const handleDuplate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    if (onDuplicate) {
+      onDuplicate(card);
+    }
+  };
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu(false);
@@ -119,11 +129,10 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
       style={style}
       {...attributes}
       {...listeners}
-      className={`cursor-pointer hover:shadow-md transition-all duration-2000 ease-out px-3 py-2 rounded-xl relative border mb-2 ${
-        localChecklistCompleto
-          ? 'bg-green-50 border-green-400'
-          : 'bg-white border-gray-200'
-      } ${isAnimating ? 'delete-animating' : ''}`}
+      className={`cursor-pointer hover:shadow-md transition-all duration-2000 ease-out px-3 py-2 rounded-xl relative border mb-2 ${localChecklistCompleto
+        ? 'bg-green-50 border-green-400'
+        : 'bg-white border-gray-200'
+        } ${isAnimating ? 'delete-animating' : ''}`}
       onClick={() => onClick?.(card)}
       onContextMenu={handleContextMenu}
     >
@@ -155,6 +164,16 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
                   Editar
                 </button>
               )}
+
+              {onDuplicate && (
+                <button
+                  onClick={handleDuplate}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
+                >
+                  Duplicar
+                </button>
+              )}
+              
               {onDelete && (
                 <button
                   onClick={handleDelete}
@@ -184,11 +203,10 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
             }
           }}
           onClick={(e) => e.stopPropagation()}
-          className={`h-4 w-4 cursor-pointer rounded shrink-0 focus:ring-2 focus:ring-green-500 ${
-            localChecklistCompleto
-              ? 'border-green-500 text-green-600'
-              : 'border-gray-300 text-green-600'
-          }`}
+          className={`h-4 w-4 cursor-pointer rounded shrink-0 focus:ring-2 focus:ring-green-500 ${localChecklistCompleto
+            ? 'border-green-500 text-green-600'
+            : 'border-gray-300 text-green-600'
+            }`}
         />
         <h3 className="font-semibold text-gray-800 flex-1">{card.titulo}</h3>
       </div>
@@ -204,11 +222,10 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
           const isAtrasado = dataEntrega < hoje;
           return (
             <span
-              className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs ${
-                isAtrasado
-                  ? 'bg-red-100 text-red-700'
-                  : 'bg-gray-100 text-gray-700'
-              }`}
+              className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs ${isAtrasado
+                ? 'bg-red-100 text-red-700'
+                : 'bg-gray-100 text-gray-700'
+                }`}
               title={`Data de entrega: ${dataEntrega.toLocaleDateString('pt-BR')}`}
             >
               <MaterialIcon name="calendar_today" className="h-3 w-3" />
@@ -246,13 +263,13 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
           {renderVinculos
             ? renderVinculos(vinculos)
             : vinculos.map(vinculo => (
-                <span
-                  key={vinculo.id}
-                  className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
-                >
-                  {vinculo.tipoEntidade}
-                </span>
-              ))}
+              <span
+                key={vinculo.id}
+                className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
+              >
+                {vinculo.tipoEntidade}
+              </span>
+            ))}
         </div>
       )}
     </div>

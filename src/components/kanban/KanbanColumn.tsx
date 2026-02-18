@@ -12,6 +12,7 @@ interface KanbanColumnProps {
   column: ColunaComCards;
   onAddCard?: (columnId: string) => void;
   onEditCard?: (card: CardKanban) => void;
+  onDuplicateCard?: (card: CardKanban) => void;
   onDeleteCard?: (card: CardKanban) => void;
   onCardClick?: (card: CardKanban) => void;
   onEditColumn?: (column: ColunaKanban) => void;
@@ -28,6 +29,7 @@ const KanbanColumnComponent: React.FC<KanbanColumnProps> = ({
   column,
   onAddCard,
   onEditCard,
+  onDuplicateCard,
   onDeleteCard,
   onCardClick,
   onEditColumn,
@@ -111,6 +113,7 @@ const KanbanColumnComponent: React.FC<KanbanColumnProps> = ({
             key={card.id}
             card={card}
             onEdit={onEditCard}
+            onDuplicate={onDuplicateCard}
             onDelete={onDeleteCard}
             onClick={onCardClick}
             renderVinculos={renderVinculos}

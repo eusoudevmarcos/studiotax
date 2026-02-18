@@ -64,14 +64,14 @@ function validateResponse<T>(
       expected: (err as any).expected,
       received: (err as any).received,
     }));
-    
+
     console.error(`${errorMessage}:`, errors);
-    
+
     // Criar mensagem de erro mais descritiva
     const errorMessages = errors.map(
       err => `${err.path}: ${err.message}`
     ).join('; ');
-    
+
     throw createKanbanError(
       `${errorMessage}: ${errorMessages}`,
       KanbanErrorCode.VALIDATION_ERROR,
@@ -327,6 +327,21 @@ export const deletarCardKanban = async (id: string): Promise<void> => {
   await api.delete(`/api/externalWithAuth/kanban/card/${id}`, {
     data: { id },
   });
+};
+
+export const duplicarCardKanban = async (
+  id: string
+): Promise<CardKanban> => {
+  const response = await api.post(
+    `/api/externalWithAuth/kanban/card/${id}/duplicar`,
+    {}
+  );
+
+  return validateResponse(
+    response.data,
+    cardKanbanSchema,
+    'Erro ao duplicar card'
+  );
 };
 
 // ===================== ETIQUETAS =====================
@@ -652,6 +667,6 @@ export const buscarUsuariosSistema = async (
       .nullable()
       .optional(),
   });
-  
+
   return z.array(usuarioSistemaBuscaSchema).parse(response.data);
 };

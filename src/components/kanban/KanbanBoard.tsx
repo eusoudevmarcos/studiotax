@@ -73,6 +73,7 @@ interface KanbanBoardProps {
   quadroId: string;
   onAddCard?: (columnId: string) => void;
   onEditCard?: (card: CardKanban) => void;
+  onDuplicate?: (card: CardKanban) => void;
   onDeleteCard?: (card: CardKanban) => void;
   onCardClick?: (card: CardKanban) => void;
   onEditColumn?: (column: ColunaKanban) => void;
@@ -91,6 +92,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   quadroId: _quadroId,
   onAddCard,
   onEditCard,
+  onDuplicate,
   onDeleteCard,
   onCardClick,
   onEditColumn,
@@ -131,19 +133,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   // Descobrir tipo do item ativo
   const activeType = useMemo(() => {
     if (!activeId || !quadro) return null;
-    
+
     // Verificar se é coluna
     if (quadro.colunas.some(col => col.id === activeId)) {
       return 'column';
     }
-    
+
     // Verificar se é card
     for (const column of quadro.colunas) {
       if (column.cards.some(c => c.id === activeId)) {
         return 'card';
       }
     }
-    
+
     return null;
   }, [activeId, quadro]);
 
@@ -171,7 +173,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     setActiveId(null);
 
     if (!over || !quadro || active.id === over.id) return;
@@ -238,7 +240,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     // Mover COLUNA
     else if (activeType === 'column') {
       const sortedColumns = [...quadro.colunas].sort((a, b) => a.ordem - b.ordem);
-      
+
       const oldIndex = sortedColumns.findIndex(c => c.id === active.id);
       const newIndex = sortedColumns.findIndex(c => c.id === over.id);
 
@@ -281,7 +283,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           >
             {sortedColumns.map((column) => {
               const cardIds = getColumnCardIds(column.id);
-              
+
               return (
                 <ColumnWrapper
                   key={column.id}
@@ -293,6 +295,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     column={column}
                     onAddCard={onAddCard}
                     onEditCard={onEditCard}
+                    onDuplicateCard={onDuplicate}
                     onDeleteCard={onDeleteCard}
                     onCardClick={onCardClick}
                     onEditColumn={onEditColumn}
@@ -317,6 +320,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <KanbanCard
               card={activeCard}
               onEdit={onEditCard}
+              onDuplicate={onDuplicate}
               onDelete={onDeleteCard}
               onClick={onCardClick}
               renderVinculos={renderVinculos}
@@ -324,7 +328,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </div>
         )}
         {activeColumn && (
-          <div 
+          <div
             className="opacity-95"
             style={{
               boxShadow: '0 12px 24px rgba(0, 0, 0, 0.2)',
@@ -335,6 +339,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               column={activeColumn}
               onAddCard={onAddCard}
               onEditCard={onEditCard}
+              onDuplicateCard={onDuplicate}
               onDeleteCard={onDeleteCard}
               onCardClick={onCardClick}
               renderVinculos={renderVinculos}
