@@ -5,7 +5,8 @@ import {
   criarCardKanban,
   criarColunaKanban,
   deletarCardKanban,
-  deletarColunaKanban
+  deletarColunaKanban,
+  duplicarCardKanban
 } from '@/axios/kanban.axios';
 import { PrimaryButton } from '@/components/button/PrimaryButton';
 import { PlusIcon } from '@/components/icons';
@@ -99,6 +100,11 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
     setSelectedCard(card);
     setSelectedColumnId(card.colunaKanbanId);
     setShowCardModal(true);
+  }, []);
+
+  const handleDuplicateCard = useCallback(async (card: CardKanban) => {
+    await duplicarCardKanban(card.id);
+    await refreshAfterMutation();
   }, []);
 
   const handleDeleteCard = useCallback((card: CardKanban) => {
@@ -326,7 +332,7 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
         <div className="flex gap-2">
           <PrimaryButton variant='white' onClick={() => setShowColunaModal(true)}>
             <PlusIcon />
-            Nova Lista
+            Nova Coluna
           </PrimaryButton>
         </div>
       </div>
@@ -345,6 +351,7 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
           quadroId={quadroId}
           onAddCard={handleAddCard}
           onEditCard={handleEditCard}
+          onDuplicate={handleDuplicateCard}
           onDeleteCard={handleDeleteCard}
           onCardClick={handleCardClick}
           onEditColumn={handleEditColuna}
