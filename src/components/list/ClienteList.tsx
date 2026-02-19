@@ -6,7 +6,7 @@ import { useAdmin } from '@/context/AuthContext';
 import { Pagination } from '@/types/pagination.type';
 import { unmask } from '@/utils/mask/unmask';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '../button/PrimaryButton';
 import { FormInput } from '../input/FormInput';
 import Table, { TableColumn } from '../Table';
@@ -52,7 +52,7 @@ function normalizarTable(clientes: Cliente[]) {
     razaoSocial: c.empresa?.razaoSocial ?? '-',
     email: c.usuarioSistema?.email ?? '-',
     cnpj: c.empresa?.cnpj ?? '-',
-  
+
     servicos: Array.isArray(c.tipoServico)
       ? c.tipoServico.join(', ')
       : String(c.tipoServico ?? '-'),
@@ -82,7 +82,7 @@ const ClienteList: React.FC<{
   // Determina o valor a ser enviado como search, priorizando CNPJ, depois razão social
 
   // Busca de clientes, disparada somente quando searchClicked ou filtros forem limpos
-  const fetchClientes = async (opts?: {
+  const fetchClientes = useCallback(async (opts?: {
     resetPage?: boolean;
     resetFilters?: boolean;
   }) => {
@@ -129,7 +129,7 @@ const ClienteList: React.FC<{
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, searchCnpj, searchRazao, searchStatusCliente]);
 
   // Gatilho: buscar clientes ao clicar em buscar
   const handleSearch = () => {
@@ -150,11 +150,11 @@ const ClienteList: React.FC<{
     if (!searchClicked && clientes.length === 0) {
       fetchClientes({ resetPage: true, resetFilters: true });
     }
-  }, [onlyProspects, pageSize]);
+  }, [fetchClientes, onlyProspects, pageSize, clientes.length, searchClicked]);
 
   useEffect(() => {
     fetchClientes();
-  }, [page]);
+  }, [fetchClientes]);
 
   const dadosTabela = useMemo(() => normalizarTable(clientes), [clientes]);
 
@@ -197,7 +197,7 @@ const ClienteList: React.FC<{
             <option value="">TODOS OS STATUS</option>
             {
               StatusClienteEnum.options.map(option =>
-                <option value={option}>{option}</option>
+                <option value={option} key={option}>{option}</option>
               )
             }
 
