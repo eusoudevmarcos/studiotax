@@ -77,13 +77,13 @@ const Modal: React.FC<ModalProps> = ({
     <div
       ref={modalRef}
       onClick={handleBackdropClick}
-      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-2 transition-opacity duration-200 bg-[#00000020] ${
+      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-9999 p-2 transition-opacity duration-200 bg-[#00000020] ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >
       <div
         ref={containerRef}
-        className={`bg-white shadow-md relative rounded-2xl transition-transform duration-200
+        className={`max-h-fit bg-white shadow-md relative rounded-2xl transition-transform duration-200
           ${!fit && 'w-full max-w-4xl'}
           ${visible ? 'scale-100' : 'scale-95'}`}
       >
@@ -98,7 +98,7 @@ const Modal: React.FC<ModalProps> = ({
         </div>
 
         <div
-          className={`px-4 py-2 overflow-auto h-full max-h-[84vh] ${classNameBody}`}
+          className={`px-4 py-4 overflow-y-auto max-h-[90vh] ${classNameBody}`}
         >
           {children}
         </div>

@@ -170,12 +170,6 @@ const ClienteForm: React.FC<ClienteFormProps> = ({
         <label className="block text-primary text-xl font-bold mb-2 border-t border-gray-200 pt-4">
           Contatos
         </label>
-        <FormInput
-          name="email"
-          label="Adicione o E-mail de Acesso ao Sistema"
-          placeholder="exemplo@gmail.com"
-          inputProps={{ type: 'email', disabled: loading }}
-        />
 
         <FormArrayInput
           name="emails"

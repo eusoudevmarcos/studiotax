@@ -10,6 +10,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '../button/PrimaryButton';
 import { FormInput } from '../input/FormInput';
 import Table, { TableColumn } from '../Table';
+import { StatusClienteEnum, StatusClienteEnumInput } from '@/schemas/statusClienteEnum.schema';
+import { FormSelect } from '../input/FormSelect';
 
 interface EmpresaContato {
   telefone?: string;
@@ -23,7 +25,6 @@ interface Empresa {
   id: string;
   razaoSocial: string;
   cnpj: string;
-  dataAbertura?: string;
   contatos?: EmpresaContato[];
   localizacoes?: EmpresaLocalizacao[];
 }
@@ -51,9 +52,7 @@ function normalizarTable(clientes: Cliente[]) {
     razaoSocial: c.empresa?.razaoSocial ?? '-',
     email: c.usuarioSistema?.email ?? '-',
     cnpj: c.empresa?.cnpj ?? '-',
-    dataAbertura: c.empresa?.dataAbertura
-      ? new Date(c.empresa.dataAbertura).toLocaleDateString('pt-BR')
-      : '-',
+  
     servicos: Array.isArray(c.tipoServico)
       ? c.tipoServico.join(', ')
       : String(c.tipoServico ?? '-'),
@@ -69,20 +68,18 @@ const ClienteList: React.FC<{
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [filter, setFilter] = useState<boolean>(false);
+  const [searchStatusCliente, setSearchStatusCliente] = useState<StatusClienteEnumInput | null>(null);
   const [searchRazao, setSearchRazao] = useState<string>('');
   const [searchCnpj, setSearchCnpj] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
   const [searchClicked, setSearchClicked] = useState<boolean>(false);
-  const pageSize = 5;
+  const pageSize = 10;
 
   const router = useRouter();
   const isAdmin = useAdmin();
 
   // Determina o valor a ser enviado como search, priorizando CNPJ, depois razão social
-  const searchValue = searchCnpj.trim()
-    ? unmask(searchCnpj.trim())
-    : searchRazao.trim();
 
   // Busca de clientes, disparada somente quando searchClicked ou filtros forem limpos
   const fetchClientes = async (opts?: {
@@ -92,6 +89,21 @@ const ClienteList: React.FC<{
     if (opts?.resetPage) setPage(1);
 
     setLoading(true);
+    const searchValue = {};
+
+    if (searchCnpj) {
+      (searchValue as any).cnpj = searchCnpj;
+    }
+
+    if (searchRazao) {
+      (searchValue as any).razaoSocial = searchRazao;
+    }
+
+    if (searchStatusCliente) {
+      (searchValue as any).status = searchStatusCliente;
+    }
+
+
     try {
       const params: Record<string, any> = {
         page: opts?.resetPage ? 1 : page,
@@ -129,6 +141,7 @@ const ClienteList: React.FC<{
   const handleClear = async () => {
     setSearchRazao('');
     setSearchCnpj('');
+    setSearchStatusCliente(null);
     setSearchClicked(false);
     await fetchClientes({ resetPage: true, resetFilters: true });
   };
@@ -146,20 +159,16 @@ const ClienteList: React.FC<{
   const dadosTabela = useMemo(() => normalizarTable(clientes), [clientes]);
 
   const columns: TableColumn<any>[] = [
-    { label: 'razaoSocial', key: 'razaoSocial' },
-    { label: 'Email acesso', key: 'email' },
+    { label: 'Razão Social', key: 'razaoSocial' },
     { label: 'CNPJ', key: 'cnpj' },
-    { label: 'Abertura', key: 'dataAbertura' },
-
-    { label: 'Status', key: 'status', hiddeBtnCopy: true },
+    { label: 'Status Cliente', key: 'status', hiddeBtnCopy: true },
   ];
 
   if (isAdmin) {
     columns.push(
-      // { label: 'Serviços', hiddeBtnCopy: true, key: 'servicos' },
       {
-        label: 'Vagas',
-        key: 'vagasCount',
+        label: 'Status Contrato',
+        key: 'statusContrato',
         hiddeBtnCopy: true,
       }
     );
@@ -173,6 +182,27 @@ const ClienteList: React.FC<{
     <Card>
       <div className="flex justify-end items-center flex-wrap mb-2">
         <div className="flex gap-2 w-full max-w-[600px]">
+          <FormSelect
+            name="buscar-status"
+            value={searchStatusCliente ?? ''}
+            selectProps={{
+              classNameContainer: 'w-full',
+              disabled: loading,
+            }}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const value = e.target.value as StatusClienteEnumInput | '';
+              setSearchStatusCliente(value ? (value as StatusClienteEnumInput) : null);
+            }}
+          >
+            <option value="">TODOS OS STATUS</option>
+            {
+              StatusClienteEnum.options.map(option =>
+                <option value={option}>{option}</option>
+              )
+            }
+
+          </FormSelect>
+
           <FormInput
             name="buscar-razao"
             type="text"
