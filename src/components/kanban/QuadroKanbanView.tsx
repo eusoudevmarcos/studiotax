@@ -105,7 +105,7 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
   const handleDuplicateCard = useCallback(async (card: CardKanban) => {
     await duplicarCardKanban(card.id);
     await refreshAfterMutation();
-  }, []);
+  }, [refreshAfterMutation]);
 
   const handleDeleteCard = useCallback((card: CardKanban) => {
     setCardToDelete(card);
