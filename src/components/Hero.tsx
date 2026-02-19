@@ -64,7 +64,7 @@ export default function Hero() {
       <section
         id="home"
         className="mx-auto max-w-[1440px] flex justify-center items-end hero-container"
-        style={{ marginTop: "200px" }}
+        style={{ marginTop: "0px" }}
       >
         <div className="hero-content">
           <div className="max-w-[750px]">

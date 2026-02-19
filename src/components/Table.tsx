@@ -160,6 +160,7 @@ const Pagination: React.FC<PaginationProps> = ({
   page,
   total,
   totalPages,
+  pageSize = 10,
   onPageChange,
 }) => {
   const getPages = () => {
@@ -184,7 +185,7 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="flex justify-between items-center gap-2 mt-4">
       <span className="text-primary text-sm text-center">
-        {total} registros
+        {total}/{pageSize} registros
       </span>
       <div className="flex items-center gap-2">
         <button
