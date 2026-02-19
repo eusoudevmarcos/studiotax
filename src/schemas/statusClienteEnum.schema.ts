@@ -6,3 +6,10 @@ export const StatusClienteEnum = z.enum(
 );
 
 export type StatusClienteEnumInput = z.infer<typeof StatusClienteEnum>;
+
+export const StatusContratoEnum = z.enum(
+  ['SEM_STATUS', 'EM_CONTROLE', 'NEGOCIANDO', 'ASSINADO', 'CONCLUIDO'],
+  { error: 'Status do contrato é obrigatório' }
+);
+
+export type StatusContratoEnumInput = z.infer<typeof StatusContratoEnum>;

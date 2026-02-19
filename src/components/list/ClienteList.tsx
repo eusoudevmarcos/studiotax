@@ -4,13 +4,12 @@ import api from '@/axios';
 import Card from '@/components/Card';
 import { useAdmin } from '@/context/AuthContext';
 import { Pagination } from '@/types/pagination.type';
-import { unmask } from '@/utils/mask/unmask';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '../button/PrimaryButton';
 import { FormInput } from '../input/FormInput';
 import Table, { TableColumn } from '../Table';
-import { StatusClienteEnum, StatusClienteEnumInput } from '@/schemas/statusClienteEnum.schema';
+import { StatusClienteEnum, StatusClienteEnumInput, StatusContratoEnum, StatusContratoEnumInput } from '@/schemas/statusClienteEnum.schema';
 import { FormSelect } from '../input/FormSelect';
 
 interface EmpresaContato {
@@ -32,7 +31,8 @@ interface Cliente {
   id: string;
   tipoServico: string[];
   empresa: Empresa;
-  status: string;
+  status: StatusClienteEnumInput;
+  statusContrato: StatusContratoEnumInput;
   usuarioSistema: {
     email: string;
   };
@@ -52,7 +52,7 @@ function normalizarTable(clientes: Cliente[]) {
     razaoSocial: c.empresa?.razaoSocial ?? '-',
     email: c.usuarioSistema?.email ?? '-',
     cnpj: c.empresa?.cnpj ?? '-',
-
+    statusContrato: c.statusContrato,
     servicos: Array.isArray(c.tipoServico)
       ? c.tipoServico.join(', ')
       : String(c.tipoServico ?? '-'),
@@ -67,8 +67,8 @@ const ClienteList: React.FC<{
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [filter, setFilter] = useState<boolean>(false);
   const [searchStatusCliente, setSearchStatusCliente] = useState<StatusClienteEnumInput | null>(null);
+  const [searchStatusContrato, setSearchStatusContrato] = useState<StatusContratoEnumInput | null>(null);
   const [searchRazao, setSearchRazao] = useState<string>('');
   const [searchCnpj, setSearchCnpj] = useState<string>('');
   const [page, setPage] = useState<number>(1);
@@ -79,9 +79,6 @@ const ClienteList: React.FC<{
   const router = useRouter();
   const isAdmin = useAdmin();
 
-  // Determina o valor a ser enviado como search, priorizando CNPJ, depois razão social
-
-  // Busca de clientes, disparada somente quando searchClicked ou filtros forem limpos
   const fetchClientes = useCallback(async (opts?: {
     resetPage?: boolean;
     resetFilters?: boolean;
@@ -89,20 +86,23 @@ const ClienteList: React.FC<{
     if (opts?.resetPage) setPage(1);
 
     setLoading(true);
-    const searchValue = {};
+    const searchValue: Record<string, any> = {};
 
     if (searchCnpj) {
-      (searchValue as any).cnpj = searchCnpj;
+      searchValue.cnpj = searchCnpj;
     }
 
     if (searchRazao) {
-      (searchValue as any).razaoSocial = searchRazao;
+      searchValue.razaoSocial = searchRazao;
     }
 
     if (searchStatusCliente) {
-      (searchValue as any).status = searchStatusCliente;
+      searchValue.status = searchStatusCliente;
     }
 
+    if (searchStatusContrato) {
+      searchValue.statusContrato = searchStatusContrato;
+    }
 
     try {
       const params: Record<string, any> = {
@@ -129,19 +129,18 @@ const ClienteList: React.FC<{
     } finally {
       setLoading(false);
     }
-  }, [page, searchCnpj, searchRazao, searchStatusCliente]);
+  }, [page, searchCnpj, searchRazao, searchStatusCliente, searchStatusContrato, pageSize]);
 
-  // Gatilho: buscar clientes ao clicar em buscar
   const handleSearch = () => {
     setSearchClicked(true);
     fetchClientes({ resetPage: true });
   };
 
-  // Gatilho: limpar filtros + buscar clientes sem filtro
   const handleClear = async () => {
     setSearchRazao('');
     setSearchCnpj('');
     setSearchStatusCliente(null);
+    setSearchStatusContrato(null);
     setSearchClicked(false);
     await fetchClientes({ resetPage: true, resetFilters: true });
   };
@@ -154,7 +153,7 @@ const ClienteList: React.FC<{
 
   useEffect(() => {
     fetchClientes();
-  }, [fetchClientes]);
+  }, []);
 
   const dadosTabela = useMemo(() => normalizarTable(clientes), [clientes]);
 
@@ -178,10 +177,12 @@ const ClienteList: React.FC<{
     router.push(`/cliente/${row.id}`);
   };
 
+  const disabledClearButton = () => !searchRazao && !searchCnpj && !searchStatusCliente && !searchStatusContrato;
+
   return (
     <Card>
       <div className="flex justify-end items-center flex-wrap mb-2">
-        <div className="flex gap-2 w-full max-w-[600px]">
+        <div className="flex gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
           <FormSelect
             name="buscar-status"
             value={searchStatusCliente ?? ''}
@@ -195,12 +196,29 @@ const ClienteList: React.FC<{
             }}
           >
             <option value="">TODOS OS STATUS</option>
+            {StatusClienteEnum.options.map(option =>
+              <option value={option} key={option}>{option}</option>
+            )}
+          </FormSelect>
+
+          <FormSelect
+            name="buscar-status-contrato"
+            value={searchStatusContrato ?? ''}
+            selectProps={{
+              classNameContainer: 'w-full',
+              disabled: loading,
+            }}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const value = e.target.value as StatusContratoEnumInput | '';
+              setSearchStatusContrato(value ? (value as StatusContratoEnumInput) : null);
+            }}
+          >
+            <option value="">TODOS OS CONTRATOS</option>
             {
-              StatusClienteEnum.options.map(option =>
+              StatusContratoEnum.options.map(option =>
                 <option value={option} key={option}>{option}</option>
               )
             }
-
           </FormSelect>
 
           <FormInput
@@ -251,7 +269,7 @@ const ClienteList: React.FC<{
           <PrimaryButton
             variant="negative"
             onClick={handleClear}
-            disabled={!searchRazao && !searchCnpj}
+            disabled={disabledClearButton()}
           >
             <span className="material-icons-outlined text-sm!">delete</span>
           </PrimaryButton>
