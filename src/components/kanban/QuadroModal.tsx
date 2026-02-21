@@ -101,11 +101,8 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
               type="button"
               onClick={handleDelete}
               disabled={isDeleting || isSubmitting}
-              className="bg-red-500 hover:bg-red-600 text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="material-icons inline-block mr-2" style={{ fontSize: 18 }}>
-                delete
-              </span>
               {isDeleting ? 'Excluindo...' : 'Excluir'}
             </PrimaryButton>
           )}
