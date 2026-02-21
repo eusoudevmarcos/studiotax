@@ -1,12 +1,12 @@
-import { PrimaryButton } from '@/components/button/PrimaryButton';
-import { PlusIcon } from '@/components/icons';
-import { EspacoTrabalhoModal } from '@/components/kanban/EspacoTrabalhoModal';
-import { QuadroModal } from '@/components/kanban/QuadroModal';
-import ModalDelete from '@/components/modal/ModalDelete';
-import { useEspacoTrabalho } from '@/context/EspacoTrabalhoContext';
-import { QuadroKanban, QuadroKanbanInput } from '@/schemas/kanban.schema';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { PrimaryButton } from "@/components/button/PrimaryButton";
+import { PlusIcon } from "@/components/icons";
+import { EspacoTrabalhoModal } from "@/components/kanban/EspacoTrabalhoModal";
+import { QuadroModal } from "@/components/kanban/QuadroModal";
+import ModalDelete from "@/components/modal/ModalDelete";
+import { useEspacoTrabalho } from "@/context/EspacoTrabalhoContext";
+import { QuadroKanban, QuadroKanbanInput } from "@/schemas/kanban.schema";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 interface EspacoTrabalhoDetailProps {
   espacoId: string;
@@ -32,10 +32,10 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
   const [showDeleteQuadroModal, setShowDeleteQuadroModal] = useState(false);
   const [showDeleteEspacoModal, setShowDeleteEspacoModal] = useState(false);
   const [selectedQuadro, setSelectedQuadro] = useState<QuadroKanban | null>(
-    null
+    null,
   );
   const [quadroToDelete, setQuadroToDelete] = useState<QuadroKanban | null>(
-    null
+    null,
   );
   const [isSavingQuadro, setIsSavingQuadro] = useState(false);
   const [isDeletingQuadro, setIsDeletingQuadro] = useState(false);
@@ -68,7 +68,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
         router.push(`/kanban/espaco/${espacoId}/quadro/${novoQuadro.id}`);
       }
     } catch (error) {
-      console.log('Erro ao salvar quadro:', error);
+      console.log("Erro ao salvar quadro:", error);
       throw error;
     } finally {
       setIsSavingQuadro(false);
@@ -79,6 +79,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
     const quadro = selectedQuadro;
     if (quadro && quadro.id === quadroId) {
       setQuadroToDelete(quadro);
+      setShowQuadroModal(false);
       setShowDeleteQuadroModal(true);
     }
   };
@@ -94,7 +95,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
       setQuadroToDelete(null);
       setSelectedQuadro(null);
     } catch (error) {
-      console.log('Erro ao deletar quadro:', error);
+      console.log("Erro ao deletar quadro:", error);
     } finally {
       setIsDeletingQuadro(false);
     }
@@ -110,7 +111,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
       await atualizarEspaco(espacoId, data);
       setShowEspacoModal(false);
     } catch (error) {
-      console.log('Erro ao atualizar espaço de trabalho:', error);
+      console.log("Erro ao atualizar espaço de trabalho:", error);
       throw error;
     } finally {
       setIsSavingEspaco(false);
@@ -129,9 +130,9 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
     try {
       setIsDeletingEspaco(true);
       await deletarEspaco(espacoId);
-      router.push('/kanban');
+      router.push("/kanban");
     } catch (error) {
-      console.log('Erro ao deletar espaço de trabalho:', error);
+      console.log("Erro ao deletar espaço de trabalho:", error);
     } finally {
       setIsDeletingEspaco(false);
     }
@@ -170,7 +171,10 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                   className="p-2 text-black hover:text-gray-800 hover:bg-gray-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Editar espaço de trabalho"
                 >
-                  <span className="material-icons w-5 h-5" style={{ fontSize: 20 }}>
+                  <span
+                    className="material-icons w-5 h-5"
+                    style={{ fontSize: 20 }}
+                  >
                     edit
                   </span>
                 </button>
@@ -178,10 +182,10 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
 
               <p className="text-sm text-black mt-1">
                 {espacoTrabalhoAtual.quadros?.length ?? 0} quadro
-                {espacoTrabalhoAtual.quadros?.length !== 1 ? 's' : ''}
+                {espacoTrabalhoAtual.quadros?.length !== 1 ? "s" : ""}
               </p>
             </div>
-            <PrimaryButton variant='white' onClick={handleCreateQuadro}>
+            <PrimaryButton variant="white" onClick={handleCreateQuadro}>
               <PlusIcon />
               Novo Quadro
             </PrimaryButton>
@@ -189,7 +193,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
         </div>
 
         {espacoTrabalhoAtual.quadros &&
-          espacoTrabalhoAtual.quadros.length === 0 ? (
+        espacoTrabalhoAtual.quadros.length === 0 ? (
           <div className="text-center py-12 ">
             <p className="text-gray-500 mb-4">Nenhum quadro criado ainda.</p>
             {/* <PrimaryButton onClick={handleCreateQuadro}>
@@ -199,13 +203,14 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            {espacoTrabalhoAtual.quadros?.map(quadro => {
+            {espacoTrabalhoAtual.quadros?.map((quadro) => {
               const isAnimating = isItemAnimating(quadro.id);
               return (
                 <div
                   key={quadro.id}
-                  className={`bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-2000 ease-out relative ${isAnimating ? 'delete-animating' : ''
-                    }`}
+                  className={`bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-2000 ease-out relative ${
+                    isAnimating ? "delete-animating" : ""
+                  }`}
                 >
                   <div
                     className="cursor-pointer"
@@ -215,12 +220,12 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                       {quadro.titulo}
                     </h2>
                     <p className="text-sm text-gray-500">
-                      Criado em{' '}
-                      {new Date(quadro.criadoEm).toLocaleDateString('pt-BR')}
+                      Criado em{" "}
+                      {new Date(quadro.criadoEm).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                   <button
-                    onClick={e => {
+                    onClick={(e) => {
                       e.stopPropagation();
                       handleEditQuadro(quadro);
                     }}
@@ -228,7 +233,10 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                     className="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Editar quadro"
                   >
-                    <span className="material-icons w-4 h-4" style={{ fontSize: 16 }}>
+                    <span
+                      className="material-icons w-4 h-4"
+                      style={{ fontSize: 16 }}
+                    >
                       edit
                     </span>
                   </button>
@@ -249,7 +257,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
           onSubmit={handleSaveQuadro}
           espacoTrabalhoId={espacoTrabalhoAtual.id}
           initialValues={selectedQuadro || undefined}
-          title={selectedQuadro ? 'Editar Quadro' : 'Novo Quadro'}
+          title={selectedQuadro ? "Editar Quadro" : "Novo Quadro"}
           quadroId={selectedQuadro?.id}
           onDelete={handleDeleteQuadroClick}
         />
@@ -264,7 +272,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
           }}
           isLoading={isDeletingQuadro}
           btn={{
-            next: { label: 'Tem certeza?', onClick: handleConfirmDeleteQuadro },
+            next: { label: "Tem certeza?", onClick: handleConfirmDeleteQuadro },
           }}
           message={`Tem certeza que deseja excluir o quadro "${quadroToDelete.titulo}"?`}
         />
@@ -288,7 +296,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
           onClose={() => setShowDeleteEspacoModal(false)}
           isLoading={isDeletingEspaco}
           btn={{
-            next: { label: 'Tem certeza?', onClick: handleConfirmDeleteEspaco },
+            next: { label: "Tem certeza?", onClick: handleConfirmDeleteEspaco },
           }}
           message={`Tem certeza que deseja excluir o espaço de trabalho "${espacoTrabalhoAtual.nome}"? Esta ação não pode ser desfeita e todos os quadros serão excluídos.`}
         />
