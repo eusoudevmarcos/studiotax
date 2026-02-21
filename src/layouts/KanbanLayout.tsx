@@ -19,7 +19,7 @@ const KanbanLayout: React.FC<KanbanLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-primary">
+    <div className="flex flex-col min-h-screen bg-gray-300">
       <Sidebar onToggleSidebar={onToggleSidebar} />
 
       <Header />
@@ -31,7 +31,7 @@ const KanbanLayout: React.FC<KanbanLayoutProps> = ({ children }) => {
             : 'md:pl-65 min-[1940px]:pl-0'
           } pt-4 md:pr-0`}
       >
-        <main className="p-2 rounded-lg mt-18 px-6">
+        <main className="p-2 rounded-lg mt-19 px-6">
             <KanbanBreadcrumbs />
           {typeof children === 'function'
             ? (children as (props: { activeSection: string }) => React.ReactNode)({ activeSection }) ?? null

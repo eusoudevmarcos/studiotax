@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
     <div
       ref={modalRef}
       onClick={handleBackdropClick}
-      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-9999 p-2 transition-opacity duration-200 bg-[#00000020] ${
+      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-9999 p-2 transition-opacity duration-100 bg-[#00000020] ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >

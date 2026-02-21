@@ -59,6 +59,7 @@ export const EspacoTrabalhoList: React.FC = () => {
 
   const handleDeleteEspacoClick = async (id: string) => {
     if (selectedEspaco && selectedEspaco.id === id) {
+      setShowEspacoModal(false);
       setShowDeleteEspacoModal(true);
     }
   };
@@ -113,7 +114,7 @@ export const EspacoTrabalhoList: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {espacosTrabalho.map(espaco => {
               const isAnimating = isItemAnimating(espaco.id);
               return (
@@ -126,7 +127,7 @@ export const EspacoTrabalhoList: React.FC = () => {
                     className="cursor-pointer"
                     onClick={() => handleEspacoClick(espaco.id)}
                   >
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2 break-words">
                       {espaco.nome}
                     </h2>
                     <p className="text-sm text-gray-500">
@@ -184,7 +185,7 @@ export const EspacoTrabalhoList: React.FC = () => {
           }}
           isLoading={isDeletingEspaco}
           btn={{
-            next: { label: 'Tem certeza?', onClick: handleConfirmDeleteEspaco },
+            next: { label: 'CONFIRMAR', onClick: handleConfirmDeleteEspaco },
           }}
           message={`Tem certeza que deseja excluir o espaço de trabalho "${selectedEspaco.nome}"? Esta ação não pode ser desfeita e todos os quadros serão excluídos.`}
         />

@@ -129,9 +129,9 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
       style={style}
       {...attributes}
       {...listeners}
-      className={`cursor-pointer hover:shadow-md transition-all duration-2000 ease-out px-3 py-2 rounded-xl relative border mb-2 ${localChecklistCompleto
+      className={`cursor-pointer hover:shadow-sm border hover:border-black transition-all duration-500 ease-out px-3 py-2 rounded-xl relative mb-2 ${localChecklistCompleto
         ? 'bg-green-50 border-green-400'
-        : 'bg-white border-gray-200'
+        : 'bg-white border-gray-300'
         } ${isAnimating ? 'delete-animating' : ''}`}
       onClick={() => onClick?.(card)}
       onContextMenu={handleContextMenu}
@@ -173,7 +173,7 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
                   Duplicar
                 </button>
               )}
-              
+
               {onDelete && (
                 <button
                   onClick={handleDelete}

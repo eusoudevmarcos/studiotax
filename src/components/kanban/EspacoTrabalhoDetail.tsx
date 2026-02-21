@@ -198,7 +198,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
             </PrimaryButton> */}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {espacoTrabalhoAtual.quadros?.map(quadro => {
               const isAnimating = isItemAnimating(quadro.id);
               return (
@@ -211,7 +211,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                     className="cursor-pointer"
                     onClick={() => handleQuadroClick(quadro)}
                   >
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2 break-words pr-2">
                       {quadro.titulo}
                     </h2>
                     <p className="text-sm text-gray-500">
