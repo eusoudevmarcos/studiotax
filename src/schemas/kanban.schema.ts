@@ -47,7 +47,7 @@ export const espacoTrabalhoSchema = z.object({
   atualizadoEm: dateSchema,
   _count: z.object({
     quadros: z.number(),
-  }),
+  }).optional(),
 });
 
 export const espacoTrabalhoInputSchema = z.object({

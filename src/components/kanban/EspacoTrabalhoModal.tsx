@@ -1,13 +1,14 @@
 import {
   EspacoTrabalhoInput,
   espacoTrabalhoInputSchema,
-} from '@/schemas/kanban.schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { PrimaryButton } from '../button/PrimaryButton';
-import { FormInput } from '../input/FormInput';
-import Modal from '../modal/Modal';
+} from "@/schemas/kanban.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { PrimaryButton } from "../button/PrimaryButton";
+import { FormInput } from "../input/FormInput";
+import Modal from "../modal/Modal";
+import { useEspacoTrabalho } from "@/context/EspacoTrabalhoContext";
 
 interface EspacoTrabalhoModalProps {
   isOpen: boolean;
@@ -24,10 +25,12 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
   onClose,
   onSubmit,
   initialValues,
-  title = 'Novo Espaço de Trabalho',
+  title = "Novo Espaço de Trabalho",
   espacoId,
   onDelete,
 }) => {
+  const { atualizarEspaco } = useEspacoTrabalho();
+
   const [isDeleting, setIsDeleting] = useState(false);
   const {
     control,
@@ -36,12 +39,12 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
     reset,
   } = useForm<EspacoTrabalhoInput>({
     resolver: zodResolver(espacoTrabalhoInputSchema),
-    defaultValues: initialValues || { nome: '' },
+    defaultValues: initialValues || { nome: "" },
   });
 
   React.useEffect(() => {
     if (isOpen) {
-      reset(initialValues || { nome: '' });
+      reset(initialValues || { nome: "" });
     }
   }, [isOpen, initialValues, reset]);
 
@@ -51,7 +54,7 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
       reset();
       onClose();
     } catch (error) {
-      console.log('Erro ao salvar espaço de trabalho:', error);
+      console.log("Erro ao salvar espaço de trabalho:", error);
     }
   };
 
@@ -61,7 +64,7 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
       setIsDeleting(true);
       await onDelete(espacoId);
     } catch (error) {
-      console.log('Erro ao deletar espaço de trabalho:', error);
+      console.log("Erro ao deletar espaço de trabalho:", error);
     } finally {
       setIsDeleting(false);
     }
@@ -69,20 +72,22 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
-        <FormInput label="Nome" name="nome" control={control} errors={errors} />
+      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-2">
+        <FormInput
+          label="Titulo"
+          name="nome"
+          control={control}
+          errors={errors}
+        />
         <div className="flex justify-end gap-2 pt-4">
           {espacoId && onDelete && (
             <PrimaryButton
               type="button"
               onClick={handleDelete}
               disabled={isDeleting || isSubmitting}
-              className="bg-red-500! hover:bg-red-600! text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-red-500! hover:bg-red-600! text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="material-icons inline-block mr-2" style={{ fontSize: 18 }}>
-                delete
-              </span>
-              {isDeleting ? 'Excluindo...' : 'Excluir'}
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </PrimaryButton>
           )}
           <PrimaryButton
@@ -93,11 +98,8 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
           >
             Cancelar
           </PrimaryButton>
-          <PrimaryButton
-            type="submit"
-            disabled={isSubmitting || isDeleting}
-          >
-            {isSubmitting ? 'Salvando...' : 'Salvar'}
+          <PrimaryButton type="submit" disabled={isSubmitting || isDeleting}>
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </PrimaryButton>
         </div>
       </form>

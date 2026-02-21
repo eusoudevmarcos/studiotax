@@ -4,6 +4,7 @@ interface ModalSuccessProps {
   isOpen: boolean;
   onClose: () => void;
   message?: string;
+  title?: string
   isLoading?: boolean;
   btn?: {
     next?: {
@@ -17,6 +18,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
   isOpen,
   onClose,
   message,
+  title = "Deseja deletar?",
   isLoading = false,
   btn,
 }) => {
@@ -36,25 +38,30 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-[60] p-2 transition-opacity duration-200 bg-[#00000040] ${
-        visible ? 'opacity-100' : 'opacity-0'
-      }`}
+      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-[60] p-2 transition-opacity duration-200 bg-[#00000040] ${visible ? 'opacity-100' : 'opacity-0'
+        }`}
       onClick={onClose}
     >
       <div
-        className={`bg-white shadow-md relative rounded-2xl transition-transform duration-200 w-full max-w-md ${
-          visible ? 'scale-100' : 'scale-95'
-        }`}
+        className={`bg-white shadow-md relative rounded-2xl transition-transform duration-200 w-full max-w-md ${visible ? 'scale-100' : 'scale-95'
+          }`}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center px-6 py-3 text-black bg-primary gap-4 rounded-t-2xl">
-          {message && <h3 className="text-xl font-semibold">{message}</h3>}
+        <div className="flex justify-between items-center px-6 py-3 text-white bg-red-500 gap-4 rounded-t-2xl">
+          {title && <h3 className="text-xl font-semibold">{title}</h3>}
           <button
             onClick={onClose}
-            className="text-black hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
+            className="text-white hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
           >
             &times;
           </button>
+        </div>
+
+
+        <div>
+          {message && (
+            <p className="text-center text-gray-600 mt-4 px-6">{message}</p>
+          )}
         </div>
 
         <div className="px-4 py-2 overflow-auto h-full max-h-[84vh]">
@@ -64,22 +71,22 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
             </span>
 
             <div className="flex gap-2">
+              <button
+                className="cursor-pointer uppercase mt-6 px-6 py-2 bg-secondary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                Fechar
+              </button>
               {btn?.next && (
                 <button
-                  className="mt-6 px-6 py-2 bg-red-500 text-black rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="cursor-pointer uppercase mt-6 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={btn?.next?.onClick}
                   disabled={isLoading}
                 >
                   {isLoading ? 'Excluindo...' : btn?.next?.label}
                 </button>
               )}
-              <button
-                className="mt-6 px-6 py-2 bg-secondary text-black rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={onClose}
-                disabled={isLoading}
-              >
-                Fechar
-              </button>
             </div>
           </div>
         </div>

@@ -69,7 +69,7 @@ const KanbanColumnComponent: React.FC<KanbanColumnProps> = ({
     <div
       ref={setDroppableRef}
       style={style}
-      className={`bg-gray-200 rounded-xl min-w-[320px] max-w-[320px] flex flex-col h-fit transition-all duration-2000 ease-out ${isAnimating ? 'delete-animating' : ''
+      className={`bg-gray-50 rounded-xl min-w-[320px] max-w-[320px] max-h-[60vh] flex flex-col transition-all duration-300 ease-in ${isAnimating ? 'delete-animating' : ''
         }`}
     >
       {/* Header - drag é gerenciado pelo wrapper */}
