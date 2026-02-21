@@ -4,14 +4,13 @@ import { getClienteById } from "@/axios/cliente.axios";
 import { PrimaryButton } from "@/components/button/PrimaryButton";
 import Card from "@/components/Card";
 import ClienteInfo from "@/components/cliente/ClienteInfo";
-import VagaForm from "@/components/form/VagaForm";
 import { Tab } from "@/components/global/tab/Tab";
 import { PlusIcon } from "@/components/icons";
 import Modal from "@/components/modal/Modal";
 import ModalClienteForm from "@/components/modal/ModalClienteForm";
 import { ModalPlanoCliente } from "@/components/modal/ModalPlanoCliente";
 import { useAdmin } from "@/context/AuthContext";
-import { ClienteWithEmpresaAndVagaInput } from "@/schemas/cliente.schema";
+import { ClienteWithEmpresaInput } from "@/schemas/cliente.schema";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -20,7 +19,7 @@ const TAB_OPCOES = [
 ];
 
 const ClientePage: React.FC<{
-  initialValues?: ClienteWithEmpresaAndVagaInput;
+  initialValues?: ClienteWithEmpresaInput;
 }> = ({ initialValues }) => {
   const router = useRouter();
   const { uuid } = router.query;
@@ -29,10 +28,8 @@ const ClientePage: React.FC<{
   const [loading, setLoading] = useState(true);
   const [, setPaginaAtual] = useState(1);
   const [showModalEdit, setShowModalEdit] = useState(false);
-  const [showVagasForm, setShowVagasForm] = useState(false);
   const [modalPlanosCliente, setModalPlanosCliente] = useState(false);
-  const [modalVagasCliente, setModalVagasCliente] = useState(false);
-  const [cliente, setCliente] = useState<ClienteWithEmpresaAndVagaInput | null>(
+  const [cliente, setCliente] = useState<ClienteWithEmpresaInput | null>(
     initialValues ?? null,
   );
 
@@ -54,8 +51,7 @@ const ClientePage: React.FC<{
       try {
         const cliente = await getClienteById(uuid as string);
 
-        // const vagas = await getVagasClienteById(uuid as string);
-        // cliente.vagas = { ...vagas };
+        // vagas removidas do modelo
         setCliente(cliente);
         setClienteCarregado(true);
       } catch {
@@ -94,7 +90,7 @@ const ClientePage: React.FC<{
   const handleViewPlanos = () => setModalPlanosCliente(true);
 
   // if (loading) {
-  //   return <Loading label="Carregando Cliente e Vagas..." />;
+  //   return <Loading label="Carregando Cliente..." />;
   // }
 
   if (erro) {

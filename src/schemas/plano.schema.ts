@@ -32,7 +32,6 @@ export const planoAssinadoSchema = z.object({
   status: z.enum(['ATIVA', 'INATIVA', 'EXPIRADA', 'CANCELADA']).optional(),
   dataAssinatura: z.string().optional(),
   dataExpiracao: z.string().optional(),
-  qtdVagas: z.number().optional(),
   precoPersonalizado: z.number().optional(),
   porcentagemMinima: z.number().optional(),
   observacoes: z.string().optional(),

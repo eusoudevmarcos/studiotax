@@ -9,7 +9,7 @@ const CLIENTE_TYPES = ['CLIENTE_ATS', 'CLIENTE_ATS_CRM', 'CLIENTE_CRM'];
 const ALWAYS_PUBLIC_PATHS = [
   '/',
   '/planos/medicos',
-  '/api/external/ping' /*, '/vaga'*/,
+  '/api/external/ping',
 ];
 
 // Apenas rotas de login podem ser acessadas sem autenticação

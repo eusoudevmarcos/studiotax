@@ -36,14 +36,7 @@ interface Cliente {
   usuarioSistema: {
     email: string;
   };
-  vagas: {
-    agendaVaga: number;
-    triagens: number;
-    beneficios: number;
-    anexos: number;
-    habilidades: number;
-    candidaturas: number;
-  }[];
+  // vagas removed
 }
 
 function normalizarTable(clientes: Cliente[]) {
@@ -57,7 +50,7 @@ function normalizarTable(clientes: Cliente[]) {
       ? c.tipoServico.join(', ')
       : String(c.tipoServico ?? '-'),
     status: c.status,
-    vagasCount: c.vagas.length,
+    // vagasCount removed
   }));
 }
 

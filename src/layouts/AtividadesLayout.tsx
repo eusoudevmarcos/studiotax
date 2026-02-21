@@ -28,7 +28,7 @@ export default function AtividadeLayout({ children }: { children: React.ReactNod
   return (
     <Card title="Atividades">
       <nav className="flex gap-4 mb-2 border-b border-gray-200">
-        {['Agendas', 'Tarefas', 'Vagas', 'Entrevistas'].map(item => (
+        {['Agendas', 'Tarefas', 'Entrevistas'].map(item => (
           <button
             key={item}
             className={`py-3 text-base font-medium border-b-2 transition-all duration-200 ${

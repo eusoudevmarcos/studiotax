@@ -2,13 +2,12 @@ import {
   StatusClienteEnum,
   StatusClienteEnumInput,
 } from '@/schemas/statusClienteEnum.schema';
-import { StatusVagaEnum } from '@/schemas/vaga.schema';
 import { LabelController } from './LabelController';
 
 export const LabelStatus = ({
   status,
 }: {
-  status: StatusClienteEnumInput | StatusVagaEnum;
+  status: StatusClienteEnumInput;
 }) => {
   let statusBgColor = 'bg-[#ede9fe]';
 
@@ -17,10 +16,6 @@ export const LabelStatus = ({
     case StatusClienteEnum.enum.ATIVO:
       // Sucesso/Presente
       statusBgColor = 'bg-emerald-600 text-black';
-      break;
-    case StatusVagaEnum.enum.ABERTA:
-      // Disponível/Sucesso
-      statusBgColor = 'bg-teal-500 text-black';
       break;
     case StatusClienteEnum.enum.INATIVO:
       // Atenção importante/Perigo

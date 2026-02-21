@@ -21,7 +21,6 @@ import {
   QuadroKanbanInput,
   TipoEntidadeEnum,
   UsuarioSistema,
-  VagaAutocomplete,
   VincularEntidadeInput,
   VinculoCard,
   candidatoAutocompleteSchema,
@@ -40,7 +39,6 @@ import {
   etiquetaQuadroSchema,
   quadroCompletoSchema,
   quadroKanbanSchema,
-  vagaAutocompleteSchema,
   vinculoCardSchema
 } from '@/schemas/kanban.schema';
 import { KanbanErrorCode, createKanbanError } from '@/types/kanban.type';
@@ -558,7 +556,6 @@ export const buscarEntidadesParaAutocomplete = async (
   search: string = '',
   limit: number = 10
 ): Promise<
-  | VagaAutocomplete[]
   | CandidatoAutocomplete[]
   | ClienteAutocomplete[]
   | CompromissoAutocomplete[]
@@ -571,8 +568,6 @@ export const buscarEntidadesParaAutocomplete = async (
   );
 
   switch (tipo) {
-    case 'VAGA':
-      return z.array(vagaAutocompleteSchema).parse(response.data);
     case 'CANDIDATO':
       return z.array(candidatoAutocompleteSchema).parse(response.data);
     case 'CLIENTE':
