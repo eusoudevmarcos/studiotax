@@ -57,7 +57,7 @@ export const agendaSchema = z
     localEvento: z.string().default('REMOTO').optional(),
     // lembreteMinutos: z.number().min(5).max(1440).optional(),
 
-    candidatoId: z.uuid().optional(),
+    // candidatoId: z.uuid().optional(),
     candidato: candidatoSchema.optional(),
   });
 

@@ -131,7 +131,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
     defaultValues: {
       ...initialValues,
       localEvento: 'REMOTO',
-      candidatoId: initialValues?.candidato?.id || '',
+      // candidatoId: initialValues?.candidato?.id || '',
     },
   });
 
@@ -161,8 +161,9 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
   // vaga-related states and logic removed
 
-  // useEffect(() => {
-  // }, [errors]);
+  useEffect(() => {
+    console.log(errors)
+  }, [errors]);
 
   function handleFullDateTime(times: string, e: any) {
     e.preventDefault();
@@ -206,7 +207,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
       const googleCalendar = await postCalendar(payload);
 
-      payload = { ...rest, link: googleCalendar.meetLink };
+      payload = { ...rest, link: googleCalendar.event.htmlLink };
 
       await api.post('/api/externalWithAuth/agenda', payload);
 
