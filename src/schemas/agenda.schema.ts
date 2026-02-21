@@ -28,6 +28,7 @@ const etapaAtualSchema = z.object({
 
 export const agendaSchema = z
   .object({
+    id: z.uuid().optional(),
     titulo: z
       .string('Titulo Obrigatorio')
       .min(3, 'O título é obrigatório e deve ter ao menos 3 caracteres'),

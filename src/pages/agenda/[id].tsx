@@ -33,6 +33,7 @@ const Modal = dynamic(() => import("@/components/modal/Modal"), {
 import { SessionProviderWrapper } from "@/components/providers/SessionProviderWrapper";
 
 interface AgendaPageProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialAgenda?: any;
   initialError?: string | null;
 }
@@ -45,6 +46,7 @@ const AgendaPage: React.FC<AgendaPageProps> = ({
   const { id } = router.query;
   const isCliente = useCliente();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [agenda, setAgenda] = useState<any | null>(initialAgenda || null);
   const [loading, setLoading] = useState(!initialAgenda);
   const [erro, setErro] = useState<string | null>(initialError || null);

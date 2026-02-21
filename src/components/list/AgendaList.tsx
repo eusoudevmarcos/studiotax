@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Table, { TableColumn } from "../Table";
 import { PrimaryButton } from "../button/PrimaryButton";
 import { FormInput } from "../input/FormInput";
+import { AgendaInput } from "@/schemas/agenda.schema";
 
 interface Localizacao {
   cidade?: string;
@@ -118,13 +119,14 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
 
   const dadosFiltrados = useMemo(() => {
     const s = search.toLowerCase();
-    return dadosTabela.filter((a: any) =>
-      [a.dataHora, a.tipoEvento, a.link, a.localizacao, a.etapa, a.tipoEtapa]
+    return dadosTabela.filter((a: AgendaVaga) =>
+      [a.dataHora, a.tipoEvento, a.link, a.localizacao]
         .filter(Boolean)
-        .some((v: string) => String(v).toLowerCase().includes(s)),
+        .some((v) => String(v).toLowerCase().includes(s)),
     );
   }, [dadosTabela, search]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: TableColumn<any>[] = [
     { label: "Data e Hora", key: "dataHora" },
     { label: "Evento", key: "tipoEvento" },
@@ -148,9 +150,10 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
     // { label: 'Etapa', key: 'etapa' },
   ];
 
-  const onRowClick = (row: any) => {
-    router.push(`/agenda/${row.id}`);
-  };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onRowClick = (row: any) => {
+      router.push(`/agenda/${row.id}`);
+    };
 
   return (
     <Card noShadow>
