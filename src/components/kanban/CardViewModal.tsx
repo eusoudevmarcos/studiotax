@@ -602,7 +602,7 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
         </div>
 
         {/* Coluna direita: comentários */}
-        <div className="w-80 border-l border-gray-200 bg-gray-50 p-4 flex flex-col -z-10 relative">
+        <div className="w-80 border-l border-gray-200 bg-gray-50 p-4 flex flex-col relative">
           <h3 className="text-lg font-semibold text-gray-800 mb-3">Comentários</h3>
 
           <div className="mb-3">
