@@ -8,7 +8,6 @@ import { FormInput } from '../input/FormInput';
 import Modal from '../modal/Modal';
 
 type CandidatoSearchProps = {
-  idVaga?: string;
   onSuccess?: (candidatos: any[]) => void;
   onDelete?: () => void | null;
   initialValuesProps?: any[] | null;
@@ -17,7 +16,6 @@ type CandidatoSearchProps = {
 };
 
 const CandidatoSearch = ({
-  idVaga,
   onSuccess,
   onDelete,
   initialValuesProps = [],
@@ -143,30 +141,17 @@ const CandidatoSearch = ({
     );
   };
 
-  const handleVincularCandidatos = async () => {
+  const handleConfirmSelection = async () => {
     if (candidatosSelecionados.length === 0) {
-      setError('Adicione ao menos um candidato para vincular.');
+      setError('Adicione ao menos um candidato.');
       return;
     }
     setLoading(true);
-    setError(null);
     try {
-      // Exemplo de endpoint, ajuste conforme necessário
-      await api.post(
-        `/api/externalWithAuth/vaga/vincular-candidatos/${idVaga}`,
-        {
-          candidatos: candidatosSelecionados.map(c => c.id),
-        }
-      );
-      setError(null);
-      alert('Candidatos vinculados com sucesso!');
+      if (onSuccess) onSuccess(candidatosSelecionados);
       setCandidatosSelecionados([]);
-      if (onSuccess) onSuccess([]);
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          'Erro ao vincular candidatos. Tente novamente.'
-      );
+      setError('Erro ao processar seleção.');
     } finally {
       setLoading(false);
     }
@@ -317,10 +302,10 @@ const CandidatoSearch = ({
           <div className="flex justify-end">
             <PrimaryButton
               className="mt-2"
-              onClick={handleVincularCandidatos}
+              onClick={handleConfirmSelection}
               disabled={loading}
             >
-              Vincular Candidato{candidatosSelecionados.length > 1 ? 's' : ''}
+              Confirmar Seleção
             </PrimaryButton>
           </div>
         </div>

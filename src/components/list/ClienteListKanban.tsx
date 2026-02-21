@@ -43,14 +43,7 @@ interface Cliente {
   usuarioSistema: {
     email: string;
   };
-  vagas: {
-    agendaVaga: number;
-    triagens: number;
-    beneficios: number;
-    anexos: number;
-    habilidades: number;
-    candidaturas: number;
-  }[];
+  // vagas removed
 }
 
 const PAGE_SIZE = 8;
@@ -89,7 +82,7 @@ const ClienteList: React.FC<{
     ? unmask(searchCnpj.trim())
     : searchRazao.trim();
 
-  // KanbanData state inicial (baseado no VagaList)
+  // KanbanData state inicial (baseado no ClienteList)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const resetKanbanClienteData: KanbanClienteResponse = {
     lanes: [],
@@ -103,7 +96,7 @@ const ClienteList: React.FC<{
     resetKanbanClienteData
   );
 
-  // Handler para abrir editor (atenção: igual VagaList!)
+  // Handler para abrir editor (atenção: igual em outras listas)
   const handleEditCard = (cliente: Cliente) => {
     if (!cliente) return;
     router.push(`/cliente/${cliente.id}/editar`);
@@ -126,7 +119,7 @@ const ClienteList: React.FC<{
     if (!itemRemover) return;
     setRemoverLoading(true);
     try {
-      await api.delete(`/api/externalWithAuth/cliente/${itemRemover.id}`);
+      await api.delete(`/api/externalWithAuth/cliente-studio/`, { data: { id: itemRemover.id } });
       setOpenRemover(false);
       setItemRemover(null);
       fetchClientes();

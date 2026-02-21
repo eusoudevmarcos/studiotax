@@ -131,7 +131,6 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
     defaultValues: {
       ...initialValues,
       localEvento: 'REMOTO',
-      vagaId: initialValues?.vagaId || '',
       candidatoId: initialValues?.candidato?.id || '',
     },
   });
@@ -160,77 +159,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
   const [loadingTimes, setLoadingTimes] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  // Estados para vagas com paginação infinita
-  const [vagasData, setVagasData] = useState<any[]>([]);
-  const [isLoadingVagas, setIsLoadingVagas] = useState(false);
-  const [vagasPage, setVagasPage] = useState(1);
-  const [vagasHasMore, setVagasHasMore] = useState(true);
-  const [vagasOpened, setVagasOpened] = useState(false);
-
-  // Função para buscar vagas paginadas
-  const fetchVagas = async (page = 1) => {
-    if (!initialValues?.candidatoId && !initialValues?.candidato?.id) return;
-    setIsLoadingVagas(true);
-    try {
-      const resp = await api.get(
-        `/api/externalWithAuth/vaga/candidato/${
-          initialValues?.candidatoId || initialValues?.candidato?.id
-        }`,
-        {
-          params: {
-            pageSize: 10,
-            page,
-          },
-        }
-      );
-      const newVagas = resp.data?.data || resp.data || [];
-      setVagasData(prev => (page === 1 ? newVagas : [...prev, ...newVagas]));
-      // Verifica se há mais páginas
-      if (resp.data?.totalPages) {
-        setVagasHasMore(page < resp.data.totalPages);
-      } else if (Array.isArray(newVagas)) {
-        setVagasHasMore(newVagas.length > 0);
-      } else {
-        setVagasHasMore(false);
-      }
-    } catch (_) {
-      setVagasHasMore(false);
-      setVagasData([]);
-    } finally {
-      setIsLoadingVagas(false);
-    }
-  };
-
-  // Handler para abrir o select e buscar as vagas
-  const handleVagasOpen = () => {
-    if (!vagasOpened) {
-      setVagasOpened(true);
-      setVagasPage(1);
-      fetchVagas(1);
-    }
-  };
-
-  // Handler para rolagem infinita no select de vagas
-  const handleVagasScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
-    if (
-      vagasHasMore &&
-      !isLoadingVagas &&
-      target.scrollHeight - target.scrollTop - target.clientHeight < 40
-    ) {
-      const nextPage = vagasPage + 1;
-      setVagasPage(nextPage);
-      fetchVagas(nextPage);
-    }
-  };
-
-  // Resetar vagas quando o formulário for reaberto/outro candidato
-  useEffect(() => {
-    setVagasData([]);
-    setVagasPage(1);
-    setVagasHasMore(true);
-    setVagasOpened(false);
-  }, [initialValues?.candidatoId, initialValues?.candidato?.id]);
+  // vaga-related states and logic removed
 
   // useEffect(() => {
   // }, [errors]);
@@ -324,70 +253,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
     fetchTimes();
   }, [selectedDate]);
 
-  const CandidatoVagaComponent = () => {
-    return (
-      <>
-        <Card title="Candidato e Vaga">
-          <div>
-            <p className="text-primary text-sm">Informações do candidato</p>
-            <p>Nome: {initialValues?.candidato?.pessoa?.nome}</p>
-            <p>CPF: {initialValues?.candidato?.pessoa?.cpf}</p>
-          </div>
-
-          {/* Vagas do candidato */}
-          <div className="my-2">
-            <div
-              onFocus={handleVagasOpen}
-              tabIndex={-1}
-              style={{ outline: 'none' }}
-            >
-              <FormSelect
-                name="vagaId"
-                label={<span className="text-primary">Selecione a Vaga</span>}
-                placeholder="Selecione a vaga"
-                selectProps={{
-                  disabled: isLoadingVagas,
-                }}
-                onMenuScrollToBottom={handleVagasScroll}
-              >
-                <>
-                  {Array.isArray(vagasData) &&
-                    vagasData.map((vaga: any) => (
-                      <option
-                        key={vaga.id}
-                        value={vaga.id}
-                        className="flex justify-between"
-                      >
-                        {vaga.titulo}{' '}
-                        {vaga.dataPublicacao ? `- ${vaga.dataPublicacao}` : ''}
-                      </option>
-                    ))}
-                  {isLoadingVagas && (
-                    <option disabled value="">
-                      Carregando vagas...
-                    </option>
-                  )}
-                  {!isLoadingVagas && vagasData.length === 0 && (
-                    <option disabled value="">
-                      Nenhuma vaga encontrada
-                    </option>
-                  )}
-                </>
-              </FormSelect>
-            </div>
-            {isLoadingVagas && (
-              <span className="text-xs text-gray-500">Carregando vagas...</span>
-            )}
-            {errors.vagaId && (
-              <span className="text-xs text-red-500">
-                {errors.vagaId.message}
-              </span>
-            )}
-          </div>
-        </Card>
-      </>
-    );
-  };
+  // Removed CandidatoVagaComponent (vaga references removed)
 
   return (
     <FormProvider {...methods}>
@@ -507,7 +373,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
           <LocalizacaoForm namePrefix="localizacao" />
         )}
 
-        {getValues('candidatoId') && <CandidatoVagaComponent />}
+        {/* vaga references removed */}
 
         <Card title="Convidados">
           <ConvidadosTable initialValues={initialValues?.convidados} />

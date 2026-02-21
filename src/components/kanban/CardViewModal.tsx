@@ -204,7 +204,6 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
   };
 
   const getVinculoLabel = (vinculo: VinculoCard): string => {
-    if (vinculo.vaga) return `Vaga: ${vinculo.vaga.titulo}`;
     if (vinculo.candidato) return `Candidato: ${vinculo.candidato.pessoa.nome}`;
     if (vinculo.cliente) {
       return `Cliente: ${vinculo.cliente.empresa.razaoSocial}`;

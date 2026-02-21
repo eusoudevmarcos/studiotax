@@ -57,22 +57,8 @@ export const agendaSchema = z
     localEvento: z.string().default('REMOTO').optional(),
     // lembreteMinutos: z.number().min(5).max(1440).optional(),
 
-    vagaId: z.uuid('Vaga é obrigatorio para o candidato').optional(),
     candidatoId: z.uuid().optional(),
     candidato: candidatoSchema.optional(),
-  })
-  .refine(
-    data => {
-      // Se candidatoId existe, vagaId deve existir
-      if (data.candidatoId) {
-        return !!data.vagaId;
-      }
-      return true;
-    },
-    {
-      message: 'vagaId é obrigatório quando candidatoId está presente',
-      path: ['vagaId'],
-    }
-  );
+  });
 
 export type AgendaInput = z.infer<typeof agendaSchema>;

@@ -57,7 +57,7 @@ const ClienteSearch = ({
           search: searchQuery,
         };
 
-        const response = await api.get("/api/externalWithAuth/cliente", {
+        const response = await api.get("/api/externalWithAuth/cliente-studio/", {
           params,
         });
 

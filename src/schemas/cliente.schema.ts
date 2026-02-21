@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { empresaSchema } from './empresa.schema';
 import { planoAssinadoSchema } from './plano.schema';
 import { StatusClienteEnum } from './statusClienteEnum.schema';
-import { KanbanVagaResponseSchema, vagaSchema } from './vaga.schema';
 
 // Cliente
 export const clienteSchema = z.object({
@@ -24,13 +23,7 @@ export const clienteSchema = z.object({
 });
 export type ClienteInput = z.infer<typeof clienteSchema>;
 
-// Cliente + Vagas
-export const clienteWithVagasSchema = clienteSchema.extend({
-  vagas: z.array(z.lazy(() => vagaSchema)).optional(),
-  vagaId: z.uuid(),
-});
-export type ClienteWithVagasInput = z.infer<typeof clienteWithVagasSchema>;
-
+// Cliente (vagas removidas)
 // Cliente + Empesa
 export const clienteWithEmpresaSchema = clienteSchema.extend({
   empresaId: z.uuid().optional(),
@@ -52,16 +45,5 @@ export type ClienteWithEmpresaAndPlanosSchema = z.infer<
   typeof clienteWithEmpresaAndPlanosSchema
 >;
 
-// Cliente + Empesa + Vaga
-export const clienteWithEmpresaAndVagaSchema = clienteSchema.extend({
-  empresaId: z.uuid().optional(),
-  empresa: empresaSchema,
-  vagas: z.lazy(() => KanbanVagaResponseSchema).optional(),
-  vagaId: z.uuid(),
-  usuarioSistema: z.object({ email: z.string() }).optional(),
-  planos: z.array(planoAssinadoSchema).optional(), // Planos com detalhes
-});
-
-export type ClienteWithEmpresaAndVagaInput = z.infer<
-  typeof clienteWithEmpresaAndVagaSchema
->;
+// Cliente + Empresa (vagas removidas)
+// Note: referências a 'vagas' removidas conforme solicitação.

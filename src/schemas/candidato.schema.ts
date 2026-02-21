@@ -73,7 +73,7 @@ export const candidatoSchema = z
     links: z.array(z.string()),
     areaCandidato: AreaCandidatoEnum,
     pessoa: pessoaSchema,
-    // candidaturaVaga, formacoes, anexos são tratados em outras telas/buscas
+    // candidaturas, formacoes, anexos são tratados em outras telas/buscas
     formacoes: z.array(formacaoSchema).optional(),
     anexos: z
       .array(

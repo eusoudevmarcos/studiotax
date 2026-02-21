@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 // ===================== ENUMS =====================
 export const TipoEntidadeEnum = z.enum([
-  'VAGA',
   'CANDIDATO',
   'CLIENTE',
   'COMPROMISSO',
@@ -78,19 +77,11 @@ export const vinculoCardSchema = z.object({
   id: z.string(),
   cardKanbanId: z.string(),
   tipoEntidade: TipoEntidadeEnum,
-  vagaId: z.string().nullable(),
+  // vaga removed
   candidatoId: z.string().nullable(),
   clienteId: z.string().nullable(),
   compromissoId: z.string().nullable(),
   criadoEm: dateSchema,
-  vaga: z
-    .object({
-      id: z.string(),
-      titulo: z.string(),
-      status: z.string(),
-    })
-    .nullable()
-    .optional(),
   candidato: z
     .object({
       id: z.string(),
@@ -349,12 +340,6 @@ export type EspacoTrabalhoComQuadros = z.infer<
 >;
 
 // ===================== SCHEMAS PARA AUTCOMPLETE =====================
-export const vagaAutocompleteSchema = z.object({
-  id: z.string(),
-  titulo: z.string(),
-  status: z.string(),
-});
-
 export const candidatoAutocompleteSchema = z.object({
   id: z.string(),
   pessoa: z.object({
@@ -380,13 +365,10 @@ export const compromissoAutocompleteSchema = z.object({
 
 // Union type para todas as entidades de autocomplete
 export const entidadeAutocompleteSchema = z.discriminatedUnion('tipo', [
-  vagaAutocompleteSchema.extend({ tipo: z.literal('VAGA') }),
   candidatoAutocompleteSchema.extend({ tipo: z.literal('CANDIDATO') }),
   clienteAutocompleteSchema.extend({ tipo: z.literal('CLIENTE') }),
   compromissoAutocompleteSchema.extend({ tipo: z.literal('COMPROMISSO') }),
 ]);
-
-export type VagaAutocomplete = z.infer<typeof vagaAutocompleteSchema>;
 export type CandidatoAutocomplete = z.infer<typeof candidatoAutocompleteSchema>;
 export type ClienteAutocomplete = z.infer<typeof clienteAutocompleteSchema>;
 export type CompromissoAutocomplete = z.infer<

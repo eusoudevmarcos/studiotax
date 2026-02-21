@@ -241,10 +241,7 @@ const QuadroKanbanViewContent: React.FC<{ quadroId: string }> = ({
           let label = '';
           let color = 'bg-blue-100 text-blue-800';
 
-          if (vinculo.vaga) {
-            label = `Vaga: ${vinculo.vaga.titulo}`;
-            color = 'bg-green-100 text-green-800';
-          } else if (vinculo.candidato) {
+          if (vinculo.candidato) {
             label = `Candidato: ${vinculo.candidato.pessoa.nome}`;
             color = 'bg-purple-100 text-purple-800';
           } else if (vinculo.cliente) {

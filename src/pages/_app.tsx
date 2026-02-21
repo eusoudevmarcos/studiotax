@@ -112,7 +112,7 @@ function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/logo_simbolo.ico" />
         <meta
           name="description"
-          content="Aura: O match perfeito para sua empresa. Especialistas em recrutamento médico, TI e vagas executivas com agilidade e efetividade."
+          content="Aura: O match perfeito para sua empresa. Especialistas em recrutamento médico e TI com agilidade e efetividade."
         />
       </Head>
 
