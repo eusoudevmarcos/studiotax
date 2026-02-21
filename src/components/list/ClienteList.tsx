@@ -112,7 +112,7 @@ const ClienteList: React.FC<{
       };
 
       const response = await api.get<Pagination<Cliente[]>>(
-        '/api/externalWithAuth/cliente',
+        '/api/externalWithAuth/cliente-studio/',
         {
           params,
         }

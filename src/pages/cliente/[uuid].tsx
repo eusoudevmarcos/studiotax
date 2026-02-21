@@ -74,7 +74,7 @@ const ClientePage: React.FC<{
     if (!cliente) return;
     if (confirm("Tem certeza que deseja excluir este cliente?")) {
       try {
-        const response = await api.delete(`/api/externalWithAuth/cliente`, {
+        const response = await api.delete(`/api/externalWithAuth/cliente-studio/`, {
           data: { id: cliente.id },
         });
         if (response.data) {

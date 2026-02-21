@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 const externalBackendApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+  // headers previously included Client-Identity; removed
 });
 
 export default async function handler(

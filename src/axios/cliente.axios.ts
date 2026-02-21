@@ -7,7 +7,7 @@ import api from '.';
 export const getClienteById = async (
   uuid: string /* uuid */
 ): Promise<ClienteWithEmpresaAndVagaInput> => {
-  const response = await api.get(`/api/externalWithAuth/cliente/${uuid}`);
+  const response = await api.get(`/api/externalWithAuth/cliente-studio/${uuid}`);
   return response.data;
 };
 
@@ -23,7 +23,7 @@ export const getCliente = async ({
   pageSize = 5,
   ...params
 }): Promise<KanbanClienteResponse> => {
-  const clientes = await api.get('/api/externalWithAuth/cliente', {
+  const clientes = await api.get('/api/externalWithAuth/cliente-studio/', {
     params: { page, pageSize, ...params },
   });
 
@@ -32,7 +32,7 @@ export const getCliente = async ({
 
 export const saveCliente = async ({ payload }: any) => {
   const response = await api.post(
-    '/api/externalWithAuth/cliente/save',
+    '/api/externalWithAuth/cliente-studio/save',
     payload
   );
 
@@ -52,7 +52,7 @@ export const patchClienteStatus = async ({
   id: string;
   status: string;
 }): Promise<any> => {
-  const response = await api.patch(`/api/externalWithAuth/cliente/status`, {
+  const response = await api.patch(`/api/externalWithAuth/cliente-studio/status`, {
     id,
     status,
   });

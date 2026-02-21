@@ -126,7 +126,7 @@ const ClienteList: React.FC<{
     if (!itemRemover) return;
     setRemoverLoading(true);
     try {
-      await api.delete(`/api/externalWithAuth/cliente/${itemRemover.id}`);
+      await api.delete(`/api/externalWithAuth/cliente-studio/`, { data: { id: itemRemover.id } });
       setOpenRemover(false);
       setItemRemover(null);
       fetchClientes();
