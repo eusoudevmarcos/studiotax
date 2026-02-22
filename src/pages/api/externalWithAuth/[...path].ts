@@ -1,7 +1,7 @@
 // pages/api/externalWithAuth/[...path].ts (Ajuste AQUI)
-import axios from 'axios';
-import { parse } from 'cookie';
-import { NextApiRequest, NextApiResponse } from 'next';
+import axios from "axios";
+import { parse } from "cookie";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const externalBackendApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
@@ -13,28 +13,28 @@ const externalBackendApi = axios.create({
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '50mb',
+      sizeLimit: "50mb",
     },
   },
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
     const cookies = req.headers.cookie ? parse(req.headers.cookie) : {};
     const token = cookies.token;
 
     if (!token) {
-      return res.status(401).json({ error: 'Não autenticado.' });
+      return res.status(401).json({ error: "Não autenticado." });
     }
 
     const { path } = req.query;
-    const externalPath = Array.isArray(path) ? path.join('/') : path;
+
+    const externalPath = Array.isArray(path) ? path.join("/") : path;
 
     const urlToExternalBackend = `/${externalPath}`;
-
     // if (process.env.NODE_ENV === 'production') {
     //   if (req.method === 'GET') {
     //     const data = await redis.get(cacheKey);
@@ -46,56 +46,56 @@ export default async function handler(
     // }
 
     const headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
 
     let externalResponse;
     switch (req.method) {
-      case 'GET':
+      case "GET":
         externalResponse = await externalBackendApi.get(urlToExternalBackend, {
           headers,
           params: req.query,
         });
         break;
-      case 'POST':
+      case "POST":
         externalResponse = await externalBackendApi.post(
           urlToExternalBackend,
           req.body,
-          { headers }
+          { headers },
         );
         // if (externalPath) await invalidateGetCache(externalPath);
         break;
-      case 'PUT':
+      case "PUT":
         externalResponse = await externalBackendApi.put(
           urlToExternalBackend,
           req.body,
           {
             headers,
             params: req.query,
-          }
+          },
         );
         // if (externalPath) await invalidateGetCache(externalPath);
         break;
-      case 'PATCH':
+      case "PATCH":
         externalResponse = await externalBackendApi.patch(
           urlToExternalBackend,
           req.body,
-          { headers }
+          { headers },
         );
         // if (externalPath) await invalidateGetCache(externalPath);
         break;
-      case 'DELETE':
+      case "DELETE":
         externalResponse = await externalBackendApi.delete(
           urlToExternalBackend,
-          { headers, data: req.body }
+          { headers, data: req.body },
         );
         // if (externalPath) await invalidateGetCache(externalPath);
         break;
       default:
         return res
           .status(405)
-          .json({ error: 'Método não permitido nesta rota de proxy.' });
+          .json({ error: "Método não permitido nesta rota de proxy." });
     }
 
     // if (process.env.NODE_ENV === 'production') {
@@ -107,10 +107,13 @@ export default async function handler(
     res.status(externalResponse.status).json(externalResponse.data);
   } catch (error: unknown) {
     console.log(error);
-    const err = error as { response?: { status?: number; data?: unknown }; message?: string };
+    const err = error as {
+      response?: { status?: number; data?: unknown };
+      message?: string;
+    };
     const statusCode = err.response?.status || 500;
     res.status(statusCode).json({
-      error: 'Erro ao se comunicar com a API externa.',
+      error: "Erro ao se comunicar com a API externa.",
       details: err.response?.data || err.message,
     });
   }
