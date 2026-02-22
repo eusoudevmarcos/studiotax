@@ -196,7 +196,7 @@ export const FuncionarioForm = ({
 
       setLoading(true);
 
-      const url = `/api/externalWithAuth/funcionario/save`;
+      const url = `/api/externalWithAuth/funcionario-studio/save`;
       const response = await api.post(url, cleanData);
 
       const isEdit = !!initialValues?.id;

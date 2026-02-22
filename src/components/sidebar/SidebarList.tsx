@@ -1,5 +1,5 @@
 import { TipoUsuarioEnum } from "@/schemas/funcionario.schema";
-import { CalendarIcon } from "../icons";
+import { CalendarIcon, EmployeesIcon } from "../icons";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getNavItems = (user: any) => {
@@ -37,13 +37,13 @@ export const getNavItems = (user: any) => {
     });
   }
 
-  // if (user?.tipo === TipoUsuarioEnum.enum.ADMIN_SISTEMA) {
-  //   navItems.push({
-  //     icon: <EmployeesIcon className="w-5 h-5 text-inherit" />,
-  //     label: 'Usuarios do sistema',
-  //     href: `/funcionarios`,
-  //   });
-  // }
+  if (user?.tipo === TipoUsuarioEnum.enum.ADMIN_SISTEMA) {
+    navItems.push({
+      icon: <EmployeesIcon className="w-5 h-5 text-inherit" />,
+      label: 'Usuarios do sistema',
+      href: `/funcionarios`,
+    });
+  }
 
   return navItems;
 };
