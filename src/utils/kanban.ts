@@ -11,7 +11,7 @@ export function getUsuarioNome(
   usuarioSistema: UsuarioSistema | null | undefined
 ): string {
   if (!usuarioSistema) return 'Usuário desconhecido';
-  console.log('usuarioSistema', usuarioSistema);
+
   if (usuarioSistema.funcionario?.pessoa?.nome) {
     return usuarioSistema.funcionario.pessoa.nome;
   } else if (usuarioSistema.cliente?.empresa?.nomeFantasia) {

@@ -123,19 +123,21 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
         const sourceIndex = sortedSourceCards.findIndex(c => c.id === cardId);
         const newCards = arrayMove(sortedSourceCards, sourceIndex, position);
         
-        // Atualizar ordem para todos os cards (ordem descendente: maior ordem primeiro)
-        // O array já está ordenado em ordem descendente, então precisamos inverter
+        // Atualizar ordem para todos os cards
+        // Como a renderização usa ordem descendente (maior primeiro), 
+        // atribuímos ordem decrescente: primeiro item = maior ordem
         const totalCards = newCards.length;
-        newCards.forEach((c, index) => {
-          c.ordem = totalCards - 1 - index; // Inverter para manter ordem descendente
-        });
+        const cardsWithNewOrder = newCards.map((c, index) => ({
+          ...c,
+          ordem: totalCards - 1 - index,
+        }));
 
         // Criar novo estado atualizando apenas a coluna uma vez
         const finalQuadro: QuadroCompleto = {
           ...updatedQuadro,
           colunas: updatedQuadro.colunas.map(col => {
             if (col.id === sourceColumnId) {
-              return { ...col, cards: newCards };
+              return { ...col, cards: cardsWithNewOrder };
             }
             return col;
           }),
@@ -144,13 +146,16 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
         // Atualizar estado local (optimistic update)
         setQuadro(finalQuadro);
 
-        // Call API
+        // Call API - usar moverCard para cada card com sua nova posição visual
         try {
-          await moverCard({
-            cardId,
-            novaColunaId: targetColumnId,
-            novaPosicao: position,
-          });
+          const updatePromises = cardsWithNewOrder.map((c, index) =>
+            moverCard({
+              cardId: c.id,
+              novaColunaId: sourceColumnId,
+              novaPosicao: index,
+            })
+          );
+          await Promise.all(updatePromises);
         } catch (err: any) {
           console.log('Erro ao mover card:', err);
           // Revert optimistic update
@@ -161,32 +166,33 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       }
 
       // Colunas diferentes - remover da origem e inserir no destino
-      const newSourceCards = sortedSourceCards.filter(c => c.id !== cardId);
-      const newTargetCards = [...sortedTargetCards];
+      const filteredSourceCards = sortedSourceCards.filter(c => c.id !== cardId);
+      const newTargetCardsList = [...sortedTargetCards];
       const updatedCard = { ...card, colunaKanbanId: targetColumnId };
-      newTargetCards.splice(position, 0, updatedCard);
+      newTargetCardsList.splice(position, 0, updatedCard);
 
-      // Atualizar ordem para todos os cards na coluna de destino (ordem descendente)
-      const totalTargetCards = newTargetCards.length;
-      newTargetCards.forEach((c, index) => {
-        c.ordem = totalTargetCards - 1 - index; // Inverter para manter ordem descendente
-      });
+      // Atualizar ordem para todos os cards (ordem decrescente: primeiro = maior ordem)
+      const totalTargetCards = newTargetCardsList.length;
+      const targetCardsWithOrder = newTargetCardsList.map((c, index) => ({
+        ...c,
+        ordem: totalTargetCards - 1 - index,
+      }));
 
-      // Atualizar ordem para todos os cards na coluna de origem (ordem descendente)
-      const totalSourceCards = newSourceCards.length;
-      newSourceCards.forEach((c, index) => {
-        c.ordem = totalSourceCards - 1 - index; // Inverter para manter ordem descendente
-      });
+      const totalSourceCards = filteredSourceCards.length;
+      const sourceCardsWithOrder = filteredSourceCards.map((c, index) => ({
+        ...c,
+        ordem: totalSourceCards - 1 - index,
+      }));
 
       // Criar novo estado com as colunas atualizadas
       const finalQuadro: QuadroCompleto = {
         ...updatedQuadro,
         colunas: updatedQuadro.colunas.map(col => {
           if (col.id === sourceColumnId) {
-            return { ...col, cards: newSourceCards };
+            return { ...col, cards: sourceCardsWithOrder };
           }
           if (col.id === targetColumnId) {
-            return { ...col, cards: newTargetCards };
+            return { ...col, cards: targetCardsWithOrder };
           }
           return col;
         }),
@@ -195,15 +201,23 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       // Atualizar estado local (optimistic update)
       setQuadro(finalQuadro);
 
-      // Call API
+      // Call API - mover card para nova coluna e atualizar ordens
       try {
-        await moverCard({
-          cardId,
-          novaColunaId: targetColumnId,
-          novaPosicao: position,
-        });
-        // Não fazer refresh automático - o estado já está atualizado
-        // Apenas em caso de erro fazemos rollback
+        const sourceUpdatePromises = sourceCardsWithOrder.map((c, index) =>
+          moverCard({
+            cardId: c.id,
+            novaColunaId: sourceColumnId,
+            novaPosicao: index,
+          })
+        );
+        const targetUpdatePromises = targetCardsWithOrder.map((c, index) =>
+          moverCard({
+            cardId: c.id,
+            novaColunaId: targetColumnId,
+            novaPosicao: index,
+          })
+        );
+        await Promise.all([...sourceUpdatePromises, ...targetUpdatePromises]);
       } catch (err: any) {
         console.log('Erro ao mover card:', err);
         // Revert optimistic update

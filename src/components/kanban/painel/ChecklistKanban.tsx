@@ -8,8 +8,21 @@ import {
 } from '@/axios/kanban.axios';
 import { useKanban } from '@/context/KanbanContext';
 import { CardKanban, ChecklistCard } from '@/schemas/kanban.schema';
-import { useEffect, useRef, useState } from 'react';
-// Removido: import { FiCheckSquare, FiLoader } from 'react-icons/fi';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Painel, type popupPositionType } from './Painel';
 
 interface ChecklistKanbanProps {
@@ -53,9 +66,17 @@ export const ChecklistKanban = ({
   const editItemInputRef = useRef<HTMLInputElement | null>(null);
   const editingItemMenuRef = useRef<HTMLDivElement | null>(null);
 
+  // Função para ordenar itens do checklist pelo campo ordem
+  const sortChecklistItems = (checklists: ChecklistCard[]): ChecklistCard[] => {
+    return checklists.map(cl => ({
+      ...cl,
+      itens: cl.itens ? [...cl.itens].sort((a, b) => a.ordem - b.ordem) : [],
+    }));
+  };
+
   // Estado local para manter os checklists atualizados
-  const [localChecklists, setLocalChecklists] = useState<ChecklistCard[]>(
-    card.checklists || []
+  const [localChecklists, setLocalChecklists] = useState<ChecklistCard[]>(() =>
+    sortChecklistItems(card.checklists || [])
   );
 
   // Estado local para checklistCompleto
@@ -63,9 +84,17 @@ export const ChecklistKanban = ({
     card.checklistCompleto || false
   );
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
   // Sincronizar quando o card mudar
   useEffect(() => {
-    setLocalChecklists(card.checklists || []);
+    setLocalChecklists(sortChecklistItems(card.checklists || []));
     setLocalChecklistCompleto(card.checklistCompleto || false);
     setEditingItemId(null);
     setEditingItemDescricao('');
@@ -99,6 +128,66 @@ export const ChecklistKanban = ({
       };
     }
   }, [editingItemId]);
+
+  const handleItemDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const activeData = active.data.current as
+      | { type?: string; checklistId?: string }
+      | null;
+    const overData = over.data.current as
+      | { type?: string; checklistId?: string }
+      | null;
+
+    if (!activeData || activeData.type !== 'checklist-item' || !activeData.checklistId) {
+      return;
+    }
+
+    const checklistId = activeData.checklistId;
+    const targetChecklistId = overData?.checklistId ?? checklistId;
+
+    // No momento, permitimos reordenação apenas dentro do mesmo checklist
+    if (targetChecklistId !== checklistId) {
+      return;
+    }
+
+    const previousState = localChecklists;
+    const checklist = localChecklists.find(cl => cl.id === checklistId);
+
+    if (!checklist || !checklist.itens) return;
+
+    const items = [...checklist.itens];
+    const oldIndex = items.findIndex(item => item.id === active.id);
+    const newIndex = items.findIndex(item => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(items, oldIndex, newIndex);
+    const withOrder = reordered.map((item, index) => ({
+      ...item,
+      ordem: index,
+    }));
+
+    setLocalChecklists(prev =>
+      prev.map(cl =>
+        cl.id === checklistId ? { ...cl, itens: withOrder } : cl
+      )
+    );
+
+    try {
+      // Atualizar a ordem de TODOS os itens no banco de dados
+      const updatePromises = withOrder.map(item =>
+        atualizarChecklistItem(item.id, { ordem: item.ordem })
+      );
+
+      await Promise.all(updatePromises);
+    } catch (error) {
+      console.log('Erro ao reordenar item de checklist:', error);
+      setLocalChecklists(previousState);
+    }
+  };
 
   // Funções para gerenciar checklists
   const handleCriarChecklist = async () => {
@@ -332,252 +421,205 @@ export const ChecklistKanban = ({
 
       {/* Seção de renderização dos checklists - apenas quando showFullSection for true */}
       {showFullSection && localChecklists.length !== 0 && (
-        <div className="space-y-4 mt-4">
-          <div className="flex items-center gap-2 mb-3">
-            {localChecklistCompleto && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-green-100 text-green-700 px-2 py-1 text-xs font-medium">
-                {/* <FiCheckSquare className="w-3 h-3" /> -> Material Icons */}
-                <span className="material-icons w-3 h-3 align-middle" style={{ fontSize: 16 }}>check_box</span>
-                Concluído
-              </span>
-            )}
-          </div>
+        <DndContext sensors={sensors} onDragEnd={handleItemDragEnd}>
+          <div className="space-y-4 mt-4">
+            <div className="flex items-center gap-2 mb-3">
+              {localChecklistCompleto && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-green-100 text-green-700 px-2 py-1 text-xs font-medium">
+                  <span className="material-icons w-3 h-3 align-middle" style={{ fontSize: 16 }}>check_box</span>
+                  Concluído
+                </span>
+              )}
+            </div>
 
-          {localChecklists.map(checklist => {
-            const isEditing = editingChecklistId === checklist.id;
-            const totalItens = checklist.itens?.length || 0;
-            const itensConcluidos =
-              checklist.itens?.filter(i => i.concluido).length || 0;
-            const progresso = totalItens > 0 ? `${itensConcluidos}/${totalItens}` : '0/0';
-            const porcentagemProgresso = totalItens > 0 ? (itensConcluidos / totalItens) * 100 : 0;
-            const estaCompleto = totalItens > 0 && itensConcluidos === totalItens;
+            {localChecklists.map(checklist => {
+              const isEditing = editingChecklistId === checklist.id;
+              const totalItens = checklist.itens?.length || 0;
+              const itensConcluidos =
+                checklist.itens?.filter(i => i.concluido).length || 0;
+              const progresso = totalItens > 0 ? `${itensConcluidos}/${totalItens}` : '0/0';
+              const porcentagemProgresso = totalItens > 0 ? (itensConcluidos / totalItens) * 100 : 0;
+              const estaCompleto = totalItens > 0 && itensConcluidos === totalItens;
+              const itemIds = checklist.itens?.map(item => item.id) || [];
 
-            return (
-              <div
-                key={checklist.id}
-                className="rounded"
-              >
-                {/* Cabeçalho do checklist */}
-                <div className="flex items-center gap-2 group mt-2 p-1 hover:bg-gray-100 transition-colors duration-300 rounded-md">
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editingChecklistTitulo}
-                      onChange={e =>
-                        setEditingChecklistTitulo(e.target.value)
-                      }
-                      onBlur={() =>
-                        handleEditarChecklist(
-                          checklist.id,
-                          editingChecklistTitulo
-                        )
-                      }
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
+              return (
+                <div
+                  key={checklist.id}
+                  className="rounded"
+                >
+                  {/* Cabeçalho do checklist */}
+                  <div className="flex items-center gap-2 group mt-2 p-1 hover:bg-gray-100 transition-colors duration-300 rounded-md">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editingChecklistTitulo}
+                        onChange={e =>
+                          setEditingChecklistTitulo(e.target.value)
+                        }
+                        onBlur={() =>
                           handleEditarChecklist(
                             checklist.id,
                             editingChecklistTitulo
-                          );
-                        }
-                        if (e.key === 'Escape') {
-                          setEditingChecklistId(null);
-                        }
-                      }}
-                      className="flex-1 rounded border border-gray-300 px-2 py-1 focus:outline-none"
-                      autoFocus
-                    />
-                  ) : (
-                    <>
-                      <span className="material-icons text-gray-500">checklist</span>
-
-                      <span
-                        className="flex-1 cursor-pointer text-md font-semibold"
-                        onClick={() => {
-                          setEditingChecklistId(checklist.id);
-                          setEditingChecklistTitulo(checklist.titulo);
-                        }}
-                        title="Clique para editar"
-                      >
-                        {checklist.titulo}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {progresso}
-                      </span>
-                    </>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => handleDeletarChecklist(checklist.id)}
-                    className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
-                    title="Deletar checklist"
-                  >
-                    <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
-                  </button>
-                </div>
-
-
-                {/* Barra de progresso */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500 font-semibold">{porcentagemProgresso}%</span>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-300 ${estaCompleto
-                        ? 'bg-green-500'
-                        : porcentagemProgresso > 0
-                          ? 'bg-blue-500'
-                          : 'bg-gray-300'
-                        }`}
-                      style={{ width: `${porcentagemProgresso}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Lista de itens do checklist */}
-                <div className="ml-4">
-                  {checklist.itens?.map(item => (
-                    <div
-                      key={item.id}
-                      className={`flex flex-col rounded hover:bg-gray-100 transition-colors duration-300 p-1 ${editingItemId === item.id ? 'bg-gray-200 shadow-md' : ''}`}
-                    >
-                      <div className={`flex items-center gap-2 group`}>
-                        {editingItemId !== item.id &&
-                          (
-                            <input
-                              type="checkbox"
-                              checked={item.concluido}
-                              onChange={() =>
-                                handleToggleChecklistItem(
-                                  item.id,
-                                  item.concluido
-                                )
-                              }
-                              className="cursor-pointer"
-                            />
-                          )}
-                        {editingItemId === item.id ? (
-                          <>
-                            <input
-                              ref={editItemInputRef}
-                              type="text"
-                              value={editingItemDescricao}
-                              onChange={e => setEditingItemDescricao(e.target.value)}
-                              className="flex-1 rounded border border-gray-300 px-2 py-1 text-md focus:outline-none"
-                              disabled={!!savingItem[item.id]}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                  handleEditItemSave(item.id, checklist.id);
-                                }
-                                if (e.key === 'Escape') {
-                                  handleEditItemCancel();
-                                }
-                              }}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <span
-                              className={`flex-1 text-md ${item.concluido
-                                ? 'line-through text-gray-400'
-                                : 'text-gray-700'
-                                } cursor-pointer`}
-                              title="Clique para editar"
-                              onClick={() => handleEditItemStart(item.id, item.descricao, checklist.id)}
-                            >
-                              {item.descricao}
-                            </span>
-
-                            <button
-                              type="button"
-                              onClick={() => handleDeletarChecklistItem(item.id)}
-                              className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
-                              title="Deletar item"
-                            >
-                              <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                      {editingItemId === item.id && (
-                        <div
-                          ref={editingItemMenuRef}
-                          className="flex gap-2 p-1"
-                        >
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleEditItemSave(item.id, checklist.id)
-                            }
-                            className="cursor-pointer flex items-center text-sm bg-primary hover:bg-blue-600 p-2 rounded transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            disabled={!!savingItem[item.id] || editingItemDescricao.trim() === ""}
-                            title="Salvar"
-                          >
-                            {savingItem[item.id] && (
-                              // Loader com Material Icons
-                              <span className="material-icons animate-spin mr-1" style={{ fontSize: 18 }}>autorenew</span>
-                            )}
-                            Salvar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleEditItemCancel}
-                            className="cursor-pointer flex items-center text-sm bg-gray-300 hover:bg-gray-400 p-2 rounded transition-colors"
-                            title="Cancelar edição"
-                          >
-                            Cancelar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDeletarChecklistItem(item.id)
-                            }
-                            className="cursor-pointer flex items-center text-sm bg-red-300 hover:bg-red-400 p-2 rounded transition-colors"
-                            title="Deletar item"
-                          >
-                            Deletar
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Input para adicionar novo item */}
-                <div className="flex gap-2 mt-2 ml-5">
-                  {!showAddItemInput[checklist.id] && (
-                    <button
-                      type="button"
-                      className="cursor-pointer rounded bg-gray-200 hover:bg-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition-colors"
-                      onClick={() =>
-                        setShowAddItemInput(prev => ({
-                          ...prev,
-                          [checklist.id]: true,
-                        }))
-                      }
-                    >
-                      Adicionar um item
-                    </button>
-                  )}
-
-                  {showAddItemInput[checklist.id] && (
-                    <>
-                      <input
-                        type="text"
-                        value={newItemDescricao[checklist.id] || ''}
-                        onChange={e =>
-                          setNewItemDescricao(prev => ({
-                            ...prev,
-                            [checklist.id]: e.target.value,
-                          }))
+                          )
                         }
                         onKeyDown={e => {
-                          if (
-                            e.key === 'Enter' &&
-                            newItemDescricao[checklist.id]?.trim()
-                          ) {
-                            handleCriarChecklistItem(checklist.id);
+                          if (e.key === 'Enter') {
+                            handleEditarChecklist(
+                              checklist.id,
+                              editingChecklistTitulo
+                            );
                           }
                           if (e.key === 'Escape') {
+                            setEditingChecklistId(null);
+                          }
+                        }}
+                        className="flex-1 rounded border border-gray-300 px-2 py-1 focus:outline-none"
+                        autoFocus
+                      />
+                    ) : (
+                      <>
+                        <span className="material-icons text-gray-500">checklist</span>
+
+                        <span
+                          className="flex-1 cursor-pointer text-md font-semibold"
+                          onClick={() => {
+                            setEditingChecklistId(checklist.id);
+                            setEditingChecklistTitulo(checklist.titulo);
+                          }}
+                          title="Clique para editar"
+                        >
+                          {checklist.titulo}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {progresso}
+                        </span>
+                      </>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeletarChecklist(checklist.id)}
+                      className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
+                      title="Deletar checklist"
+                    >
+                      <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
+                    </button>
+                  </div>
+
+                  {/* Barra de progresso */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-semibold">{porcentagemProgresso}%</span>
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${estaCompleto
+                          ? 'bg-green-500'
+                          : porcentagemProgresso > 0
+                            ? 'bg-blue-500'
+                            : 'bg-gray-300'
+                          }`}
+                        style={{ width: `${porcentagemProgresso}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Lista de itens do checklist com drag-and-drop */}
+                  <div className="ml-4">
+                    <SortableContext
+                      items={itemIds}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {checklist.itens?.map(item => (
+                        <SortableChecklistItemRow
+                          key={item.id}
+                          item={item}
+                          checklistId={checklist.id}
+                          isEditing={editingItemId === item.id}
+                          isSaving={!!savingItem[item.id]}
+                          editingDescricao={editingItemDescricao}
+                          onToggle={handleToggleChecklistItem}
+                          onStartEdit={handleEditItemStart}
+                          onCancelEdit={handleEditItemCancel}
+                          onSaveEdit={handleEditItemSave}
+                          onChangeDescricao={setEditingItemDescricao}
+                          onDelete={handleDeletarChecklistItem}
+                          editItemInputRef={editItemInputRef}
+                          editingItemMenuRef={editingItemMenuRef}
+                        />
+                      ))}
+                    </SortableContext>
+                  </div>
+
+                  {/* Input para adicionar novo item */}
+                  <div className="flex gap-2 mt-2 ml-5">
+                    {!showAddItemInput[checklist.id] && (
+                      <button
+                        type="button"
+                        className="cursor-pointer rounded bg-gray-200 hover:bg-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition-colors"
+                        onClick={() =>
+                          setShowAddItemInput(prev => ({
+                            ...prev,
+                            [checklist.id]: true,
+                          }))
+                        }
+                      >
+                        Adicionar um item
+                      </button>
+                    )}
+
+                    {showAddItemInput[checklist.id] && (
+                      <>
+                        <input
+                          type="text"
+                          value={newItemDescricao[checklist.id] || ''}
+                          onChange={e =>
+                            setNewItemDescricao(prev => ({
+                              ...prev,
+                              [checklist.id]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={e => {
+                            if (
+                              e.key === 'Enter' &&
+                              newItemDescricao[checklist.id]?.trim()
+                            ) {
+                              handleCriarChecklistItem(checklist.id);
+                            }
+                            if (e.key === 'Escape') {
+                              setShowAddItemInput(prev => ({
+                                ...prev,
+                                [checklist.id]: false,
+                              }));
+                              setNewItemDescricao(prev => ({
+                                ...prev,
+                                [checklist.id]: '',
+                              }));
+                            }
+                          }}
+                          placeholder="Adicionar um item..."
+                          className="flex-1 rounded border border-gray-300 px-2 py-2 text-xs focus:outline-none"
+                          disabled={creatingItem[checklist.id]}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleCriarChecklistItem(checklist.id);
+                          }}
+                          disabled={
+                            !newItemDescricao[checklist.id]?.trim() ||
+                            creatingItem[checklist.id]
+                          }
+                          className="cursor-pointer rounded bg-primary hover:bg-blue-600 px-2 py-1 text-xs text-black transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                          {creatingItem[checklist.id] ? (
+                            <span className="material-icons animate-spin" style={{ fontSize: 16 }}>autorenew</span>
+                          ) : (
+                            'Adicionar'
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
                             setShowAddItemInput(prev => ({
                               ...prev,
                               [checklist.id]: false,
@@ -586,56 +628,186 @@ export const ChecklistKanban = ({
                               ...prev,
                               [checklist.id]: '',
                             }));
-                          }
-                        }}
-                        placeholder="Adicionar um item..."
-                        className="flex-1 rounded border border-gray-300 px-2 py-2 text-xs focus:outline-none"
-                        disabled={creatingItem[checklist.id]}
-                        autoFocus
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleCriarChecklistItem(checklist.id);
-                        }}
-                        disabled={
-                          !newItemDescricao[checklist.id]?.trim() ||
-                          creatingItem[checklist.id]
-                        }
-                        className="cursor-pointer rounded bg-primary hover:bg-blue-600 px-2 py-1 text-xs text-black transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                      >
-                        {creatingItem[checklist.id] ? (
-                          // Loader com Material Icons
-                          <span className="material-icons animate-spin" style={{ fontSize: 16 }}>autorenew</span>
-                        ) : (
-                          'Adicionar'
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowAddItemInput(prev => ({
-                            ...prev,
-                            [checklist.id]: false,
-                          }));
-                          setNewItemDescricao(prev => ({
-                            ...prev,
-                            [checklist.id]: '',
-                          }));
-                        }}
-                        className="cursor-pointer rounded px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-                        title="Cancelar"
-                      >
-                        Cancelar
-                      </button>
-                    </>
-                  )}
+                          }}
+                          className="cursor-pointer rounded px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                          title="Cancelar"
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </DndContext>
       )}
     </>
+  );
+};
+
+type ChecklistItemType = NonNullable<ChecklistCard['itens']>[number];
+
+interface SortableChecklistItemRowProps {
+  item: ChecklistItemType;
+  checklistId: string;
+  isEditing: boolean;
+  isSaving: boolean;
+  editingDescricao: string;
+  onToggle: (itemId: string, concluido: boolean) => void;
+  onStartEdit: (itemId: string, descricao: string, checklistId: string) => void;
+  onCancelEdit: () => void;
+  onSaveEdit: (itemId: string, checklistId: string) => void;
+  onChangeDescricao: (value: string) => void;
+  onDelete: (itemId: string) => void;
+  editItemInputRef: React.RefObject<HTMLInputElement | null>;
+  editingItemMenuRef: React.RefObject<HTMLDivElement | null>;
+}
+
+const SortableChecklistItemRow: React.FC<SortableChecklistItemRowProps> = ({
+  item,
+  checklistId,
+  isEditing,
+  isSaving,
+  editingDescricao,
+  onToggle,
+  onStartEdit,
+  onCancelEdit,
+  onSaveEdit,
+  onChangeDescricao,
+  onDelete,
+  editItemInputRef,
+  editingItemMenuRef,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: item.id,
+    data: {
+      type: 'checklist-item',
+      checklistId,
+    },
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.7 : 1,
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSaveEdit(item.id, checklistId);
+    }
+    if (e.key === 'Escape') {
+      onCancelEdit();
+    }
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex flex-col rounded hover:bg-gray-100 transition-colors duration-300 p-1 ${isEditing ? 'bg-gray-200 shadow-md' : ''}`}
+    >
+      <div className="flex items-center gap-2 group">
+        {/* Handle de drag */}
+        <button
+          type="button"
+          className="cursor-grab text-gray-300 hover:text-gray-500"
+          {...attributes}
+          {...listeners}
+        >
+          <span className="material-icons" style={{ fontSize: 18 }}>
+            drag_indicator
+          </span>
+        </button>
+
+        {!isEditing && (
+          <input
+            type="checkbox"
+            checked={item.concluido}
+            onChange={() => onToggle(item.id, item.concluido)}
+            className="cursor-pointer"
+          />
+        )}
+
+        {isEditing ? (
+          <input
+            ref={editItemInputRef}
+            type="text"
+            value={editingDescricao}
+            onChange={e => onChangeDescricao(e.target.value)}
+            className="flex-1 rounded border border-gray-300 px-2 py-1 text-md focus:outline-none"
+            disabled={isSaving}
+            onKeyDown={handleKeyDown}
+          />
+        ) : (
+          <>
+            <span
+              className={`flex-1 text-md ${item.concluido
+                ? 'line-through text-gray-400'
+                : 'text-gray-700'
+                } cursor-pointer`}
+              title="Clique para editar"
+              onClick={() => onStartEdit(item.id, item.descricao, checklistId)}
+            >
+              {item.descricao}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => onDelete(item.id)}
+              className="cursor-pointer text-red-300 hover:text-red-700 opacity-0 hover:duration-200 transition-opacity duration-700 group-hover:opacity-100"
+              title="Deletar item"
+            >
+              <span className="material-icons text-red-500 hover:text-red-700 transition-colors">delete_outline</span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {isEditing && (
+        <div
+          ref={editingItemMenuRef}
+          className="flex gap-2 p-1"
+        >
+          <button
+            type="button"
+            onClick={() => onSaveEdit(item.id, checklistId)}
+            className="cursor-pointer flex items-center text-sm bg-primary hover:bg-blue-600 p-2 rounded transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled={isSaving || editingDescricao.trim() === ''}
+            title="Salvar"
+          >
+            {isSaving && (
+              <span className="material-icons animate-spin mr-1" style={{ fontSize: 18 }}>autorenew</span>
+            )}
+            Salvar
+          </button>
+          <button
+            type="button"
+            onClick={onCancelEdit}
+            className="cursor-pointer flex items-center text-sm bg-gray-300 hover:bg-gray-400 p-2 rounded transition-colors"
+            title="Cancelar edição"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(item.id)}
+            className="cursor-pointer flex items-center text-sm bg-red-300 hover:bg-red-400 p-2 rounded transition-colors"
+            title="Deletar item"
+          >
+            Deletar
+          </button>
+        </div>
+      )}
+    </div>
   );
 };

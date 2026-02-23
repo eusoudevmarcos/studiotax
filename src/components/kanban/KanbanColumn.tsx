@@ -150,9 +150,17 @@ export const KanbanColumn = React.memo<KanbanColumnProps>(
   KanbanColumnComponent,
   (prevProps, nextProps) => {
     // Comparação customizada para evitar re-renders desnecessários
+    // Verificar se a ordem dos cards mudou
+    const prevCardIds = prevProps.column.cards.map(c => c.id).join(',');
+    const nextCardIds = nextProps.column.cards.map(c => c.id).join(',');
+    const prevCardOrders = prevProps.column.cards.map(c => c.ordem).join(',');
+    const nextCardOrders = nextProps.column.cards.map(c => c.ordem).join(',');
+    
     return (
       prevProps.column.id === nextProps.column.id &&
       prevProps.column.cards.length === nextProps.column.cards.length &&
+      prevCardIds === nextCardIds &&
+      prevCardOrders === nextCardOrders &&
       prevProps.column.titulo === nextProps.column.titulo &&
       prevProps.canAddCard === nextProps.canAddCard &&
       prevProps.isLoading === nextProps.isLoading &&
