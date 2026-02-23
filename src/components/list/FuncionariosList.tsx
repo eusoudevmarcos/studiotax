@@ -1,12 +1,12 @@
-import api from '@/axios';
-import Card from '@/components/Card';
-import { Pagination } from '@/types/pagination.type';
-import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
-import { PrimaryButton } from '../button/PrimaryButton';
-import { FormInput } from '../input/FormInput';
-import Table, { TableColumn } from '../Table';
-import { ClienteInput } from '@/schemas/cliente.schema';
+import api from "@/axios";
+import Card from "@/components/Card";
+import { Pagination } from "@/types/pagination.type";
+import { useRouter } from "next/router";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { PrimaryButton } from "../button/PrimaryButton";
+import { FormInput } from "../input/FormInput";
+import Table, { TableColumn } from "../Table";
+import { ClienteInput } from "@/schemas/cliente.schema";
 
 // Tipos para Pessoa e Empresa
 interface Pessoa {
@@ -40,7 +40,7 @@ type FuncionarioTabela = {
 
 function normalizarTable(funcionarios: FuncionarioApi[]): FuncionarioTabela[] {
   return funcionarios.map((f: FuncionarioApi) => {
-    let nome = '-';
+    let nome = "-";
     if (f.funcionario && f.funcionario.pessoa && f.funcionario.pessoa.nome) {
       nome = f.funcionario.pessoa.nome;
     }
@@ -49,19 +49,19 @@ function normalizarTable(funcionarios: FuncionarioApi[]): FuncionarioTabela[] {
       nome,
       email: f.email,
       tipoUsuario: f.tipoUsuario,
-      setor: f.funcionario?.setor || '-',
-      cargo: f.funcionario?.cargo || '-',
+      setor: f.funcionario?.setor || "-",
+      cargo: f.funcionario?.cargo || "-",
     };
   });
 }
 
 // Colunas da tabela
 const columns: TableColumn<FuncionarioTabela>[] = [
-  { label: 'Nome', key: 'nome' },
-  { label: 'Email', key: 'email' },
-  { label: 'Tipo Usuário', key: 'tipoUsuario' },
-  { label: 'Setor', key: 'setor' },
-  { label: 'Cargo', key: 'cargo' },
+  { label: "Nome", key: "nome" },
+  { label: "Email", key: "email" },
+  { label: "Tipo Usuário", key: "tipoUsuario" },
+  { label: "Setor", key: "setor" },
+  { label: "Cargo", key: "cargo" },
 ];
 
 const FuncionariosList: React.FC = () => {
@@ -75,85 +75,89 @@ const FuncionariosList: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   // Estados controlados dos inputs de busca
-  const [searchNomeInput, setSearchNomeInput] = useState<string>('');
-  const [searchEmailInput, setSearchEmailInput] = useState<string>('');
+  const [searchNomeInput, setSearchNomeInput] = useState<string>("");
+  const [searchEmailInput, setSearchEmailInput] = useState<string>("");
   const [searchTipoUsuarioInput, setSearchTipoUsuarioInput] =
-    useState<string>('');
+    useState<string>("");
 
   // Filtros aplicados enviados para a API
   const [appliedFilters, setAppliedFilters] = useState<{
     nome: string;
     email: string;
     tipoUsuario: string;
-    // Se quiser expandir para setor/cargo, adicione aqui
   }>({
-    nome: '',
-    email: '',
-    tipoUsuario: '',
+    nome: "",
+    email: "",
+    tipoUsuario: "",
   });
-
-  const [searchClicked, setSearchClicked] = useState<boolean>(false);
 
   const router = useRouter();
 
-  // Busca para API apenas com filtros aplicados;
-  const fetchFuncionarios = async (
-    aplicarFiltros = false,
-    pageOverride?: number
-  ) => {
-    setLoading(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const params: Record<string, any> = {
-        page: typeof pageOverride === 'number' ? pageOverride : page,
-        pageSize,
-      };
+  /*
+    --------- AJUSTE DA PAGINAÇÃO: ---------
 
-      // Apenas envia filtros aplicados na API (appliedFilters)
-      if (aplicarFiltros) {
-        if (appliedFilters.nome.trim())
-          params.nome = appliedFilters.nome.trim();
-        if (appliedFilters.email.trim())
-          params.email = appliedFilters.email.trim();
-        if (appliedFilters.tipoUsuario.trim())
-          params.tipoUsuario = appliedFilters.tipoUsuario.trim();
+    O problema original do código é que haviam dois efeitos (useEffect) rodando chamadas para fetchFuncionarios:
+      - Um rodava sempre que `page` mudava (mesmo sem filtros), isso causava chamadas duplicadas ou incorretas.
+      - O outro ficava preso à combinação de `page`, `appliedFilters` e `searchClicked`, mas não separava bem os fluxos de busca por filtros x paginação pura.
+
+    Também era usado um sinalizador `searchClicked`, que confunde o gatilho correto da busca filtrada.
+    O correto é:
+      - Quando o usuário fizer uma busca: aplicar filtros + ir para página 1
+      - Quando mudar de página: buscar novamente, levando em conta se há filtro ativo ou não
+
+    Portanto, reescrevemos o controle de efeitos e de chamada da função fetchFuncionarios.
+  */
+
+  // Função para buscar funcionários, memoizada para não mudar desnecessariamente
+  const fetchFuncionarios = useCallback(
+    async (opts?: { page?: number; filters?: typeof appliedFilters }) => {
+      setLoading(true);
+      try {
+        const params: Record<string, unknown> = {
+          page: opts?.page ?? page,
+          pageSize,
+        };
+
+        // Decide se aplica filtros baseando-se na presença das chaves em filters
+        const filtersToUse = opts?.filters ?? appliedFilters;
+        if (filtersToUse.nome.trim()) params.nome = filtersToUse.nome.trim();
+        if (filtersToUse.email.trim()) params.email = filtersToUse.email.trim();
+        if (filtersToUse.tipoUsuario.trim())
+          params.tipoUsuario = filtersToUse.tipoUsuario.trim();
+
+        const response = await api.get<Pagination<FuncionarioApi[]>>(
+          "/api/externalWithAuth/funcionario-studiotax",
+          { params },
+        );
+        const data = Array.isArray(response.data?.data)
+          ? response.data.data
+          : [];
+        setFuncionarios(data);
+        setTotal(response.data.total ?? data.length);
+        setTotalPages(response.data.totalPages ?? 1);
+      } catch (_) {
+        setFuncionarios([]);
+        setTotal(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
-      const response = await api.get<Pagination<FuncionarioApi[]>>(
-        '/api/externalWithAuth/funcionario-studiotax',
-        { params }
-      );
-      const data = Array.isArray(response.data?.data) ? response.data.data : [];
-      setFuncionarios(data);
-      setTotal(response.data.total ?? data.length);
-      setTotalPages(response.data.totalPages ?? 1);
-    } catch (_) {
-      setFuncionarios([]);
-      setTotal(0);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [page, pageSize, appliedFilters],
+  );
 
-  // Busca inicial SEM filtros ao montar
+  // Refaz busca sempre que filtros OU página mudarem
   useEffect(() => {
-    fetchFuncionarios(false, 1);
-  }, [page]);
-
-  // Fazer busca com filtros apenas quando clicar em Search OU mudar página após Search
-  useEffect(() => {
-    if (searchClicked) {
-      fetchFuncionarios(true);
-    }
+    fetchFuncionarios();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, appliedFilters, searchClicked]);
+  }, [page, appliedFilters]);
 
   const dadosTabela = useMemo(
     () => normalizarTable(funcionarios),
-    [funcionarios]
+    [funcionarios],
   );
 
-  // Ao clicar search: aplica valores dos filtros e reseta página
+  // Ao clicar search: aplica valores dos filtros e reseta página (e busca é disparada pelo useEffect)
   const handleSearch = () => {
     setAppliedFilters({
       nome: searchNomeInput,
@@ -161,23 +165,20 @@ const FuncionariosList: React.FC = () => {
       tipoUsuario: searchTipoUsuarioInput,
     });
     setPage(1);
-    setSearchClicked(true);
   };
 
   // Limpa as pesquisas, reseta filtros e faz buscar sem filtro
-  const handleClear = async () => {
-    setSearchNomeInput('');
-    setSearchEmailInput('');
-    setSearchTipoUsuarioInput('');
+  const handleClear = () => {
+    setSearchNomeInput("");
+    setSearchEmailInput("");
+    setSearchTipoUsuarioInput("");
 
     setAppliedFilters({
-      nome: '',
-      email: '',
-      tipoUsuario: '',
+      nome: "",
+      email: "",
+      tipoUsuario: "",
     });
     setPage(1);
-    setSearchClicked(false);
-    await fetchFuncionarios(false, 1);
   };
 
   const onRowClick = (row: FuncionarioTabela) => {
@@ -197,7 +198,7 @@ const FuncionariosList: React.FC = () => {
           inputProps={{
             disabled: loading,
           }}
-          onChange={e => setSearchNomeInput(e)}
+          onChange={(e) => setSearchNomeInput(e)}
         />
 
         <FormInput
@@ -209,7 +210,7 @@ const FuncionariosList: React.FC = () => {
           inputProps={{
             disabled: loading,
           }}
-          onChange={e => setSearchEmailInput(e)}
+          onChange={(e) => setSearchEmailInput(e)}
         />
 
         <FormInput
@@ -221,7 +222,7 @@ const FuncionariosList: React.FC = () => {
           inputProps={{
             disabled: loading,
           }}
-          onChange={e => setSearchTipoUsuarioInput(e)}
+          onChange={(e) => setSearchTipoUsuarioInput(e)}
         />
 
         <PrimaryButton
