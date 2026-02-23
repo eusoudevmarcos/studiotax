@@ -38,8 +38,9 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-[60] p-2 transition-opacity duration-200 bg-[#00000040] ${visible ? 'opacity-100' : 'opacity-0'
-        }`}
+      className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-[10000] p-2 transition-opacity duration-200 bg-[#00000040] ${
+        visible ? 'opacity-100' : 'opacity-0'
+      }`}
       onClick={onClose}
     >
       <div
