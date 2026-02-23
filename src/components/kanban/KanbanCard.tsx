@@ -187,7 +187,7 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
         </div>
       )}
 
-      <div className="flex items-center gap-2 mb-2 pr-8">
+      <div className="flex items-center gap-2 mb-2 pr-10">
         <input
           type="checkbox"
           checked={localChecklistCompleto}
@@ -208,7 +208,9 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
             : 'border-gray-300 text-green-600'
             }`}
         />
-        <h3 className="font-semibold text-gray-800 flex-1">{card.titulo}</h3>
+        <h3 className="font-semibold text-gray-800 flex-1 break-words">
+          {card.titulo}
+        </h3>
       </div>
 
       {/* Indicadores visuais: apenas data de entrega e criador */}
