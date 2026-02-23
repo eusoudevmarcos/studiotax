@@ -146,6 +146,7 @@ const ClienteList: React.FC<{
 
   useEffect(() => {
     fetchClientes();
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const dadosTabela = useMemo(() => normalizarTable(clientes), [clientes]);
