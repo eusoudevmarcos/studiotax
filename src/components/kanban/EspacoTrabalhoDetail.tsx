@@ -216,7 +216,7 @@ export const EspacoTrabalhoDetail: React.FC<EspacoTrabalhoDetailProps> = ({
                     className="cursor-pointer"
                     onClick={() => handleQuadroClick(quadro)}
                   >
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2 break-words pr-2">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2 break-words pr-10">
                       {quadro.titulo}
                     </h2>
                     <p className="text-sm text-gray-500">
