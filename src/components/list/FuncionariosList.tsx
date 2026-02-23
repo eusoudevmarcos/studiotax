@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '../button/PrimaryButton';
 import { FormInput } from '../input/FormInput';
 import Table, { TableColumn } from '../Table';
+import { ClienteInput } from '@/schemas/cliente.schema';
 
 // Tipos para Pessoa e Empresa
 interface Pessoa {
@@ -25,7 +26,7 @@ type FuncionarioApi = {
     pessoaId?: string | null;
     pessoa?: Pessoa | null;
   } | null;
-  cliente: any; // não utilizado para funcionários
+  cliente: ClienteInput; // não utilizado para funcionários
 };
 
 type FuncionarioTabela = {
@@ -102,6 +103,7 @@ const FuncionariosList: React.FC = () => {
   ) => {
     setLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const params: Record<string, any> = {
         page: typeof pageOverride === 'number' ? pageOverride : page,
         pageSize,

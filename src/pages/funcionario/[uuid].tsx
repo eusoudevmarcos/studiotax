@@ -29,6 +29,7 @@ const FuncionarioPage: React.FC = () => {
           `/api/externalWithAuth/funcionario-studio/${uuid}`
         );
         setFuncionario(response.data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (_: any) {
         setErro('Funcionário não encontrado ou erro ao buscar dados.');
         setFuncionario(null);
@@ -49,6 +50,7 @@ const FuncionarioPage: React.FC = () => {
         data: { id: uuid },
       });
       await router.back();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (_: any) {
     } finally {
       setLoading(false);
