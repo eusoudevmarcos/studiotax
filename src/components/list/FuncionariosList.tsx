@@ -138,8 +138,7 @@ const FuncionariosList: React.FC = () => {
   // Busca inicial SEM filtros ao montar
   useEffect(() => {
     fetchFuncionarios(false, 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   // Fazer busca com filtros apenas quando clicar em Search OU mudar página após Search
   useEffect(() => {
