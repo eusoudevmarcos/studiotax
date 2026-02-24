@@ -2,13 +2,13 @@ import {
   ColunaKanban,
   ColunaKanbanInput,
   colunaKanbanInputSchema,
-} from '@/schemas/kanban.schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { PrimaryButton } from '../button/PrimaryButton';
-import { FormInput } from '../input/FormInput';
-import Modal from '../modal/Modal';
+} from "@/schemas/kanban.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { PrimaryButton } from "../button/PrimaryButton";
+import { FormInput } from "../input/FormInput";
+import Modal from "../modal/Modal";
 
 interface ColunaFormModalProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
   onSubmit,
   quadroKanbanId,
   initialValues,
-  title = 'Nova Coluna',
+  title = "Nova Coluna",
   onDelete,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,6 +35,7 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<ColunaKanbanInput>({
     resolver: zodResolver(colunaKanbanInputSchema),
     defaultValues: initialValues
@@ -57,7 +58,7 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
             }
           : {
               quadroKanbanId,
-            }
+            },
       );
     }
   }, [isOpen, initialValues, quadroKanbanId, reset]);
@@ -68,7 +69,7 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
       reset();
       if (onClose) onClose();
     } catch (error) {
-      console.log('Erro ao salvar coluna:', error);
+      console.log("Erro ao salvar coluna:", error);
     }
   };
 
@@ -78,15 +79,17 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
       setIsDeleting(true);
       await onDelete(initialValues.id);
     } catch (error) {
-      console.log('Erro ao deletar coluna:', error);
+      console.log("Erro ao deletar coluna:", error);
     } finally {
       setIsDeleting(false);
     }
   };
 
+  const titulo = watch("titulo");
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-2">
         <FormInput
           label="Título"
           name="titulo"
@@ -94,6 +97,11 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
           errors={errors}
           required
         />
+
+        <p className="text-sm text-gray-500">
+          caracteres: {titulo.length} / 50
+        </p>
+
         <div className="flex justify-end gap-2 pt-4">
           {initialValues && onDelete && (
             <PrimaryButton
@@ -103,7 +111,7 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
               className="bg-red-500 hover:bg-red-600 text-black disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-icons inline-block mr-2">delete</span>
-              {isDeleting ? 'Excluindo...' : 'Excluir'}
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </PrimaryButton>
           )}
           <PrimaryButton
@@ -114,11 +122,8 @@ export const ColunaFormModal: React.FC<ColunaFormModalProps> = ({
           >
             Cancelar
           </PrimaryButton>
-          <PrimaryButton
-            type="submit"
-            disabled={isSubmitting || isDeleting}
-          >
-            {isSubmitting ? 'Salvando...' : 'Salvar'}
+          <PrimaryButton type="submit" disabled={isSubmitting || isDeleting}>
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </PrimaryButton>
         </div>
       </form>

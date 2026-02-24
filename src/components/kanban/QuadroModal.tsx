@@ -1,13 +1,13 @@
 import {
   QuadroKanbanInput,
   quadroKanbanInputSchema,
-} from '@/schemas/kanban.schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { PrimaryButton } from '../button/PrimaryButton';
-import { FormInput } from '../input/FormInput';
-import Modal from '../modal/Modal';
+} from "@/schemas/kanban.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { PrimaryButton } from "../button/PrimaryButton";
+import { FormInput } from "../input/FormInput";
+import Modal from "../modal/Modal";
 
 interface QuadroModalProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
   onSubmit,
   espacoTrabalhoId,
   initialValues,
-  title = 'Novo Quadro',
+  title = "Novo Quadro",
   quadroId,
   onDelete,
 }) => {
@@ -36,6 +36,7 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<QuadroKanbanInput>({
     resolver: zodResolver(quadroKanbanInputSchema),
     defaultValues: initialValues
@@ -58,7 +59,7 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
             }
           : {
               espacoTrabalhoId,
-            }
+            },
       );
     }
   }, [isOpen, initialValues, espacoTrabalhoId, reset]);
@@ -69,7 +70,7 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
       reset();
       onClose();
     } catch (error) {
-      console.log('Erro ao salvar quadro:', error);
+      console.log("Erro ao salvar quadro:", error);
     }
   };
 
@@ -79,15 +80,17 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
       setIsDeleting(true);
       await onDelete(quadroId);
     } catch (error) {
-      console.log('Erro ao deletar quadro:', error);
+      console.log("Erro ao deletar quadro:", error);
     } finally {
       setIsDeleting(false);
     }
   };
 
+  const titulo = watch("titulo");
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-2">
         <FormInput
           label="Título"
           name="titulo"
@@ -95,6 +98,11 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
           errors={errors}
           required
         />
+
+        <p className="text-sm text-gray-500">
+          caracteres: {titulo.length} / 50
+        </p>
+
         <div className="flex justify-end gap-2 pt-4">
           {quadroId && onDelete && (
             <PrimaryButton
@@ -103,7 +111,7 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
               disabled={isDeleting || isSubmitting}
               className="bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isDeleting ? 'Excluindo...' : 'Excluir'}
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </PrimaryButton>
           )}
           <PrimaryButton
@@ -114,11 +122,8 @@ export const QuadroModal: React.FC<QuadroModalProps> = ({
           >
             Cancelar
           </PrimaryButton>
-          <PrimaryButton
-            type="submit"
-            disabled={isSubmitting || isDeleting}
-          >
-            {isSubmitting ? 'Salvando...' : 'Salvar'}
+          <PrimaryButton type="submit" disabled={isSubmitting || isDeleting}>
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </PrimaryButton>
         </div>
       </form>
