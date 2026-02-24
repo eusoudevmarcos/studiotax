@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 
-import Card from '@/components/Card';
-import { FormInput } from '@/components/input/FormInput';
-import { FormSelect } from '@/components/input/FormSelect';
-import ModalSuccess from '@/components/modal/ModalSuccess';
+import Card from "@/components/Card";
+import { FormInput } from "@/components/input/FormInput";
+import { FormSelect } from "@/components/input/FormSelect";
+import ModalSuccess from "@/components/modal/ModalSuccess";
 
-import { PrimaryButton } from '@/components/button/PrimaryButton';
-import LocalizacaoForm from '@/components/form/LocalizacaoForm';
-import { AgendaInput, agendaSchema } from '@/schemas/agenda.schema';
+import { PrimaryButton } from "@/components/button/PrimaryButton";
+import LocalizacaoForm from "@/components/form/LocalizacaoForm";
+import { AgendaInput, agendaSchema } from "@/schemas/agenda.schema";
 
-import api from '@/axios';
-import getAvailableTimes from '@/axios/getAvaliableTimes';
-import postCalendar from '@/axios/postCalendar';
-import Table, { TableColumn } from '@/components/Table';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/style.css';
-import { ConnectGoogleButton } from '../button/GoogleAuth';
-import { ErrorMessage } from '../input/ErrorMessage';
+import api from "@/axios";
+import getAvailableTimes from "@/axios/getAvaliableTimes";
+import postCalendar from "@/axios/postCalendar";
+import Table, { TableColumn } from "@/components/Table";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/style.css";
+import { ConnectGoogleButton } from "../button/GoogleAuth";
+import { ErrorMessage } from "../input/ErrorMessage";
 
 type Convidado = {
   email: string;
@@ -32,27 +32,29 @@ export default function ConvidadosTable({
 }) {
   const { setValue } = useFormContext();
   const [convidados, setConvidados] = useState<Convidado[]>(
-    Array.isArray(initialValues) ? initialValues.map(email => ({ email })) : []
+    Array.isArray(initialValues)
+      ? initialValues.map((email) => ({ email }))
+      : [],
   );
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     if (Array.isArray(initialValues)) {
-      setConvidados(initialValues.map(email => ({ email })));
-      setValue('convidados', initialValues);
+      setConvidados(initialValues.map((email) => ({ email })));
+      setValue("convidados", initialValues);
     }
   }, [initialValues, setValue]);
 
   // Sempre que convidados mudar, atualiza o form (como array de string)
   useEffect(() => {
     setValue(
-      'convidados',
-      convidados.map(c => c.email)
+      "convidados",
+      convidados.map((c) => c.email),
     );
   }, [convidados, setValue]);
 
   const handleRemove = (index: number) => {
-    setConvidados(prev => {
+    setConvidados((prev) => {
       const novosConvidados = prev.filter((_, i) => i !== index);
       return novosConvidados;
     });
@@ -63,22 +65,24 @@ export default function ConvidadosTable({
     e.stopPropagation();
     if (!email) return;
 
-    const isConvidado = convidados.find(convidado => convidado.email === email);
+    const isConvidado = convidados.find(
+      (convidado) => convidado.email === email,
+    );
     if (!!isConvidado) return;
 
     const novosConvidados = [...convidados, { email }];
     setConvidados(novosConvidados);
-    setEmail('');
+    setEmail("");
   };
 
   const columns: TableColumn<Convidado>[] = [
     {
-      key: 'email',
-      label: 'Email do Convidado',
+      key: "email",
+      label: "Email do Convidado",
     },
     {
-      key: 'acoes',
-      label: 'Ações',
+      key: "acoes",
+      label: "Ações",
       render: (_: any, index: number) => (
         <PrimaryButton
           onClick={() => handleRemove(index)}
@@ -99,13 +103,13 @@ export default function ConvidadosTable({
           name="email"
           noControl
           value={email}
-          onChange={value => setEmail(value)}
+          onChange={(value) => setEmail(value)}
           placeholder="email@exemplo.com"
         />
         <PrimaryButton
           type="button"
           onClick={handleAddConvidado}
-          style={{ maxWidth: '50px' }}
+          style={{ maxWidth: "50px" }}
         >
           +
         </PrimaryButton>
@@ -127,10 +131,10 @@ type AgendaFormProps = {
 export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
   const methods = useForm<AgendaInput>({
     resolver: zodResolver(agendaSchema),
-    mode: 'onTouched',
+    mode: "onTouched",
     defaultValues: {
       ...initialValues,
-      localEvento: 'REMOTO',
+      localEvento: "REMOTO",
       // candidatoId: initialValues?.candidato?.id || '',
     },
   });
@@ -143,18 +147,18 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
     formState: { errors },
   } = methods;
 
-  const [localEvento, setLocalEvento] = useState<string>('REMOTO');
+  const [localEvento, setLocalEvento] = useState<string>("REMOTO");
   const [isEtapa, setIsEtapa] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [errroAvailableTimes, setErrorAvailableTimes] = useState<string | null>(
-    null
+    null,
   );
   const [loadingTimes, setLoadingTimes] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -162,7 +166,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
   // vaga-related states and logic removed
 
   useEffect(() => {
-    console.log(errors)
+    console.log(errors);
   }, [errors]);
 
   function handleFullDateTime(times: string, e: any) {
@@ -172,21 +176,21 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
     setSelectedTime(times);
 
-    const [hours, minutes] = times.split(':').map(Number);
+    const [hours, minutes] = times.split(":").map(Number);
 
     const fullDate = new Date(selectedDate);
 
     fullDate.setHours(hours, minutes, 0, 0);
 
     const year = fullDate.getFullYear();
-    const month = String(fullDate.getMonth() + 1).padStart(2, '0');
-    const day = String(fullDate.getDate()).padStart(2, '0');
-    const hour = String(fullDate.getHours()).padStart(2, '0');
-    const minute = String(fullDate.getMinutes()).padStart(2, '0');
+    const month = String(fullDate.getMonth() + 1).padStart(2, "0");
+    const day = String(fullDate.getDate()).padStart(2, "0");
+    const hour = String(fullDate.getHours()).padStart(2, "0");
+    const minute = String(fullDate.getMinutes()).padStart(2, "0");
 
     const dataHora = `${year}-${month}-${day}T${hour}:${minute}:00`;
 
-    setValue('dataHora', dataHora, { shouldValidate: true });
+    setValue("dataHora", dataHora, { shouldValidate: true });
   }
 
   async function onSubmit(data: AgendaInput) {
@@ -209,17 +213,17 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
       payload = { ...rest, link: googleCalendar.event.htmlLink };
 
-      await api.post('/api/externalWithAuth/agenda', payload);
+      await api.post("/api/externalWithAuth/agenda", payload);
 
       setSuccessMessage(
         isEdit
-          ? 'Agenda editada com sucesso!'
-          : 'Agenda criada e sincronizada com Google!'
+          ? "Agenda editada com sucesso!"
+          : "Agenda criada e sincronizada com Google!",
       );
       setShowSuccessModal(true);
       onSuccess(true);
     } catch (error) {
-      console.log('Erro ao salvar:', error);
+      console.log("Erro ao salvar:", error);
       onSuccess(false);
     } finally {
       setLoadingSubmit(false);
@@ -234,8 +238,8 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
 
     // Formatar a data pro formato YYYY-MM-DD (ajuste de timezone se necessário)
     const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(selectedDate.getDate()).padStart(2, "0");
     const dateStr = `${year}-${month}-${day}`;
 
     async function fetchTimes() {
@@ -260,14 +264,14 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col max-w-3xl mx-auto bg-white rounded-lg space-y-3"
+        className="flex flex-col mx-auto bg-white rounded-lg space-y-3"
       >
         <ConnectGoogleButton />
 
         <FormInput name="titulo" label="Titulo" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <input type="hidden" {...register('dataHora' as any)} />
+          <input type="hidden" {...register("dataHora" as any)} />
 
           <FormSelect
             name="tipoEvento"
@@ -289,7 +293,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
           <FormSelect
             name="localEvento"
             label="Tipo de reunião"
-            onChange={e => {
+            onChange={(e) => {
               setLocalEvento(e.target.value);
             }}
           >
@@ -321,17 +325,17 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
             }
             footer={
               selectedDate
-                ? `Selecionado: ${selectedDate.toLocaleDateString('pt-BR')} ${
-                    selectedTime?.toString() ?? ''
+                ? `Selecionado: ${selectedDate.toLocaleDateString("pt-BR")} ${
+                    selectedTime?.toString() ?? ""
                   }`
-                : 'Data não selecionada'
+                : "Data não selecionada"
             }
           />
 
           <div className="flex flex-col gap-1 justify-center items-center">
             <div
               className="w-32 max-h-48 overflow-y-auto border border-cyan-200 rounded shadow-inner flex flex-col items-center p-2"
-              style={{ minWidth: '8rem' }}
+              style={{ minWidth: "8rem" }}
             >
               <p className="text-primary">Horarios</p>
               {loadingTimes && (
@@ -344,14 +348,14 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
               )}
               {availableTimes &&
                 !loadingTimes &&
-                availableTimes.map(times => {
+                availableTimes.map((times) => {
                   return (
                     <button
                       key={times}
                       className={`p-1 rounded cursor-pointer w-full mb-1 ${
-                        selectedTime === times ? 'bg-cyan-300' : 'bg-cyan-100'
+                        selectedTime === times ? "bg-cyan-300" : "bg-cyan-100"
                       }`}
-                      onClick={e => handleFullDateTime(times, e)}
+                      onClick={(e) => handleFullDateTime(times, e)}
                     >
                       {times}
                     </button>
@@ -370,7 +374,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
           ></ErrorMessage>
         </Card>
 
-        {localEvento === 'PRESENCIAL' && (
+        {localEvento === "PRESENCIAL" && (
           <LocalizacaoForm namePrefix="localizacao" />
         )}
 
@@ -417,7 +421,7 @@ export const AgendaForm = ({ onSuccess, initialValues }: AgendaFormProps) => {
           className="w-full bg-blue-600 hover:bg-blue-700 text-black font-semibold py-3 rounded-md transition-colors"
           disabled={loadingSubmit}
         >
-          {initialValues ? 'Salvar Alterações' : 'Cadastrar Agenda'}
+          {initialValues ? "Salvar Alterações" : "Cadastrar Agenda"}
         </PrimaryButton>
       </form>
 

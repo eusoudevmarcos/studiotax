@@ -26,23 +26,21 @@ interface AgendaVaga {
   link?: string;
   tipoEvento: string;
   localizacao?: Localizacao;
-  vagaId?: string;
   etapaAtual?: EtapaAtual;
+  nome: string;
+  titulo: string;
 }
 
 function normalizarTable(agendas: AgendaVaga[]) {
   return agendas.map((a) => ({
     id: a.id,
-    dataHora: a.dataHora ? new Date(a.dataHora).toLocaleString("pt-BR") : "-",
+    dataHora: a.dataHora ? a.dataHora : "-",
     tipoEvento: a.tipoEvento,
     link: a.link ?? "-",
-    // localizacao: a.localizacao
-    //   ? `${a.localizacao.logradouro ?? '-'}, ${a.localizacao.cidade ?? '-'} - ${
-    //       a.localizacao.uf ?? '-'
-    //     }`
-    //   : '-',
     etapa: a.etapaAtual?.nome ?? "-",
     tipoEtapa: a.etapaAtual?.tipo ?? "-",
+    nome: a.nome ?? "-",
+    titulo: a.titulo ?? "-",
   }));
 }
 
@@ -120,14 +118,16 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
   const dadosFiltrados = useMemo(() => {
     const s = search.toLowerCase();
     return dadosTabela.filter((a: AgendaVaga) =>
-      [a.dataHora, a.tipoEvento, a.link, a.localizacao]
+      [a.dataHora, a.tipoEvento, a.link, a.localizacao, a.nome, a.titulo]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(s)),
     );
   }, [dadosTabela, search]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: TableColumn<any>[] = [
+    { label: "Criado Por", key: "nome" },
+    { label: "Titulo", key: "titulo" },
     { label: "Data e Hora", key: "dataHora" },
     { label: "Evento", key: "tipoEvento" },
     {
@@ -140,6 +140,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="underline text-blue-600"
+            onClick={(e) => e.stopPropagation()}
           >
             Ir para Google Agenda
           </a>
@@ -150,10 +151,10 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
     // { label: 'Etapa', key: 'etapa' },
   ];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onRowClick = (row: any) => {
-      router.push(`/agenda/${row.id}`);
-    };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onRowClick = (row: any) => {
+    router.push(`/agenda/${row.id}`);
+  };
 
   return (
     <Card noShadow>

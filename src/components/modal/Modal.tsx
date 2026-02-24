@@ -1,11 +1,11 @@
 // src/components/Modal.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 interface ModalProps {
   isOpen: boolean;
   onClose?: (open: boolean) => void;
   children: React.ReactNode;
-  title?: string;
+  title?: string | React.ReactNode;
   backdropClose?: boolean;
   fit?: boolean;
   classNameBody?: string;
@@ -40,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const handleBackdropClick = (
-    _e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    _e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     // e.preventDefault();
     // e.stopPropagation();
@@ -78,17 +78,21 @@ const Modal: React.FC<ModalProps> = ({
       ref={modalRef}
       onClick={handleBackdropClick}
       className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-9999 p-2 transition-opacity duration-100 bg-[#00000020] ${
-        visible ? 'opacity-100' : 'opacity-0'
+        visible ? "opacity-100" : "opacity-0"
       }`}
     >
       <div
         ref={containerRef}
         className={`max-h-fit bg-white shadow-md relative rounded-2xl transition-transform duration-200
-          ${!fit && 'w-full max-w-4xl'}
-          ${visible ? 'scale-100' : 'scale-95'}`}
+          ${!fit && "w-full max-w-4xl"}
+          ${visible ? "scale-100" : "scale-95"}`}
       >
         <div className="flex justify-between items-center px-6 py-3  text-black bg-primary gap-4 rounded-t-2xl">
-          {title && <h3 className="text-xl font-semibold ">{title}</h3>}
+          {title && (
+            <h3 className="text-xl font-semibold ">
+              {typeof title === "string" ? title : title}
+            </h3>
+          )}
           <button
             onClick={handleClose}
             className="text-black hover:text-gray-700 text-2xl font-bold ml-auto cursor-pointer"
