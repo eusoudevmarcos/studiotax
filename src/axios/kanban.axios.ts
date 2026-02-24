@@ -39,24 +39,24 @@ import {
   etiquetaQuadroSchema,
   quadroCompletoSchema,
   quadroKanbanSchema,
-  vinculoCardSchema
-} from '@/schemas/kanban.schema';
-import { KanbanErrorCode, createKanbanError } from '@/types/kanban.type';
-import { z } from 'zod';
-import api from '.';
+  vinculoCardSchema,
+} from "@/schemas/kanban.schema";
+import { KanbanErrorCode, createKanbanError } from "@/types/kanban.type";
+import { z } from "zod";
+import api from ".";
 
 // ===================== HELPER PARA VALIDAÇÃO =====================
 function validateResponse<T>(
   data: unknown,
   schema: z.ZodSchema<T>,
-  errorMessage: string = 'Resposta da API inválida'
+  errorMessage: string = "Resposta da API inválida",
 ): T {
   const result = schema.safeParse(data);
   if (!result.success) {
     // Formatar erros do Zod de forma mais legível
     // ZodError usa 'issues' ao invés de 'errors'
-    const errors = result.error.issues.map(err => ({
-      path: err.path.join('.'),
+    const errors = result.error.issues.map((err) => ({
+      path: err.path.join("."),
       message: err.message,
       code: err.code,
       expected: (err as any).expected,
@@ -66,15 +66,15 @@ function validateResponse<T>(
     console.error(`${errorMessage}:`, errors);
 
     // Criar mensagem de erro mais descritiva
-    const errorMessages = errors.map(
-      err => `${err.path}: ${err.message}`
-    ).join('; ');
+    const errorMessages = errors
+      .map((err) => `${err.path}: ${err.message}`)
+      .join("; ");
 
     throw createKanbanError(
       `${errorMessage}: ${errorMessages}`,
       KanbanErrorCode.VALIDATION_ERROR,
       undefined,
-      errors
+      errors,
     );
   }
   return result.data;
@@ -82,69 +82,69 @@ function validateResponse<T>(
 
 // ===================== ESPAÇO DE TRABALHO =====================
 export const criarEspacoTrabalho = async (
-  data: EspacoTrabalhoInput
+  data: EspacoTrabalhoInput,
 ): Promise<EspacoTrabalhoInput> => {
   try {
     const response = await api.post(
-      '/api/externalWithAuth/kanban/espaco-trabalho',
-      data
+      "/api/externalWithAuth/kanban/espaco-trabalho",
+      data,
     );
     return validateResponse(
       response.data,
       espacoTrabalhoSchema,
-      'Erro ao criar espaço de trabalho'
+      "Erro ao criar espaço de trabalho",
     );
   } catch (error: any) {
     if (error.response?.status === 404) {
       throw createKanbanError(
-        'Espaço de trabalho não encontrado',
-        KanbanErrorCode.NOT_FOUND
+        "Espaço de trabalho não encontrado",
+        KanbanErrorCode.NOT_FOUND,
       );
     }
     if (error.response?.status === 401 || error.response?.status === 403) {
-      throw createKanbanError('Não autorizado', KanbanErrorCode.UNAUTHORIZED);
+      throw createKanbanError("Não autorizado", KanbanErrorCode.UNAUTHORIZED);
     }
     throw createKanbanError(
-      error.message || 'Erro ao criar espaço de trabalho',
+      error.message || "Erro ao criar espaço de trabalho",
       KanbanErrorCode.INTERNAL_ERROR,
       undefined,
-      error.response?.data
+      error.response?.data,
     );
   }
 };
 
 export const listarEspacosTrabalho = async (): Promise<EspacoTrabalho[]> => {
   const response = await api.get(
-    '/api/externalWithAuth/kanban/espaco-trabalho'
+    "/api/externalWithAuth/kanban/espaco-trabalho",
   );
   return z.array(espacoTrabalhoSchema).parse(response.data);
 };
 
 export const obterEspacoTrabalhoPorId = async (
-  id: string
+  id: string,
 ): Promise<EspacoTrabalhoComQuadros> => {
   const response = await api.get(
-    `/api/externalWithAuth/kanban/espaco-trabalho/${id}`
+    `/api/externalWithAuth/kanban/espaco-trabalho/${id}`,
   );
   return validateResponse(
     response.data,
     espacoTrabalhoComQuadrosSchema,
-    'Erro ao obter espaço de trabalho'
+    "Erro ao obter espaço de trabalho",
   );
 };
 
 export const atualizarEspacoTrabalho = async (
   id: string,
-  data: Partial<EspacoTrabalhoInput>
+  data: Partial<EspacoTrabalhoInput>,
 ): Promise<EspacoTrabalhoInput> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/espaco-trabalho/${id}`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     espacoTrabalhoInputSchema,
-    'Erro ao atualizar espaço de trabalho'
+    "Erro ao atualizar espaço de trabalho",
   );
 };
 
@@ -156,13 +156,13 @@ export const deletarEspacoTrabalho = async (id: string): Promise<void> => {
 
 // ===================== QUADRO KANBAN =====================
 export const criarQuadroKanban = async (
-  data: QuadroKanbanInput
+  data: QuadroKanbanInput,
 ): Promise<QuadroKanban> => {
-  const response = await api.post('/api/externalWithAuth/kanban/quadro', data);
+  const response = await api.post("/api/externalWithAuth/kanban/quadro", data);
   return validateResponse(
     response.data,
     quadroKanbanSchema,
-    'Erro ao criar quadro'
+    "Erro ao criar quadro",
   );
 };
 
@@ -171,13 +171,13 @@ export interface KanbanFiltrosInput {
   titulo?: string;
   descricao?: string;
   membroIds?: string[];
-  ordenarPor?: 'criadoEm' | 'titulo' | 'ordem';
-  ordemDirecao?: 'asc' | 'desc';
+  ordenarPor?: "criadoEm" | "titulo" | "ordem";
+  ordemDirecao?: "asc" | "desc";
 }
 
 export const obterQuadroCompleto = async (
   id: string,
-  filtros?: KanbanFiltrosInput
+  filtros?: KanbanFiltrosInput,
 ): Promise<QuadroCompleto> => {
   const params: Record<string, string> = {};
 
@@ -192,7 +192,7 @@ export const obterQuadroCompleto = async (
       params.descricao = filtros.descricao;
     }
     if (filtros.membroIds && filtros.membroIds.length > 0) {
-      params.membroIds = filtros.membroIds.join(',');
+      params.membroIds = filtros.membroIds.join(",");
     }
     if (filtros.ordenarPor) {
       params.ordenarPor = filtros.ordenarPor;
@@ -208,23 +208,22 @@ export const obterQuadroCompleto = async (
   return validateResponse(
     response.data,
     quadroCompletoSchema,
-    'Erro ao obter quadro completo'
+    "Erro ao obter quadro completo",
   );
 };
 
-
 export const atualizarQuadroKanban = async (
   id: string,
-  data: Partial<QuadroKanbanInput>
+  data: Partial<QuadroKanbanInput>,
 ): Promise<QuadroKanban> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/quadro/${id}`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     quadroKanbanSchema,
-    'Erro ao atualizar quadro'
+    "Erro ao atualizar quadro",
   );
 };
 
@@ -236,13 +235,13 @@ export const deletarQuadroKanban = async (id: string): Promise<void> => {
 
 // ===================== COLUNA KANBAN =====================
 export const criarColunaKanban = async (
-  data: ColunaKanbanInput
+  data: ColunaKanbanInput,
 ): Promise<ColunaKanban> => {
-  const response = await api.post('/api/externalWithAuth/kanban/coluna', data);
+  const response = await api.post("/api/externalWithAuth/kanban/coluna", data);
   return validateResponse(
     response.data,
     colunaKanbanSchema,
-    'Erro ao criar coluna'
+    "Erro ao criar coluna",
   );
 };
 
@@ -251,43 +250,28 @@ export const moverColuna = async (data: {
   novaPosicao: number;
 }): Promise<ColunaKanban> => {
   const response = await api.post(
-    '/api/externalWithAuth/kanban/coluna/mover',
-    data
+    "/api/externalWithAuth/kanban/coluna/mover",
+    data,
   );
   return validateResponse(
     response.data,
     colunaKanbanSchema,
-    'Erro ao mover coluna'
-  );
-};
-
-export const reordenarColunaCards = async (
-  colunaId: string,
-  cardIds: string[]
-): Promise<ColunaKanban> => {
-  const response = await api.post(
-    `/api/externalWithAuth/kanban/coluna/${colunaId}/reordenar-cards`,
-    { cardIds }
-  );
-  return validateResponse(
-    response.data,
-    colunaKanbanSchema,
-    'Erro ao reordenar cards'
+    "Erro ao mover coluna",
   );
 };
 
 export const atualizarColunaKanban = async (
   id: string,
-  data: Partial<ColunaKanbanInput>
+  data: Partial<ColunaKanbanInput>,
 ): Promise<ColunaKanban> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/coluna/${id}`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     colunaKanbanSchema,
-    'Erro ao atualizar coluna'
+    "Erro ao atualizar coluna",
   );
 };
 
@@ -299,40 +283,40 @@ export const deletarColunaKanban = async (id: string): Promise<void> => {
 
 // ===================== CARD KANBAN =====================
 export const criarCardKanban = async (
-  data: CardKanbanInput
+  data: CardKanbanInput,
 ): Promise<CardKanban> => {
-  const response = await api.post('/api/externalWithAuth/kanban/card', data);
+  const response = await api.post("/api/externalWithAuth/kanban/card", data);
   return validateResponse(
     response.data,
     cardKanbanSchema,
-    'Erro ao criar card'
+    "Erro ao criar card",
   );
 };
 
 export const moverCard = async (data: MoverCardInput): Promise<CardKanban> => {
   const response = await api.post(
-    '/api/externalWithAuth/kanban/card/mover',
-    data
+    "/api/externalWithAuth/kanban/card/mover",
+    data,
   );
   return validateResponse(
     response.data,
     cardKanbanSchema,
-    'Erro ao mover card'
+    "Erro ao mover card",
   );
 };
 
 export const atualizarCardKanban = async (
   id: string,
-  data: Partial<CardKanbanInput>
+  data: Partial<CardKanbanInput>,
 ): Promise<CardKanban> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/card/${id}`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     cardKanbanSchema,
-    'Erro ao atualizar card'
+    "Erro ao atualizar card",
   );
 };
 
@@ -342,50 +326,48 @@ export const deletarCardKanban = async (id: string): Promise<void> => {
   });
 };
 
-export const duplicarCardKanban = async (
-  id: string
-): Promise<CardKanban> => {
+export const duplicarCardKanban = async (id: string): Promise<CardKanban> => {
   const response = await api.post(
     `/api/externalWithAuth/kanban/card/${id}/duplicar`,
-    {}
+    {},
   );
 
   return validateResponse(
     response.data,
     cardKanbanSchema,
-    'Erro ao duplicar card'
+    "Erro ao duplicar card",
   );
 };
 
 // ===================== ETIQUETAS =====================
 
 export const listarEtiquetasDoQuadro = async (
-  quadroId: string
+  quadroId: string,
 ): Promise<EtiquetaQuadro[]> => {
   const response = await api.get(
-    `/api/externalWithAuth/kanban/quadro/${quadroId}/etiquetas`
+    `/api/externalWithAuth/kanban/quadro/${quadroId}/etiquetas`,
   );
   return z.array(etiquetaQuadroSchema).parse(response.data);
 };
 
 export const criarEtiquetaQuadro = async (
   quadroId: string,
-  data: { nome: string; cor: string; ordem?: number }
+  data: { nome: string; cor: string; ordem?: number },
 ): Promise<EtiquetaQuadro> => {
   const response = await api.post(
     `/api/externalWithAuth/kanban/quadro/${quadroId}/etiqueta`,
-    data
+    data,
   );
   return etiquetaQuadroSchema.parse(response.data);
 };
 
 export const atualizarEtiquetaQuadro = async (
   id: string,
-  data: Partial<{ nome: string; cor: string; ordem?: number }>
+  data: Partial<{ nome: string; cor: string; ordem?: number }>,
 ): Promise<EtiquetaQuadro> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/etiqueta/${id}`,
-    data
+    data,
   );
   return etiquetaQuadroSchema.parse(response.data);
 };
@@ -398,11 +380,11 @@ export const deletarEtiquetaQuadro = async (id: string): Promise<void> => {
 
 export const atualizarEtiquetasDoCard = async (
   cardId: string,
-  etiquetaIds: string[]
+  etiquetaIds: string[],
 ): Promise<CardKanban> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/card/${cardId}/etiquetas`,
-    { etiquetaIds }
+    { etiquetaIds },
   );
   // O backend retorna o card com apenas as etiquetas; fazemos parse parcial e mesclamos depois se necessário
   return validateResponse(
@@ -410,7 +392,7 @@ export const atualizarEtiquetasDoCard = async (
     cardKanbanSchema.extend({
       etiquetas: z.array(cardEtiquetaSchema).optional(),
     }),
-    'Erro ao atualizar etiquetas do card'
+    "Erro ao atualizar etiquetas do card",
   );
 };
 
@@ -423,20 +405,20 @@ export const upsertCardData = async (
     dataEntrega?: string | Date;
     recorrencia?: string;
     lembreteMinutosAntes?: number | null;
-  }
+  },
 ): Promise<z.infer<typeof cardKanbanDataSchema>> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/card/${cardId}/datas`,
-    data
+    data,
   );
   return cardKanbanDataSchema.parse(response.data);
 };
 
 export const obterCardData = async (
-  cardId: string
+  cardId: string,
 ): Promise<z.infer<typeof cardKanbanDataSchema> | null> => {
   const response = await api.get(
-    `/api/externalWithAuth/kanban/card/${cardId}/datas`
+    `/api/externalWithAuth/kanban/card/${cardId}/datas`,
   );
   if (!response.data) return null;
   return cardKanbanDataSchema.parse(response.data);
@@ -446,22 +428,22 @@ export const obterCardData = async (
 
 export const criarChecklist = async (
   cardId: string,
-  data: { titulo: string; ordem?: number }
+  data: { titulo: string; ordem?: number },
 ): Promise<ChecklistCard> => {
   const response = await api.post(
     `/api/externalWithAuth/kanban/card/${cardId}/checklist`,
-    data
+    data,
   );
   return checklistCardSchema.parse(response.data);
 };
 
 export const atualizarChecklist = async (
   id: string,
-  data: Partial<{ titulo: string; ordem?: number }>
+  data: Partial<{ titulo: string; ordem?: number }>,
 ): Promise<ChecklistCard> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/checklist/${id}`,
-    data
+    data,
   );
   return checklistCardSchema.parse(response.data);
 };
@@ -474,33 +456,37 @@ export const deletarChecklist = async (id: string): Promise<void> => {
 
 export const criarChecklistItem = async (
   checklistId: string,
-  data: { descricao: string; concluido?: boolean; ordem?: number }
+  data: { descricao: string; concluido?: boolean; ordem?: number },
 ): Promise<ChecklistItem> => {
   const response = await api.post(
     `/api/externalWithAuth/kanban/checklist/${checklistId}/item`,
-    data
+    data,
   );
   return checklistItemSchema.parse(response.data);
 };
 
 export const atualizarChecklistItem = async (
   id: string,
-  data: Partial<{ descricao: string; concluido?: boolean; ordem?: number }>
+  data: Partial<{ descricao: string; concluido?: boolean; ordem?: number }>,
 ): Promise<ChecklistItem> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/checklist-item/${id}`,
-    data
+    data,
   );
   return checklistItemSchema.parse(response.data);
 };
 
-export const reordenarChecklistItens = async (
+export const moverChecklist = async (
   checklistId: string,
-  itens: { id: string; ordem: number }[]
+  data: {
+    itemId: string;
+    checklistPrevId: string | null;
+    checklistNextId: string | null;
+  },
 ): Promise<ChecklistCard> => {
   const response = await api.post(
-    `/api/externalWithAuth/kanban/checklist/${checklistId}/reordenar-itens`,
-    { itens }
+    `/api/externalWithAuth/kanban/checklist/${checklistId}/mover-items`,
+    data,
   );
   return checklistCardSchema.parse(response.data);
 };
@@ -513,16 +499,16 @@ export const deletarChecklistItem = async (id: string): Promise<void> => {
 
 export const toggleChecklistCompleto = async (
   cardId: string,
-  completo: boolean
+  completo: boolean,
 ): Promise<CardKanban> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/card/${cardId}/checklist-completo`,
-    { completo }
+    { completo },
   );
   return validateResponse(
     response.data,
     cardKanbanSchema,
-    'Erro ao atualizar status de checklist do card'
+    "Erro ao atualizar status de checklist do card",
   );
 };
 
@@ -530,7 +516,7 @@ export const toggleChecklistCompleto = async (
 
 export const adicionarMembroAoCard = async (
   cardId: string,
-  usuarioSistemaId: string
+  usuarioSistemaId: string,
 ): Promise<void> => {
   await api.post(`/api/externalWithAuth/kanban/card/${cardId}/membro`, {
     usuarioSistemaId,
@@ -539,25 +525,25 @@ export const adicionarMembroAoCard = async (
 
 export const removerMembroDoCard = async (
   cardId: string,
-  usuarioSistemaId: string
+  usuarioSistemaId: string,
 ): Promise<void> => {
   await api.delete(
     `/api/externalWithAuth/kanban/card/${cardId}/membro/${usuarioSistemaId}`,
     {
       data: { cardId, usuarioSistemaId },
-    }
+    },
   );
 };
 
 // ===================== VÍNCULOS =====================
 export const vincularEntidade = async (
-  data: VincularEntidadeInput
+  data: VincularEntidadeInput,
 ): Promise<VinculoCard> => {
-  const response = await api.post('/api/externalWithAuth/kanban/vinculo', data);
+  const response = await api.post("/api/externalWithAuth/kanban/vinculo", data);
   return validateResponse(
     response.data,
     vinculoCardSchema,
-    'Erro ao vincular entidade'
+    "Erro ao vincular entidade",
   );
 };
 
@@ -568,10 +554,10 @@ export const removerVinculo = async (id: string): Promise<void> => {
 };
 
 export const listarVinculosDoCard = async (
-  cardId: string
+  cardId: string,
 ): Promise<VinculoCard[]> => {
   const response = await api.get(
-    `/api/externalWithAuth/kanban/card/${cardId}/vinculos`
+    `/api/externalWithAuth/kanban/card/${cardId}/vinculos`,
   );
   return z.array(vinculoCardSchema).parse(response.data);
 };
@@ -579,26 +565,24 @@ export const listarVinculosDoCard = async (
 // ===================== AUTCOMPLETE =====================
 export const buscarEntidadesParaAutocomplete = async (
   tipo: TipoEntidadeEnum,
-  search: string = '',
-  limit: number = 10
+  search: string = "",
+  limit: number = 10,
 ): Promise<
-  | CandidatoAutocomplete[]
-  | ClienteAutocomplete[]
-  | CompromissoAutocomplete[]
+  CandidatoAutocomplete[] | ClienteAutocomplete[] | CompromissoAutocomplete[]
 > => {
   const response = await api.get(
     `/api/externalWithAuth/kanban/autocomplete/${tipo}`,
     {
       params: { search, limit },
-    }
+    },
   );
 
   switch (tipo) {
-    case 'CANDIDATO':
+    case "CANDIDATO":
       return z.array(candidatoAutocompleteSchema).parse(response.data);
-    case 'CLIENTE':
+    case "CLIENTE":
       return z.array(clienteAutocompleteSchema).parse(response.data);
-    case 'COMPROMISSO':
+    case "COMPROMISSO":
       return z.array(compromissoAutocompleteSchema).parse(response.data);
     default:
       return [];
@@ -608,40 +592,40 @@ export const buscarEntidadesParaAutocomplete = async (
 // ===================== COMENTÁRIOS =====================
 export const criarComentarioCard = async (
   cardId: string,
-  data: Omit<ComentarioCardInput, 'cardKanbanId'>
+  data: Omit<ComentarioCardInput, "cardKanbanId">,
 ): Promise<ComentarioCard> => {
   const response = await api.post(
     `/api/externalWithAuth/kanban/card/${cardId}/comentario`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     comentarioCardSchema,
-    'Erro ao criar comentário'
+    "Erro ao criar comentário",
   );
 };
 
 export const listarComentariosDoCard = async (
-  cardId: string
+  cardId: string,
 ): Promise<ComentarioCard[]> => {
   const response = await api.get(
-    `/api/externalWithAuth/kanban/card/${cardId}/comentarios`
+    `/api/externalWithAuth/kanban/card/${cardId}/comentarios`,
   );
   return z.array(comentarioCardSchema).parse(response.data);
 };
 
 export const atualizarComentarioCard = async (
   id: string,
-  data: Partial<Omit<ComentarioCardInput, 'cardKanbanId'>>
+  data: Partial<Omit<ComentarioCardInput, "cardKanbanId">>,
 ): Promise<ComentarioCard> => {
   const response = await api.put(
     `/api/externalWithAuth/kanban/comentario/${id}`,
-    data
+    data,
   );
   return validateResponse(
     response.data,
     comentarioCardSchema,
-    'Erro ao atualizar comentário'
+    "Erro ao atualizar comentário",
   );
 };
 
@@ -654,14 +638,14 @@ export const deletarComentarioCard = async (id: string): Promise<void> => {
 // ===================== BUSCA DE USUÁRIOS DO SISTEMA =====================
 
 export const buscarUsuariosSistema = async (
-  search: string = '',
-  limit: number = 10
+  search: string = "",
+  limit: number = 10,
 ): Promise<UsuarioSistema[]> => {
   const response = await api.get(
     `/api/externalWithAuth/kanban/usuarios-sistema`,
     {
       params: { search, limit },
-    }
+    },
   );
   // Criar um schema específico para a resposta da API de busca de usuários
   // que inclui campos adicionais (id em pessoa e empresa)
