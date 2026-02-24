@@ -1,11 +1,17 @@
 // src/components/input/FormInput.tsx
-import { FormInputControllerField, FormInputOnChange, FormInputProps, InputElementProps, MaskProps } from '@/types/formInput.type';
-import { getError } from '@/utils/getError';
-import React, { useMemo, useState } from 'react';
-import { Controller, FieldValues, useFormContext } from 'react-hook-form';
-import { IMaskInput } from 'react-imask';
-import { Container } from './Container';
-import { ErrorMessage } from './ErrorMessage';
+import {
+  FormInputControllerField,
+  FormInputOnChange,
+  FormInputProps,
+  InputElementProps,
+  MaskProps,
+} from "@/types/formInput.type";
+import { getError } from "@/utils/getError";
+import React, { useMemo, useState } from "react";
+import { Controller, FieldValues, useFormContext } from "react-hook-form";
+import { IMaskInput } from "react-imask";
+import { Container } from "./Container";
+import { ErrorMessage } from "./ErrorMessage";
 
 export function FormInput<T extends FieldValues>({
   name,
@@ -13,7 +19,7 @@ export function FormInput<T extends FieldValues>({
   maskProps,
   label,
   placeholder,
-  type = 'text',
+  type = "text",
   value: valueProp,
   onChange,
   onFocus,
@@ -22,6 +28,7 @@ export function FormInput<T extends FieldValues>({
   errors: externalErrors,
   noControl = false,
   clear = false,
+  maxLength = 50,
   ...rest
 }: FormInputProps<T>) {
   const formContext = useFormContext<T>();
@@ -35,13 +42,13 @@ export function FormInput<T extends FieldValues>({
   const formValue = watch ? watch(name) : undefined;
 
   // Estado interno para fallback quando não está em modo controlado
-  const [internalValue, setInternalValue] = useState<string>(valueProp ?? '');
+  const [internalValue, setInternalValue] = useState<string>(valueProp ?? "");
 
   // Garantir sempre a fonte de valor correta no input
-  let inputValue = '';
+  let inputValue = "";
   if (control && !noControl) {
-    inputValue = formValue ?? '';
-  } else if (typeof valueProp !== 'undefined') {
+    inputValue = formValue ?? "";
+  } else if (typeof valueProp !== "undefined") {
     inputValue = valueProp;
   } else {
     inputValue = internalValue;
@@ -56,32 +63,32 @@ export function FormInput<T extends FieldValues>({
 
   const inputClassName = buildInputClasses(
     errorMessage ?? null,
-    otherInputProps?.className
+    otherInputProps?.className,
   );
 
   let isRequired = false;
-  if (typeof inputRequired !== 'undefined') {
+  if (typeof inputRequired !== "undefined") {
     isRequired = inputRequired === true;
   } else if (
     errors &&
     name in errors &&
     errors[name] &&
-    errors[name]?.type === 'required'
+    errors[name]?.type === "required"
   ) {
     isRequired = true;
-  } else if (typeof rest.required !== 'undefined') {
+  } else if (typeof rest.required !== "undefined") {
     isRequired = rest.required === true;
   }
 
   // Memo input for mask/normal
   const MemoInputElement = useMemo(() => {
-    type MemoInputProps = Omit<InputElementProps, 'onChange'> & {
+    type MemoInputProps = Omit<InputElementProps, "onChange"> & {
       onChange: (value: string | React.ChangeEvent<HTMLInputElement>) => void;
     };
     const Component = React.forwardRef<HTMLInputElement, MemoInputProps>(
       (
         { maskProps, onChange, onKeyDown, onFocus, required, ...props },
-        ref
+        ref,
       ) => {
         if (maskProps?.mask) {
           const maskInputProps = {
@@ -90,7 +97,7 @@ export function FormInput<T extends FieldValues>({
             onFocus,
             onKeyDown,
             required,
-            autoComplete: 'off',
+            autoComplete: "off",
             name: props.name,
             ...maskProps,
             ...props,
@@ -100,7 +107,7 @@ export function FormInput<T extends FieldValues>({
         return (
           <input
             ref={ref}
-            onChange={e => onChange(e.target.value)}
+            onChange={(e) => onChange(e.target.value)}
             onFocus={onFocus}
             onKeyDown={onKeyDown}
             autoComplete="off"
@@ -109,9 +116,9 @@ export function FormInput<T extends FieldValues>({
             {...props}
           />
         );
-      }
+      },
     );
-    Component.displayName = 'MemoInputElement';
+    Component.displayName = "MemoInputElement";
     return Component;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maskProps?.mask, name]);
@@ -119,13 +126,13 @@ export function FormInput<T extends FieldValues>({
   // Função para renderizar o input
   const renderInput = (field?: FormInputControllerField) => {
     const processedValueFromChange = (
-      newValue: string | React.ChangeEvent<HTMLInputElement>
+      newValue: string | React.ChangeEvent<HTMLInputElement>,
     ): string =>
-      typeof newValue === 'string'
-        ? newValue
-        : (newValue?.target?.value ?? '');
+      typeof newValue === "string" ? newValue : (newValue?.target?.value ?? "");
 
-    const handleChange = (newValue: string | React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (
+      newValue: string | React.ChangeEvent<HTMLInputElement>,
+    ) => {
       const processedValue = processedValueFromChange(newValue);
 
       if (field?.onChange) {
@@ -152,7 +159,7 @@ export function FormInput<T extends FieldValues>({
         type={type}
         className={inputClassName}
         placeholder={placeholder}
-        value={field ? field.value ?? '' : inputValue ?? ''}
+        value={field ? (field.value ?? "") : (inputValue ?? "")}
         onChange={handleChange}
         onBlur={field?.onBlur}
         onFocus={handleFocus}
@@ -161,6 +168,7 @@ export function FormInput<T extends FieldValues>({
         required={isRequired}
         name={name.toString()}
         {...otherInputProps}
+        maxLength={maxLength ?? otherInputProps.maxLength}
       />
     );
   };
@@ -168,16 +176,16 @@ export function FormInput<T extends FieldValues>({
   // Função para limpar
   const handleClear = () => {
     if (setValue && control && !noControl) {
-      setValue(name, '' as never, {
+      setValue(name, "" as never, {
         shouldDirty: true,
         shouldValidate: true,
       });
     }
     if (!control || noControl) {
-      setInternalValue('');
+      setInternalValue("");
     }
     if (onChange) {
-      onChange('');
+      onChange("");
     }
   };
 
@@ -208,8 +216,14 @@ export function FormInput<T extends FieldValues>({
   );
 }
 
-const ClearButton = ({ value, onClear }: { value: string; onClear: () => void }) =>
-  value && String(value).trim() !== '' ? (
+const ClearButton = ({
+  value,
+  onClear,
+}: {
+  value: string;
+  onClear: () => void;
+}) =>
+  value && String(value).trim() !== "" ? (
     <button
       type="button"
       onClick={onClear}
@@ -222,10 +236,10 @@ const ClearButton = ({ value, onClear }: { value: string; onClear: () => void })
 
 function buildInputClasses(
   errorMessage: string | null,
-  customClassName?: string
+  customClassName?: string,
 ) {
   const base =
-    'shadow appearance-none border rounded py-2 px-3 text-gray-700 w-full leading-tight focus:outline-none focus:shadow-outline transition-all duration-200 disabled:opacity-90 focus:border-primary placeholder:text-md min-h-[38px]';
-  const errorClass = errorMessage ? 'border-red-500' : '';
-  return [base, errorClass, customClassName].filter(Boolean).join(' ');
+    "shadow appearance-none border rounded py-2 px-3 text-gray-700 w-full leading-tight focus:outline-none focus:shadow-outline transition-all duration-200 disabled:opacity-90 focus:border-primary placeholder:text-md min-h-[38px]";
+  const errorClass = errorMessage ? "border-red-500" : "";
+  return [base, errorClass, customClassName].filter(Boolean).join(" ");
 }

@@ -35,6 +35,7 @@ export type CommonProps<T extends FieldValues> = {
   noControl?: boolean;
   onFocus?: FormInputOnFocus;
   required?: boolean;
+  maxLength?: number;
 };
 
 export type FormInputProps<T extends FieldValues> = CommonProps<T> & {

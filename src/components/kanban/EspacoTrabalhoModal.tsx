@@ -4,7 +4,7 @@ import {
 } from "@/schemas/kanban.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { PrimaryButton } from "../button/PrimaryButton";
 import { FormInput } from "../input/FormInput";
 import Modal from "../modal/Modal";
@@ -37,6 +37,7 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<EspacoTrabalhoInput>({
     resolver: zodResolver(espacoTrabalhoInputSchema),
     defaultValues: initialValues || { nome: "" },
@@ -70,6 +71,8 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
     }
   };
 
+  const nome = watch("nome");
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-2">
@@ -79,6 +82,7 @@ export const EspacoTrabalhoModal: React.FC<EspacoTrabalhoModalProps> = ({
           control={control}
           errors={errors}
         />
+        <p className="text-sm text-gray-500">caracteres: {nome.length} / 50</p>
         <div className="flex justify-end gap-2 pt-4">
           {espacoId && onDelete && (
             <PrimaryButton
