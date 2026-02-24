@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  atualizarCardKanban,
   atualizarEtiquetasDoCard,
   KanbanFiltrosInput,
   moverCard,
@@ -7,10 +8,16 @@ import {
   obterQuadroCompleto,
   toggleChecklistCompleto,
   upsertCardData,
-} from '@/axios/kanban.axios';
-import { QuadroCompleto } from '@/schemas/kanban.schema';
-import { arrayMove } from '@dnd-kit/sortable';
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+} from "@/axios/kanban.axios";
+import { QuadroCompleto } from "@/schemas/kanban.schema";
+import { arrayMove } from "@dnd-kit/sortable";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface KanbanContextType {
   quadro: QuadroCompleto | null;
@@ -27,14 +34,17 @@ interface KanbanContextType {
       dataEntrega?: string | Date;
       recorrencia?: string;
       lembreteMinutosAntes?: number | null;
-    }
+    },
   ) => Promise<void>;
-  toggleCardChecklistCompleto: (cardId: string, completo: boolean) => Promise<void>;
+  toggleCardChecklistCompleto: (
+    cardId: string,
+    completo: boolean,
+  ) => Promise<void>;
   moveCard: (
     cardId: string,
     sourceColumnId: string,
     targetColumnId: string,
-    position: number
+    position: number,
   ) => Promise<void>;
   moveColumn: (columnId: string, newPosition: number) => Promise<void>;
   refreshQuadro: () => Promise<void>;
@@ -57,19 +67,22 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [filtros, setFiltros] = useState<KanbanFiltrosInput | null>(null);
 
-  const fetchQuadro = useCallback(async (id: string, filtrosParam?: KanbanFiltrosInput) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await obterQuadroCompleto(id, filtrosParam);
-      setQuadro(data);
-    } catch (err: any) {
-      console.log('Erro ao buscar quadro:', err);
-      setError(err.message || 'Erro ao carregar quadro');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchQuadro = useCallback(
+    async (id: string, filtrosParam?: KanbanFiltrosInput) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await obterQuadroCompleto(id, filtrosParam);
+        setQuadro(data);
+      } catch (err: any) {
+        console.log("Erro ao buscar quadro:", err);
+        setError(err.message || "Erro ao carregar quadro");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   const refreshQuadro = useCallback(async () => {
     if (quadroId) {
@@ -77,141 +90,154 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
     }
   }, [quadroId, fetchQuadro, filtros]);
 
+  // Nova versão: moveCardHandler ajustado para casar com o backend moverCard
   const moveCardHandler = useCallback(
     async (
       cardId: string,
       sourceColumnId: string,
       targetColumnId: string,
-      position: number
+      position: number,
     ) => {
       if (!quadro) return;
 
       // Salvar estado original para possível rollback
       const originalQuadro = quadro;
 
-      // Criar cópia profunda imutável do estado
+      // Cópia profunda do quadro
       const updatedQuadro: QuadroCompleto = {
         ...quadro,
-        colunas: quadro.colunas.map(col => ({
+        colunas: quadro.colunas.map((col) => ({
           ...col,
           cards: [...col.cards],
         })),
       };
 
       const sourceColumn = updatedQuadro.colunas.find(
-        col => col.id === sourceColumnId
+        (col) => col.id === sourceColumnId,
       );
       const targetColumn = updatedQuadro.colunas.find(
-        col => col.id === targetColumnId
+        (col) => col.id === targetColumnId,
       );
 
       if (!sourceColumn || !targetColumn) return;
 
-      const card = sourceColumn.cards.find(c => c.id === cardId);
+      const card = sourceColumn.cards.find((c) => c.id === cardId);
       if (!card) return;
 
-      // Ordenar cards por ordem descendente (maior ordem primeiro = último adicionado no topo)
+      // Ordenar cards das colunas por ordem descendente (maior ordem primeiro)
       const sortedSourceCards = [...sourceColumn.cards].sort(
-        (a, b) => b.ordem - a.ordem
+        (a, b) => b.ordem - a.ordem,
       );
       const sortedTargetCards = [...targetColumn.cards].sort(
-        (a, b) => b.ordem - a.ordem
+        (a, b) => b.ordem - a.ordem,
       );
 
-      // Se é a mesma coluna, usar arrayMove e atualizar apenas uma vez
       if (sourceColumnId === targetColumnId) {
-        const sourceIndex = sortedSourceCards.findIndex(c => c.id === cardId);
+        // Reordenar dentro da mesma coluna usando o método do backend (um único moverCard com novaPosicao)
+        const sourceIndex = sortedSourceCards.findIndex((c) => c.id === cardId);
         const newCards = arrayMove(sortedSourceCards, sourceIndex, position);
-        
-        // Atualizar ordem para todos os cards (ordem descendente: maior ordem primeiro)
-        // O array já está ordenado em ordem descendente, então precisamos inverter
+        // Otimismo para UI: atualizar ordem local
         const totalCards = newCards.length;
-        newCards.forEach((c, index) => {
-          c.ordem = totalCards - 1 - index; // Inverter para manter ordem descendente
-        });
-
-        // Criar novo estado atualizando apenas a coluna uma vez
+        const cardsWithNewOrder = newCards.map((c, index) => ({
+          ...c,
+          ordem: totalCards - 1 - index,
+        }));
         const finalQuadro: QuadroCompleto = {
           ...updatedQuadro,
-          colunas: updatedQuadro.colunas.map(col => {
-            if (col.id === sourceColumnId) {
-              return { ...col, cards: newCards };
-            }
-            return col;
-          }),
+          colunas: updatedQuadro.colunas.map((col) =>
+            col.id === sourceColumnId
+              ? { ...col, cards: cardsWithNewOrder }
+              : col,
+          ),
         };
-
-        // Atualizar estado local (optimistic update)
         setQuadro(finalQuadro);
 
-        // Call API
+        // Chamar moverCard somente para o card movido, com novaPosicao (backend calcula nova ordem)
         try {
           await moverCard({
             cardId,
-            novaColunaId: targetColumnId,
+            novaColunaId: sourceColumnId,
             novaPosicao: position,
           });
         } catch (err: any) {
-          console.log('Erro ao mover card:', err);
-          // Revert optimistic update
           setQuadro(originalQuadro);
+          console.log("Erro ao mover card:", err);
           throw err;
         }
         return;
       }
 
-      // Colunas diferentes - remover da origem e inserir no destino
-      const newSourceCards = sortedSourceCards.filter(c => c.id !== cardId);
-      const newTargetCards = [...sortedTargetCards];
+      // Movimento entre colunas
+      // Remove do source
+      const filteredSourceCards = sortedSourceCards.filter(
+        (c) => c.id !== cardId,
+      );
+      // Prepara nova lista destino com card inserido (no index position)
+      const newTargetCardsList = [...sortedTargetCards];
       const updatedCard = { ...card, colunaKanbanId: targetColumnId };
-      newTargetCards.splice(position, 0, updatedCard);
+      newTargetCardsList.splice(position, 0, updatedCard);
 
-      // Atualizar ordem para todos os cards na coluna de destino (ordem descendente)
-      const totalTargetCards = newTargetCards.length;
-      newTargetCards.forEach((c, index) => {
-        c.ordem = totalTargetCards - 1 - index; // Inverter para manter ordem descendente
-      });
+      // Ordem otimista para UI
+      const totalTargetCards = newTargetCardsList.length;
+      const targetCardsWithOrder = newTargetCardsList.map((c, index) => ({
+        ...c,
+        ordem: totalTargetCards - 1 - index,
+      }));
+      const totalSourceCards = filteredSourceCards.length;
+      const sourceCardsWithOrder = filteredSourceCards.map((c, index) => ({
+        ...c,
+        ordem: totalSourceCards - 1 - index,
+      }));
 
-      // Atualizar ordem para todos os cards na coluna de origem (ordem descendente)
-      const totalSourceCards = newSourceCards.length;
-      newSourceCards.forEach((c, index) => {
-        c.ordem = totalSourceCards - 1 - index; // Inverter para manter ordem descendente
-      });
-
-      // Criar novo estado com as colunas atualizadas
+      // Estado local otimista
       const finalQuadro: QuadroCompleto = {
         ...updatedQuadro,
-        colunas: updatedQuadro.colunas.map(col => {
-          if (col.id === sourceColumnId) {
-            return { ...col, cards: newSourceCards };
-          }
-          if (col.id === targetColumnId) {
-            return { ...col, cards: newTargetCards };
-          }
+        colunas: updatedQuadro.colunas.map((col) => {
+          if (col.id === sourceColumnId)
+            return { ...col, cards: sourceCardsWithOrder };
+          if (col.id === targetColumnId)
+            return { ...col, cards: targetCardsWithOrder };
           return col;
         }),
       };
-
-      // Atualizar estado local (optimistic update)
       setQuadro(finalQuadro);
 
-      // Call API
+      // Calcular ordemSuperior e ordemInferior no target de acordo com position
+      let ordemSuperior: number | undefined = undefined;
+      let ordemInferior: number | undefined = undefined;
+      if (newTargetCardsList.length === 1) {
+        // Virou o único card, backend já sabe tratar (vai usar 1000)
+      } else if (position === 0) {
+        // Topo: maior ordem (card acima, não existe cardPosterior aqui)
+        ordemSuperior = newTargetCardsList[1]?.ordem;
+        ordemInferior = undefined;
+      } else if (position === newTargetCardsList.length - 1) {
+        // Base: menor ordem (card abaixo, não existe cardAnterior aqui)
+        ordemSuperior = undefined;
+        ordemInferior =
+          newTargetCardsList[newTargetCardsList.length - 2]?.ordem;
+      } else {
+        // Entre dois cards (ordemSuperior = card acima, ordemInferior = card abaixo)
+        ordemSuperior = newTargetCardsList[position - 1]?.ordem;
+        ordemInferior = newTargetCardsList[position + 1]?.ordem;
+      }
+
+      // Chamar moverCard para o card movido
       try {
         await moverCard({
           cardId,
           novaColunaId: targetColumnId,
           novaPosicao: position,
+          ordemSuperior,
+          ordemInferior,
         });
-        // Não fazer refresh automático - o estado já está atualizado
-        // Apenas em caso de erro fazemos rollback
       } catch (err: any) {
-        console.log('Erro ao mover card:', err);
-        // Revert optimistic update
         setQuadro(originalQuadro);
+        console.log("Erro ao mover card:", err);
         throw err;
       }
     },
-    [quadro]
+    [quadro],
   );
 
   // Fetch quando quadroId ou filtros mudarem
@@ -231,16 +257,16 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       // Criar cópia profunda imutável do estado
       const updatedQuadro: QuadroCompleto = {
         ...quadro,
-        colunas: quadro.colunas.map(col => ({ ...col })),
+        colunas: quadro.colunas.map((col) => ({ ...col })),
       };
 
       // Ordenar colunas por ordem
       const sortedColumns = [...updatedQuadro.colunas].sort(
-        (a, b) => a.ordem - b.ordem
+        (a, b) => a.ordem - b.ordem,
       );
 
       // Encontrar índice da coluna atual
-      const currentIndex = sortedColumns.findIndex(c => c.id === columnId);
+      const currentIndex = sortedColumns.findIndex((c) => c.id === columnId);
       if (currentIndex === -1) return;
 
       // Usar arrayMove para calcular nova ordem
@@ -267,13 +293,13 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
           novaPosicao: newPosition,
         });
       } catch (err: any) {
-        console.log('Erro ao mover coluna:', err);
+        console.log("Erro ao mover coluna:", err);
         // Revert optimistic update
         setQuadro(originalQuadro);
         throw err;
       }
     },
-    [quadro]
+    [quadro],
   );
 
   const refreshAfterMutation = useCallback(async () => {
@@ -283,8 +309,8 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
         const data = await obterQuadroCompleto(quadroId, filtros || undefined);
         setQuadro(data);
       } catch (err: any) {
-        console.log('Erro ao atualizar quadro após mutação:', err);
-        setError(err.message || 'Erro ao atualizar quadro');
+        console.log("Erro ao atualizar quadro após mutação:", err);
+        setError(err.message || "Erro ao atualizar quadro");
         // Em caso de erro, tentar fazer um fetch completo
         await fetchQuadro(quadroId, filtros || undefined);
       }
@@ -296,7 +322,7 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       await atualizarEtiquetasDoCard(cardId, etiquetaIds);
       await refreshAfterMutation();
     },
-    [refreshAfterMutation]
+    [refreshAfterMutation],
   );
 
   const updateCardDates = useCallback(
@@ -307,12 +333,12 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
         dataEntrega?: string | Date;
         recorrencia?: string;
         lembreteMinutosAntes?: number | null;
-      }
+      },
     ) => {
       await upsertCardData(cardId, data);
       await refreshAfterMutation();
     },
-    [refreshAfterMutation]
+    [refreshAfterMutation],
   );
 
   const toggleCardChecklistCompleto = useCallback(
@@ -320,7 +346,7 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       await toggleChecklistCompleto(cardId, completo);
       await refreshAfterMutation();
     },
-    [refreshAfterMutation]
+    [refreshAfterMutation],
   );
 
   const value: KanbanContextType = {
@@ -347,7 +373,7 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
 export const useKanban = (): KanbanContextType => {
   const context = useContext(KanbanContext);
   if (context === undefined) {
-    throw new Error('useKanban must be used within a KanbanProvider');
+    throw new Error("useKanban must be used within a KanbanProvider");
   }
   return context;
 };
