@@ -2,12 +2,21 @@
 import api from "@/axios";
 import Card from "@/components/Card";
 import { Pagination } from "@/types/pagination.type";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import Table, { TableColumn } from "../Table";
 import { PrimaryButton } from "../button/PrimaryButton";
 import { FormInput } from "../input/FormInput";
 import { AgendaInput } from "@/schemas/agenda.schema";
+
+const AgendaDetailPage = dynamic(
+  () =>
+    import("@/pages/agenda/[id]").then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false },
+);
 
 interface Localizacao {
   cidade?: string;
@@ -50,6 +59,9 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
   const [searchInput, setSearchInput] = useState("");
   const [agendas, setAgendas] = useState<AgendaVaga[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedAgendaId, setSelectedAgendaId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailVisible, setDetailVisible] = useState(false);
 
   // Paginação
   const [page, setPage] = useState<number>(1);
@@ -153,58 +165,103 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onRowClick = (row: any) => {
-    router.push(`/agenda/${row.id}`);
+    if (!row?.id) return;
+    setSelectedAgendaId(row.id);
+    setDetailOpen(true);
+    setTimeout(() => setDetailVisible(true), 10);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailVisible(false);
+    setTimeout(() => {
+      setDetailOpen(false);
+      setSelectedAgendaId(null);
+    }, 300);
   };
 
   return (
-    <Card noShadow>
-      <div className="flex justify-between items-center flex-wrap mb-2">
-        {!noTitle && (
-          <h3 className="text-2xl font-bold text-primary">Lista de Agendas</h3>
-        )}
-        <div className="flex gap-2 w-full justify-end">
-          <FormInput
-            name=""
-            type="text"
-            placeholder="Buscar agenda..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e)}
-            inputProps={{
-              className:
-                "grow w-full max-w-[300px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
-              disabled: loading,
-            }}
-          />
-          <PrimaryButton
-            onClick={handleSearch}
-            disabled={loading || !searchInput.trim()}
-          >
-            <span className="material-icons-outlined">search</span>
-          </PrimaryButton>
-          <PrimaryButton
-            variant="negative"
-            onClick={handleClear}
-            disabled={!searchInput && !search}
-          >
-            <span className="material-icons-outlined">delete</span>
-          </PrimaryButton>
+    <>
+      <Card noShadow>
+        <div className="flex justify-between items-center flex-wrap mb-2">
+          {!noTitle && (
+            <h3 className="text-2xl font-bold text-primary">Lista de Agendas</h3>
+          )}
+          <div className="flex gap-2 w-full justify-end">
+            <FormInput
+              name=""
+              type="text"
+              placeholder="Buscar agenda..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e)}
+              inputProps={{
+                className:
+                  "grow w-full max-w-[300px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
+                disabled: loading,
+              }}
+            />
+            <PrimaryButton
+              onClick={handleSearch}
+              disabled={loading || !searchInput.trim()}
+            >
+              <span className="material-icons-outlined">search</span>
+            </PrimaryButton>
+            <PrimaryButton
+              variant="negative"
+              onClick={handleClear}
+              disabled={!searchInput && !search}
+            >
+              <span className="material-icons-outlined">delete</span>
+            </PrimaryButton>
+          </div>
         </div>
-      </div>
-      <Table
-        columns={columns}
-        data={dadosFiltrados}
-        loading={loading}
-        emptyMessage="Nenhuma agenda encontrada."
-        pagination={{
-          page,
-          pageSize,
-          total,
-          totalPages,
-          onPageChange: setPage,
-        }}
-        onRowClick={onRowClick}
-      />
-    </Card>
+        <Table
+          columns={columns}
+          data={dadosFiltrados}
+          loading={loading}
+          emptyMessage="Nenhuma agenda encontrada."
+          pagination={{
+            page,
+            pageSize,
+            total,
+            totalPages,
+            onPageChange: setPage,
+          }}
+          onRowClick={onRowClick}
+        />
+      </Card>
+
+      {detailOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex justify-end bg-black/30"
+          onClick={handleCloseDetail}
+        >
+          <div
+            className={`h-full w-full max-w-3xl bg-white shadow-xl transform transition-transform duration-300 ${
+              detailVisible ? "translate-x-0" : "translate-x-full"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <h3 className="text-lg font-semibold text-primary">
+                Detalhes da Agenda
+              </h3>
+              <button
+                type="button"
+                className="text-2xl leading-none px-2"
+                onClick={handleCloseDetail}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="h-[calc(100%-3rem)] overflow-y-auto p-4">
+              {selectedAgendaId && (
+                <AgendaDetailPage id={selectedAgendaId} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

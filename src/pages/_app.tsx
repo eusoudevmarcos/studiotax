@@ -1,19 +1,19 @@
 // frontend/pages/_app.tsx
-import DashboardLayout from '@/layouts/DashboardLayout';
-import KanbanLayout from '@/layouts/KanbanLayout';
-import MainLayout from '@/layouts/MainLayout';
-import type { AppProps } from 'next/app';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
+import DashboardLayout from "@/layouts/DashboardLayout";
+import KanbanLayout from "@/layouts/KanbanLayout";
+import MainLayout from "@/layouts/MainLayout";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
-import { AuthProvider } from '@/context/AuthContext';
-import { isAlwaysPublicPath } from '@/proxy';
-import '@/styles/globals.css';
-import '@/styles/landingPage.css';
+import { AuthProvider } from "@/context/AuthContext";
+import { isAlwaysPublicPath } from "@/proxy";
+import "@/styles/globals.css";
+import "@/styles/landingPage.css";
 // import { GoogleAnalytics } from '@next/third-parties/google';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-const PUBLIC_ROUTES = ['/login'];
+const PUBLIC_ROUTES = ["/login"];
 
 // Componente de isolamento do loading
 type LoadingWrapperProps = {
@@ -28,16 +28,16 @@ function LoadingWrapper({ children }: LoadingWrapperProps) {
     const complete = () => setLoading(false);
     const error = () => setLoading(false);
 
-    router.events.on('routeChangeStart', start);
-    router.events.on('routeChangeComplete', complete);
-    router.events.on('routeChangeError', error);
+    router.events.on("routeChangeStart", start);
+    router.events.on("routeChangeComplete", complete);
+    router.events.on("routeChangeError", error);
 
     setLoading(false);
 
     return () => {
-      router.events.off('routeChangeStart', start);
-      router.events.off('routeChangeComplete', complete);
-      router.events.off('routeChangeError', error);
+      router.events.off("routeChangeStart", start);
+      router.events.off("routeChangeComplete", complete);
+      router.events.off("routeChangeError", error);
     };
   }, [router.events]);
 
@@ -60,8 +60,8 @@ function LoadingWrapper({ children }: LoadingWrapperProps) {
         <div
           className="border-4 border-primary border-t-transparent rounded-full w-12 h-12 animate-spin"
           style={{
-            borderTopColor: 'transparent',
-            animation: 'spin 1s linear infinite',
+            borderTopColor: "transparent",
+            animation: "spin 1s linear infinite",
           }}
         ></div>
         <span className="mt-2 text-primary">Carregando...</span>
@@ -86,10 +86,9 @@ function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const isPublic = PUBLIC_ROUTES.includes(router.pathname);
 
-
   // const GoogleAnalyticsId = () => <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
 
-  if (router.pathname == '/dashboard/cliente') {
+  if (router.pathname == "/dashboard/cliente") {
     return (
       <>
         <AuthProvider>
@@ -116,9 +115,8 @@ function App({ Component, pageProps }: AppProps) {
         />
       </Head>
 
-      {router.pathname === '/' ? (
+      {router.pathname === "/" ? (
         <>
-          {/* <SpeedInsights /> */}
           <MainLayout>
             <LoadingWrapper>
               <Component {...pageProps} />
@@ -127,16 +125,13 @@ function App({ Component, pageProps }: AppProps) {
         </>
       ) : isPublic || isAlwaysPublicPath(router.pathname) ? (
         <>
-          {/* <SpeedInsights /> */}
           <LoadingWrapper>
             <Component {...pageProps} />
           </LoadingWrapper>
         </>
       ) : (
         <AuthProvider>
-          {/* <ScreenshotGuard forceDev={false} durationMs={0} /> */}
-          {/* <SpeedInsights /> */}
-          {router.pathname.startsWith('/kanban') ? (
+          {router.pathname.startsWith("/kanban") ? (
             <KanbanLayout>
               <LoadingWrapper>
                 <Component {...pageProps} />
@@ -144,7 +139,7 @@ function App({ Component, pageProps }: AppProps) {
             </KanbanLayout>
           ) : (
             <DashboardLayout>
-              {dashboardProps => (
+              {(dashboardProps) => (
                 <LoadingWrapper>
                   <Component {...pageProps} {...dashboardProps} />
                 </LoadingWrapper>

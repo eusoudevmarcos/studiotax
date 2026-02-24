@@ -6,7 +6,7 @@ import { useCliente } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
 // Dynamic imports para componentes pesados
@@ -36,15 +36,24 @@ interface AgendaPageProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialAgenda?: any;
   initialError?: string | null;
+  id?: string;
 }
 
 const AgendaPage: React.FC<AgendaPageProps> = ({
   initialAgenda,
   initialError,
+  id,
 }) => {
   const router = useRouter();
-  const { id } = router.query;
   const isCliente = useCliente();
+
+  const effectiveId = useMemo(() => {
+    if (typeof id === "string" && id) return id;
+    if (typeof router.query.id === "string" && router.query.id) {
+      return router.query.id;
+    }
+    return undefined;
+  }, [id, router.query.id]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [agenda, setAgenda] = useState<any | null>(initialAgenda || null);
@@ -53,11 +62,11 @@ const AgendaPage: React.FC<AgendaPageProps> = ({
   const [showModalEdit, setShowModalEdit] = useState(false);
 
   const fetchAgenda = useCallback(async () => {
-    if (!id || typeof id !== "string") return;
+    if (!effectiveId) return;
     setLoading(true);
     setErro(null);
     try {
-      const res = await api.get(`/api/externalWithAuth/agenda/${id}`);
+      const res = await api.get(`/api/externalWithAuth/agenda/${effectiveId}`);
       setAgenda(res.data);
     } catch (_) {
       setErro("Agenda não encontrada ou erro ao buscar dados.");
@@ -65,14 +74,14 @@ const AgendaPage: React.FC<AgendaPageProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [effectiveId]);
 
   useEffect(() => {
     // Só busca se não tiver dados iniciais do SSR
-    if (!initialAgenda) {
+    if (!initialAgenda && effectiveId) {
       fetchAgenda();
     }
-  }, [fetchAgenda, initialAgenda]);
+  }, [effectiveId, fetchAgenda, initialAgenda]);
 
   const handleTrash = useCallback(async () => {
     if (!agenda) return;
