@@ -5,10 +5,11 @@ import {
   criarChecklistItem,
   deletarChecklist,
   deletarChecklistItem,
+  reordenarChecklistItens,
 } from '@/axios/kanban.axios';
 import { useKanban } from '@/context/KanbanContext';
 import { CardKanban, ChecklistCard } from '@/schemas/kanban.schema';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -24,6 +25,14 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Painel, type popupPositionType } from './Painel';
+
+/** Ordena itens do checklist pelo campo ordem (função pura, estável) */
+function sortChecklistItems(checklists: ChecklistCard[]): ChecklistCard[] {
+  return checklists.map(cl => ({
+    ...cl,
+    itens: cl.itens ? [...cl.itens].sort((a, b) => a.ordem - b.ordem) : [],
+  }));
+}
 
 interface ChecklistKanbanProps {
   popupPosition: popupPositionType;
@@ -66,14 +75,6 @@ export const ChecklistKanban = ({
   const editItemInputRef = useRef<HTMLInputElement | null>(null);
   const editingItemMenuRef = useRef<HTMLDivElement | null>(null);
 
-  // Função para ordenar itens do checklist pelo campo ordem
-  const sortChecklistItems = (checklists: ChecklistCard[]): ChecklistCard[] => {
-    return checklists.map(cl => ({
-      ...cl,
-      itens: cl.itens ? [...cl.itens].sort((a, b) => a.ordem - b.ordem) : [],
-    }));
-  };
-
   // Estado local para manter os checklists atualizados
   const [localChecklists, setLocalChecklists] = useState<ChecklistCard[]>(() =>
     sortChecklistItems(card.checklists || [])
@@ -90,6 +91,65 @@ export const ChecklistKanban = ({
         distance: 8,
       },
     })
+  );
+
+  const handleItemDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (!over || active.id === over.id) return;
+
+      const activeData = active.data.current as
+        | { type?: string; checklistId?: string }
+        | null;
+      const overData = over.data.current as
+        | { type?: string; checklistId?: string }
+        | null;
+
+      if (!activeData || activeData.type !== 'checklist-item' || !activeData.checklistId) {
+        return;
+      }
+
+      const checklistId = activeData.checklistId;
+      const targetChecklistId = overData?.checklistId ?? checklistId;
+
+      if (targetChecklistId !== checklistId) return;
+
+      const previousState = localChecklists;
+      const checklist = localChecklists.find(cl => cl.id === checklistId);
+
+      if (!checklist || !checklist.itens) return;
+
+      const items = [...checklist.itens];
+      const oldIndex = items.findIndex(item => item.id === active.id);
+      const newIndex = items.findIndex(item => item.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const reordered = arrayMove(items, oldIndex, newIndex);
+      const withOrder = reordered.map((item, index) => ({
+        ...item,
+        ordem: index,
+      }));
+
+      setLocalChecklists(prev =>
+        prev.map(cl =>
+          cl.id === checklistId ? { ...cl, itens: withOrder } : cl
+        )
+      );
+
+      try {
+        const itensParaReordenar = withOrder.map((item, index) => ({
+          id: item.id,
+          ordem: index,
+        }));
+        await reordenarChecklistItens(checklistId, itensParaReordenar);
+      } catch (error) {
+        console.log('Erro ao reordenar item de checklist:', error);
+        setLocalChecklists(previousState);
+      }
+    },
+    [localChecklists]
   );
 
   // Sincronizar quando o card mudar
@@ -129,65 +189,93 @@ export const ChecklistKanban = ({
     }
   }, [editingItemId]);
 
-  const handleItemDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleToggleChecklistItem = useCallback(
+    async (itemId: string, concluido: boolean) => {
+      try {
+        await atualizarChecklistItem(itemId, { concluido: !concluido });
+        setLocalChecklists(prev =>
+          prev.map(cl => ({
+            ...cl,
+            itens: cl.itens?.map(item =>
+              item.id === itemId ? { ...item, concluido: !concluido } : item
+            ),
+          }))
+        );
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        console.log('Erro ao atualizar item de checklist:', error);
+      }
+    },
+    [onUpdate]
+  );
 
-    if (!over || active.id === over.id) return;
+  const handleEditItemStart = useCallback(
+    (itemId: string, descricao: string, checklistId: string) => {
+      setEditingItemId(itemId);
+      setEditingItemDescricao(descricao);
+      setEditingItemChecklistId(checklistId);
+    },
+    []
+  );
 
-    const activeData = active.data.current as
-      | { type?: string; checklistId?: string }
-      | null;
-    const overData = over.data.current as
-      | { type?: string; checklistId?: string }
-      | null;
+  const handleEditItemCancel = useCallback(() => {
+    setEditingItemId(null);
+    setEditingItemDescricao('');
+    setEditingItemChecklistId(null);
+  }, []);
 
-    if (!activeData || activeData.type !== 'checklist-item' || !activeData.checklistId) {
-      return;
-    }
+  const handleEditItemSave = useCallback(
+    async (itemId: string, checklistId: string) => {
+      const novoDescricao = editingItemDescricao.trim();
+      if (!novoDescricao) {
+        handleEditItemCancel();
+        return;
+      }
+      setSavingItem(prev => ({ ...prev, [itemId]: true }));
+      try {
+        await atualizarChecklistItem(itemId, { descricao: novoDescricao });
+        setLocalChecklists(prev =>
+          prev.map(cl =>
+            cl.id === checklistId
+              ? {
+                ...cl,
+                itens: cl.itens?.map(item =>
+                  item.id === itemId
+                    ? { ...item, descricao: novoDescricao }
+                    : item
+                ),
+              }
+              : cl
+          )
+        );
+        handleEditItemCancel();
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        console.log('Erro ao editar item de checklist:', error);
+      } finally {
+        setSavingItem(prev => ({ ...prev, [itemId]: false }));
+      }
+    },
+    [editingItemDescricao, handleEditItemCancel, onUpdate]
+  );
 
-    const checklistId = activeData.checklistId;
-    const targetChecklistId = overData?.checklistId ?? checklistId;
-
-    // No momento, permitimos reordenação apenas dentro do mesmo checklist
-    if (targetChecklistId !== checklistId) {
-      return;
-    }
-
-    const previousState = localChecklists;
-    const checklist = localChecklists.find(cl => cl.id === checklistId);
-
-    if (!checklist || !checklist.itens) return;
-
-    const items = [...checklist.itens];
-    const oldIndex = items.findIndex(item => item.id === active.id);
-    const newIndex = items.findIndex(item => item.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    const reordered = arrayMove(items, oldIndex, newIndex);
-    const withOrder = reordered.map((item, index) => ({
-      ...item,
-      ordem: index,
-    }));
-
-    setLocalChecklists(prev =>
-      prev.map(cl =>
-        cl.id === checklistId ? { ...cl, itens: withOrder } : cl
-      )
-    );
-
-    try {
-      // Atualizar a ordem de TODOS os itens no banco de dados
-      const updatePromises = withOrder.map(item =>
-        atualizarChecklistItem(item.id, { ordem: item.ordem })
-      );
-
-      await Promise.all(updatePromises);
-    } catch (error) {
-      console.log('Erro ao reordenar item de checklist:', error);
-      setLocalChecklists(previousState);
-    }
-  };
+  const handleDeletarChecklistItem = useCallback(
+    async (itemId: string) => {
+      try {
+        await deletarChecklistItem(itemId);
+        setLocalChecklists(prev =>
+          prev.map(cl => ({
+            ...cl,
+            itens: cl.itens?.filter(item => item.id !== itemId) || [],
+          }))
+        );
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        console.log('Erro ao deletar item de checklist:', error);
+      }
+    },
+    [onUpdate]
+  );
 
   // Funções para gerenciar checklists
   const handleCriarChecklist = async () => {
@@ -262,41 +350,6 @@ export const ChecklistKanban = ({
     }
   };
 
-  const handleToggleChecklistItem = async (
-    itemId: string,
-    concluido: boolean
-  ) => {
-    try {
-      await atualizarChecklistItem(itemId, { concluido: !concluido });
-      setLocalChecklists(prev =>
-        prev.map(cl => ({
-          ...cl,
-          itens: cl.itens?.map(item =>
-            item.id === itemId ? { ...item, concluido: !concluido } : item
-          ),
-        }))
-      );
-      if (onUpdate) onUpdate();
-    } catch (error) {
-      console.log('Erro ao atualizar item de checklist:', error);
-    }
-  };
-
-  const handleDeletarChecklistItem = async (itemId: string) => {
-    try {
-      await deletarChecklistItem(itemId);
-      setLocalChecklists(prev =>
-        prev.map(cl => ({
-          ...cl,
-          itens: cl.itens?.filter(item => item.id !== itemId) || [],
-        }))
-      );
-      if (onUpdate) onUpdate();
-    } catch (error) {
-      console.log('Erro ao deletar item de checklist:', error);
-    }
-  };
-
   const _handleToggleChecklistCompleto = async () => {
     const novoEstado = !localChecklistCompleto;
     setLocalChecklistCompleto(novoEstado);
@@ -306,51 +359,6 @@ export const ChecklistKanban = ({
     } catch (error) {
       setLocalChecklistCompleto(!novoEstado);
       console.log('Erro ao atualizar status do card:', error);
-    }
-  };
-
-  // Funções para editar o texto de um item do checklist
-  const handleEditItemStart = (itemId: string, descricao: string, checklistId: string) => {
-    setEditingItemId(itemId);
-    setEditingItemDescricao(descricao);
-    setEditingItemChecklistId(checklistId);
-  };
-
-  const handleEditItemCancel = () => {
-    setEditingItemId(null);
-    setEditingItemDescricao('');
-    setEditingItemChecklistId(null);
-  };
-
-  const handleEditItemSave = async (itemId: string, checklistId: string) => {
-    const novoDescricao = editingItemDescricao.trim();
-    if (!novoDescricao) {
-      handleEditItemCancel();
-      return;
-    }
-    setSavingItem(prev => ({ ...prev, [itemId]: true }));
-    try {
-      await atualizarChecklistItem(itemId, { descricao: novoDescricao });
-      setLocalChecklists(prev =>
-        prev.map(cl =>
-          cl.id === checklistId
-            ? {
-              ...cl,
-              itens: cl.itens?.map(item =>
-                item.id === itemId
-                  ? { ...item, descricao: novoDescricao }
-                  : item
-              ),
-            }
-            : cl
-        )
-      );
-      handleEditItemCancel();
-      if (onUpdate) onUpdate();
-    } catch (error) {
-      console.log('Erro ao editar item de checklist:', error);
-    } finally {
-      setSavingItem(prev => ({ ...prev, [itemId]: false }));
     }
   };
 
@@ -665,7 +673,7 @@ interface SortableChecklistItemRowProps {
   editingItemMenuRef: React.RefObject<HTMLDivElement | null>;
 }
 
-const SortableChecklistItemRow: React.FC<SortableChecklistItemRowProps> = ({
+const SortableChecklistItemRowComponent: React.FC<SortableChecklistItemRowProps> = ({
   item,
   checklistId,
   isEditing,
@@ -811,3 +819,5 @@ const SortableChecklistItemRow: React.FC<SortableChecklistItemRowProps> = ({
     </div>
   );
 };
+
+const SortableChecklistItemRow = React.memo(SortableChecklistItemRowComponent);

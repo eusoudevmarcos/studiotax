@@ -261,6 +261,21 @@ export const moverColuna = async (data: {
   );
 };
 
+export const reordenarColunaCards = async (
+  colunaId: string,
+  cardIds: string[]
+): Promise<ColunaKanban> => {
+  const response = await api.post(
+    `/api/externalWithAuth/kanban/coluna/${colunaId}/reordenar-cards`,
+    { cardIds }
+  );
+  return validateResponse(
+    response.data,
+    colunaKanbanSchema,
+    'Erro ao reordenar cards'
+  );
+};
+
 export const atualizarColunaKanban = async (
   id: string,
   data: Partial<ColunaKanbanInput>
@@ -477,6 +492,17 @@ export const atualizarChecklistItem = async (
     data
   );
   return checklistItemSchema.parse(response.data);
+};
+
+export const reordenarChecklistItens = async (
+  checklistId: string,
+  itens: { id: string; ordem: number }[]
+): Promise<ChecklistCard> => {
+  const response = await api.post(
+    `/api/externalWithAuth/kanban/checklist/${checklistId}/reordenar-itens`,
+    { itens }
+  );
+  return checklistCardSchema.parse(response.data);
 };
 
 export const deletarChecklistItem = async (id: string): Promise<void> => {

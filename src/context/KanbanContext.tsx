@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+  atualizarCardKanban,
   atualizarEtiquetasDoCard,
   KanbanFiltrosInput,
-  moverCard,
   moverColuna,
   obterQuadroCompleto,
+  reordenarColunaCards,
   toggleChecklistCompleto,
   upsertCardData,
 } from '@/axios/kanban.axios';
@@ -146,16 +147,12 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
         // Atualizar estado local (optimistic update)
         setQuadro(finalQuadro);
 
-        // Call API - usar moverCard para cada card com sua nova posição visual
+        // Call API - reordenação em lote (uma única requisição)
         try {
-          const updatePromises = cardsWithNewOrder.map((c, index) =>
-            moverCard({
-              cardId: c.id,
-              novaColunaId: sourceColumnId,
-              novaPosicao: index,
-            })
+          await reordenarColunaCards(
+            sourceColumnId,
+            cardsWithNewOrder.map((c) => c.id)
           );
-          await Promise.all(updatePromises);
         } catch (err: any) {
           console.log('Erro ao mover card:', err);
           // Revert optimistic update
@@ -201,23 +198,21 @@ export const KanbanProvider: React.FC<KanbanProviderProps> = ({
       // Atualizar estado local (optimistic update)
       setQuadro(finalQuadro);
 
-      // Call API - mover card para nova coluna e atualizar ordens
+      // Call API - mover card e reordenação em lote (3 requisições em vez de N+M)
       try {
-        const sourceUpdatePromises = sourceCardsWithOrder.map((c, index) =>
-          moverCard({
-            cardId: c.id,
-            novaColunaId: sourceColumnId,
-            novaPosicao: index,
-          })
-        );
-        const targetUpdatePromises = targetCardsWithOrder.map((c, index) =>
-          moverCard({
-            cardId: c.id,
-            novaColunaId: targetColumnId,
-            novaPosicao: index,
-          })
-        );
-        await Promise.all([...sourceUpdatePromises, ...targetUpdatePromises]);
+        await atualizarCardKanban(cardId, {
+          colunaKanbanId: targetColumnId,
+        });
+        await Promise.all([
+          reordenarColunaCards(
+            sourceColumnId,
+            sourceCardsWithOrder.map((c) => c.id)
+          ),
+          reordenarColunaCards(
+            targetColumnId,
+            targetCardsWithOrder.map((c) => c.id)
+          ),
+        ]);
       } catch (err: any) {
         console.log('Erro ao mover card:', err);
         // Revert optimistic update
