@@ -4,6 +4,7 @@ import { getUsuarioNome } from '@/utils/kanban';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 // Utilitário para Material Icons (icones do Google Font)
 const MaterialIcon = ({
@@ -72,8 +73,18 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
   };
 
   const [showMenu, setShowMenu] = React.useState(false);
+  const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
   const menuRef = React.useRef<HTMLDivElement>(null);
   const btnRef = React.useRef<HTMLButtonElement>(null);
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!showMenu && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setMenuPosition({ top: rect.bottom + 4, left: rect.right - 128 });
+    }
+    setShowMenu(!showMenu);
+  };
 
   React.useEffect(() => {
     if (!showMenu) return;
@@ -141,49 +152,50 @@ const KanbanCardComponent: React.FC<KanbanCardProps> = ({
         <div className="absolute top-2 right-2 z-10">
           <button
             ref={btnRef}
-            onClick={e => {
-              e.stopPropagation();
-              setShowMenu(!showMenu);
-            }}
+            onClick={toggleMenu}
             className="p-1 hover:bg-gray-100 rounded"
             onMouseDown={e => e.stopPropagation()}
           >
             <MaterialIcon name="more_vert" className="w-4 h-4 text-gray-600" />
           </button>
-          {showMenu && (
-            <div
-              ref={menuRef}
-              className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 z-20"
-              onMouseDown={e => e.stopPropagation()}
-            >
-              {onEdit && (
-                <button
-                  onClick={handleEdit}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
-                >
-                  Editar
-                </button>
-              )}
+          {showMenu &&
+            typeof document !== 'undefined' &&
+            createPortal(
+              <div
+                ref={menuRef}
+                className="fixed w-32 bg-white rounded-md shadow-lg border border-gray-200 z-[9999]"
+                style={{ top: menuPosition.top, left: menuPosition.left }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {onEdit && (
+                  <button
+                    onClick={handleEdit}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
+                  >
+                    Editar
+                  </button>
+                )}
 
-              {onDuplicate && (
-                <button
-                  onClick={handleDuplate}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
-                >
-                  Duplicar
-                </button>
-              )}
+                {onDuplicate && (
+                  <button
+                    onClick={handleDuplate}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-t-md"
+                  >
+                    Duplicar
+                  </button>
+                )}
 
-              {onDelete && (
-                <button
-                  onClick={handleDelete}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600 rounded-b-md"
-                >
-                  Excluir
-                </button>
-              )}
-            </div>
-          )}
+                {onDelete && (
+                  <button
+                    onClick={handleDelete}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600 rounded-b-md"
+                  >
+                    Excluir
+                  </button>
+                )}
+              </div>,
+              document.body
+            )}
         </div>
       )}
 
