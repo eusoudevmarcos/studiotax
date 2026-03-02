@@ -50,3 +50,42 @@ export const patchClienteStatus = async ({
   });
   return response.data;
 };
+
+// ===================== ANÁLISE TRIBUTÁRIA DO CLIENTE STUDIO =====================
+
+export interface AnaliseTributariaClienteStudio {
+  id: string;
+  clienteStudioId: string;
+  creditoFiscal: number;
+  origemCredito: string;
+  createdAt: string;
+}
+
+/**
+ * Lista todas as análises tributárias vinculadas a um ClienteStudio
+ */
+export const getAnalisesTributariasByClienteStudioId = async (
+  clienteStudioId: string
+): Promise<AnaliseTributariaClienteStudio[]> => {
+  const response = await api.get(
+    `/api/externalWithAuth/cliente-studio/analise-tributaria/${clienteStudioId}`
+  );
+  return response.data;
+};
+
+/**
+ * Cria uma nova análise tributária para um ClienteStudio
+ */
+export const createAnaliseTributariaForClienteStudio = async (
+  clienteStudioId: string,
+  payload: {
+    creditoFiscal: number;
+    origemCredito: string;
+  }
+): Promise<AnaliseTributariaClienteStudio> => {
+  const response = await api.post(
+    `/api/externalWithAuth/cliente-studio/analise-tributaria/${clienteStudioId}`,
+    payload
+  );
+  return response.data;
+};

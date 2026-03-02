@@ -7,13 +7,18 @@ import {
   listarComentariosDoCard,
   listarVinculosDoCard,
   removerMembroDoCard,
-  removerVinculo
+  removerVinculo,
 } from '@/axios/kanban.axios';
+import {
+  AnaliseTributariaClienteStudio,
+  createAnaliseTributariaForClienteStudio,
+  getAnalisesTributariasByClienteStudioId,
+} from '@/axios/cliente.axios';
 import { useKanban } from '@/context/KanbanContext';
 import {
   CardKanban,
   ComentarioCard,
-  VinculoCard
+  VinculoCard,
 } from '@/schemas/kanban.schema';
 import { getUsuarioNome } from '@/utils/kanban';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,6 +28,19 @@ import { ChecklistKanban } from './painel/ChecklistKanban';
 import { DatesKanban } from './painel/DatesKanban';
 import { LabelsKanban } from './painel/LabelsKanban';
 import { MembersKanban } from './painel/MembersKanban';
+
+const ORIGEM_CREDITO_OPTIONS: { value: string; label: string }[] = [
+  { value: 'ICMS', label: 'ICMS' },
+  { value: 'PIS_COFINS', label: 'PIS/COFINS' },
+  { value: 'IRPJ', label: 'IRPJ' },
+  { value: 'CSLL', label: 'CSLL' },
+  { value: 'OUTROS', label: 'Outros' },
+];
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
 
 interface CardViewModalProps {
   isOpen: boolean;
@@ -50,6 +68,18 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
   const [vinculos, setVinculos] = useState<VinculoCard[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Análise Tributária vinculada a ClienteStudio
+  const [clienteStudioId, setClienteStudioId] = useState<string | null>(null);
+  const [analisesTributarias, setAnalisesTributarias] = useState<
+    AnaliseTributariaClienteStudio[]
+  >([]);
+  const [loadingAnalises, setLoadingAnalises] = useState(false);
+  const [erroAnalises, setErroAnalises] = useState<string | null>(null);
+  const [showAnaliseModal, setShowAnaliseModal] = useState(false);
+  const [novoCreditoFiscal, setNovoCreditoFiscal] = useState('');
+  const [novaOrigemCredito, setNovaOrigemCredito] = useState('');
+  const [salvandoAnalise, setSalvandoAnalise] = useState(false);
 
   // Loading state for comment submission (not block UI)
   const [commentSubmitting, setCommentSubmitting] = useState(false);
@@ -99,6 +129,48 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
       setLoading(false);
     }
   }, [card.id]); // Corrigido: adicionar dependência card.id
+
+  const carregarAnalisesTributarias = useCallback(
+    async (clienteId: string) => {
+      setLoadingAnalises(true);
+      setErroAnalises(null);
+      try {
+        const data = await getAnalisesTributariasByClienteStudioId(clienteId);
+        setAnalisesTributarias(data);
+      } catch (error) {
+        console.log('Erro ao carregar análises tributárias:', error);
+        setErroAnalises('Erro ao carregar análises tributárias.');
+      } finally {
+        setLoadingAnalises(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!vinculos || vinculos.length === 0) {
+      setClienteStudioId(null);
+      setAnalisesTributarias([]);
+      return;
+    }
+
+    const vinculoCliente = vinculos.find(
+      v => v.tipoEntidade === 'CLIENTE' && v.cliente?.id,
+    );
+
+    if (vinculoCliente?.cliente?.id) {
+      const novoId = vinculoCliente.cliente.id;
+      setClienteStudioId(prev => {
+        if (prev !== novoId) {
+          void carregarAnalisesTributarias(novoId);
+        }
+        return novoId;
+      });
+    } else {
+      setClienteStudioId(null);
+      setAnalisesTributarias([]);
+    }
+  }, [vinculos, carregarAnalisesTributarias]);
 
   useEffect(() => {
     if (isOpen && card.id) {
@@ -219,6 +291,43 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
       setNewComment('');
     }
   }, [isOpen]);
+
+  const handleCreateAnaliseTributaria = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    if (!clienteStudioId) return;
+    if (!novoCreditoFiscal || !novaOrigemCredito) return;
+
+    const valorNormalizado = novoCreditoFiscal
+      .replace(/\./g, '')
+      .replace(',', '.');
+    const creditoFiscalNumero = Number(valorNormalizado);
+
+    if (Number.isNaN(creditoFiscalNumero)) {
+      alert('Informe um valor válido para o crédito fiscal.');
+      return;
+    }
+
+    try {
+      setSalvandoAnalise(true);
+      await createAnaliseTributariaForClienteStudio(clienteStudioId, {
+        creditoFiscal: creditoFiscalNumero,
+        origemCredito: novaOrigemCredito,
+      });
+
+      setNovoCreditoFiscal('');
+      setNovaOrigemCredito('');
+      setShowAnaliseModal(false);
+
+      await carregarAnalisesTributarias(clienteStudioId);
+    } catch (error) {
+      console.log('Erro ao salvar análise tributária:', error);
+      alert('Erro ao salvar análise tributária.');
+    } finally {
+      setSalvandoAnalise(false);
+    }
+  };
 
   // --- Textarea ref for focus management ---
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -554,6 +663,67 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
             </div>
           </div>
 
+          {clienteStudioId && (
+            <div className="mb-4 mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-md font-semibold text-gray-700">
+                  Análise Tributária
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowAnaliseModal(true)}
+                  className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-black hover:bg-blue-700 transition-colors"
+                >
+                  Nova análise
+                </button>
+              </div>
+
+              {erroAnalises && (
+                <p className="text-xs text-red-600 mb-1">{erroAnalises}</p>
+              )}
+
+              {loadingAnalises ? (
+                <p className="text-xs text-gray-500">
+                  Carregando análises tributárias...
+                </p>
+              ) : analisesTributarias.length === 0 ? (
+                <p className="text-xs text-gray-500">
+                  Nenhuma análise tributária registrada.
+                </p>
+              ) : (
+                <ul className="space-y-1">
+                  {analisesTributarias.map(analise => (
+                    <li
+                      key={analise.id}
+                      className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-xs"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold">
+                          Crédito fiscal:{' '}
+                          {currencyFormatter.format(analise.creditoFiscal)}
+                        </span>
+                        <span>
+                          Origem:{' '}
+                          {
+                            ORIGEM_CREDITO_OPTIONS.find(
+                              opt => opt.value === analise.origemCredito,
+                            )?.label ?? analise.origemCredito
+                          }
+                        </span>
+                        <span className="text-gray-500">
+                          Criada em:{' '}
+                          {new Date(analise.createdAt).toLocaleDateString(
+                            'pt-BR',
+                          )}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           {/* Vínculos */}
           {/* <div className="space-y-6 mb-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
@@ -679,6 +849,79 @@ export const CardViewModal: React.FC<CardViewModalProps> = ({
           </div>
         </div>
       </div>
-    </Modal >
+      {clienteStudioId && (
+        <Modal
+          isOpen={showAnaliseModal}
+          onClose={() => setShowAnaliseModal(false)}
+          title="Nova análise tributária"
+          fit
+        >
+          <form
+            onSubmit={handleCreateAnaliseTributaria}
+            className="space-y-4"
+          >
+            <div>
+              <label
+                htmlFor="creditoFiscal"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Crédito fiscal apurado/disponível
+              </label>
+              <input
+                id="creditoFiscal"
+                type="text"
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 w-full leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Ex.: 10.000,00"
+                value={novoCreditoFiscal}
+                onChange={e => setNovoCreditoFiscal(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="origemCredito"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Origem do crédito fiscal
+              </label>
+              <select
+                id="origemCredito"
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 w-full leading-tight focus:outline-none focus:shadow-outline"
+                value={novaOrigemCredito}
+                onChange={e => setNovaOrigemCredito(e.target.value)}
+              >
+                <option value="">Selecione uma origem</option>
+                {ORIGEM_CREDITO_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowAnaliseModal(false)}
+                className="mr-2 rounded bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={
+                  salvandoAnalise ||
+                  !novoCreditoFiscal.trim() ||
+                  !novaOrigemCredito
+                }
+                className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-black hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {salvandoAnalise ? 'Salvando...' : 'Salvar análise'}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </Modal>
   );
 };
