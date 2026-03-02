@@ -221,7 +221,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
               type="text"
               placeholder="Nome de quem cadastrou..."
               value={filtroNomeCadastrou}
-              onChange={(e) => setFiltroNomeCadastrou(e.target.value)}
+              onChange={(value) => setFiltroNomeCadastrou(value)}
               inputProps={{
                 className:
                   "grow w-full max-w-[200px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
