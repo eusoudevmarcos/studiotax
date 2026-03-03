@@ -111,7 +111,7 @@ function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/logo_simbolo.ico" />
         <meta
           name="description"
-          content="Studio TAX: Soluções em tributação, análise fiscal e CRM completo para sua empresa. Gestão inteligente, consultoria tributária e automação de processos fiscais."
+          content="Inteligência Juridica e Tributária para te servir. Temos a solução mais assertiva do mercado para você pagar menos impostos e o melhor trabalho de recuperação fiscal"
         />
       </Head>
 
