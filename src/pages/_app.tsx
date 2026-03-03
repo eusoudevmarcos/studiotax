@@ -111,7 +111,7 @@ function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/logo_simbolo.ico" />
         <meta
           name="description"
-          content="Aura: O match perfeito para sua empresa. Especialistas em recrutamento médico e TI com agilidade e efetividade."
+          content="Studio TAX: Soluções em tributação, análise fiscal e CRM completo para sua empresa. Gestão inteligente, consultoria tributária e automação de processos fiscais."
         />
       </Head>
 
