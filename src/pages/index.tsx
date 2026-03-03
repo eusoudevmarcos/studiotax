@@ -56,9 +56,9 @@ export default function Page() {
         </div>
       </div>
 
-      <Maintenance />
+      {/* <Maintenance /> */}
 
-      <CTA />
+      {/* <CTA /> */}
     </>
   );
 }
