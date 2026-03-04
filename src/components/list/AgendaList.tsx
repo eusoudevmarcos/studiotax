@@ -8,7 +8,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Table, { TableColumn } from "../Table";
 import { PrimaryButton } from "../button/PrimaryButton";
 import { FormInput } from "../input/FormInput";
-import { AgendaInput } from "@/schemas/agenda.schema";
 
 const AgendaDetailPage = dynamic(
   () =>
@@ -40,6 +39,11 @@ interface AgendaVaga {
   titulo: string;
 }
 
+function createFormInputChangeHandler(setter: (value: string) => void) {
+  return (e: React.ChangeEvent<HTMLInputElement> | string) =>
+    setter(typeof e === "string" ? e : e.target.value);
+}
+
 function normalizarTable(agendas: AgendaVaga[]) {
   return agendas.map((a) => ({
     id: a.id,
@@ -57,6 +61,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
   const [search, setSearch] = useState("");
   const [searchClicked, setSearchClicked] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [filtroNomeCadastrou, setFiltroNomeCadastrou] = useState("");
   const [agendas, setAgendas] = useState<AgendaVaga[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedAgendaId, setSelectedAgendaId] = useState<string | null>(null);
@@ -78,10 +83,11 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
     setSearchClicked(true);
   };
 
-  // Handler para limpar pesquisa
-  const handleClear = async () => {
+  // Handler para limpar pesquisa e filtros
+  const handleClear = () => {
     setSearchInput("");
     setSearch("");
+    setFiltroNomeCadastrou("");
     setSearchClicked(false);
     setPage(1);
   };
@@ -128,13 +134,28 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
   const dadosTabela = useMemo(() => normalizarTable(agendas), [agendas]);
 
   const dadosFiltrados = useMemo(() => {
-    const s = search.toLowerCase();
-    return dadosTabela.filter((a: AgendaVaga) =>
-      [a.dataHora, a.tipoEvento, a.link, a.localizacao, a.nome, a.titulo]
-        .filter(Boolean)
-        .some((v) => String(v).toLowerCase().includes(s)),
-    );
-  }, [dadosTabela, search]);
+    let result = dadosTabela;
+
+    // Filtro geral (busca)
+    if (search) {
+      const s = search.toLowerCase();
+      result = result.filter((a: AgendaVaga & { localizacao?: string }) =>
+        [a.dataHora, a.tipoEvento, a.link, a.localizacao, a.nome, a.titulo]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(s)),
+      );
+    }
+
+    // Filtro específico: Nome de quem cadastrou
+    if (filtroNomeCadastrou.trim()) {
+      const nomeBusca = filtroNomeCadastrou.toLowerCase().trim();
+      result = result.filter((a: AgendaVaga & { nome?: string }) =>
+        String(a.nome ?? "").toLowerCase().includes(nomeBusca),
+      );
+    }
+
+    return result;
+  }, [dadosTabela, search, filtroNomeCadastrou]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: TableColumn<any>[] = [
@@ -186,16 +207,28 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
           {!noTitle && (
             <h3 className="text-2xl font-bold text-primary">Lista de Agendas</h3>
           )}
-          <div className="flex gap-2 w-full justify-end">
+          <div className="flex flex-wrap gap-2 w-full justify-end items-end">
             <FormInput
               name=""
               type="text"
               placeholder="Buscar agenda..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e)}
+              onChange={createFormInputChangeHandler(setSearchInput)}
               inputProps={{
                 className:
-                  "grow w-full max-w-[300px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
+                  "grow w-full max-w-[200px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
+                disabled: loading,
+              }}
+            />
+            <FormInput
+              name=""
+              type="text"
+              placeholder="Nome de quem cadastrou..."
+              value={filtroNomeCadastrou}
+              onChange={createFormInputChangeHandler(setFiltroNomeCadastrou)}
+              inputProps={{
+                className:
+                  "grow w-full max-w-[200px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
                 disabled: loading,
               }}
             />
@@ -208,7 +241,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
             <PrimaryButton
               variant="negative"
               onClick={handleClear}
-              disabled={!searchInput && !search}
+              disabled={!searchInput && !search && !filtroNomeCadastrou}
             >
               <span className="material-icons-outlined">delete</span>
             </PrimaryButton>
