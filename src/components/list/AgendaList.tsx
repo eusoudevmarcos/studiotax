@@ -8,7 +8,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Table, { TableColumn } from "../Table";
 import { PrimaryButton } from "../button/PrimaryButton";
 import { FormInput } from "../input/FormInput";
-import { AgendaInput } from "@/schemas/agenda.schema";
 
 const AgendaDetailPage = dynamic(
   () =>
@@ -38,6 +37,11 @@ interface AgendaVaga {
   etapaAtual?: EtapaAtual;
   nome: string;
   titulo: string;
+}
+
+function createFormInputChangeHandler(setter: (value: string) => void) {
+  return (e: React.ChangeEvent<HTMLInputElement> | string) =>
+    setter(typeof e === "string" ? e : e.target.value);
 }
 
 function normalizarTable(agendas: AgendaVaga[]) {
@@ -209,7 +213,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
               type="text"
               placeholder="Buscar agenda..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e)}
+              onChange={createFormInputChangeHandler(setSearchInput)}
               inputProps={{
                 className:
                   "grow w-full max-w-[200px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
@@ -221,7 +225,7 @@ const AgendaList: React.FC<{ noTitle?: boolean }> = ({ noTitle = false }) => {
               type="text"
               placeholder="Nome de quem cadastrou..."
               value={filtroNomeCadastrou}
-              onChange={(value) => setFiltroNomeCadastrou(value)}
+              onChange={createFormInputChangeHandler(setFiltroNomeCadastrou)}
               inputProps={{
                 className:
                   "grow w-full max-w-[200px] px-3 py-2 rounded-lg border border-gray-200 outline-none",
