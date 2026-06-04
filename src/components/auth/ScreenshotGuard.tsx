@@ -1,6 +1,5 @@
 'use client';
 
-import logo from '@/assets/logo.svg';
 import { useAdmin } from '@/context/AuthContext';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -195,7 +194,12 @@ export default function ScreenshotGuard({
         }}
       >
         <div className="flex flex-col items-center">
-          <Image height={80} width={80} src={logo} alt="Logo Aura" />
+          <Image
+            height={80}
+            width={80}
+            src="/studio-tax-icon.png"
+            alt="Studio Tax"
+          />
           <span className="text-black text-2xl font-bold mt-2">
             PROTEÇÃO DE DADOS ATIVADO
           </span>

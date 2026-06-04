@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
     <div className={styles.loginContainer}>
       <div className={styles.loginBox}>
         <div className={styles.loginLogo}>
-          <Image src="/logo.png" width={500} height={80} alt="Logo Aura" />
+          <Image src="/studio-tax-logo.png" width={500} height={167} alt="Studio Tax" />
         </div>
         <form onSubmit={handleSubmit} method="POST" style={{ width: '100%' }}>
           <div className={styles.formGroup}>

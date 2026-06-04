@@ -82,7 +82,7 @@ export default function Hero() {
           </div>
 
           <Link
-            href="https://wa.me/55SEUNUMERO"
+            href="https://wa.me/556195524666"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#CA8908] text-[32px] flex items-center justify-center max-w-[484px]"

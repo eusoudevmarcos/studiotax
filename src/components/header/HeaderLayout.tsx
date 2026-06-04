@@ -50,11 +50,11 @@ const HeaderLayout: React.FC<HeaderLayoutProps> = ({
       <section className="flex justify-between items-center mx-auto max-w-[1440px] py-4 px-4 gap-2">
         <Link href="/atividades/agendas" className="flex items-center">
           <Image
-            height={40}
-            width={200}
-            src="/logo.png"
-            alt="Logo Aura"
-            className="font-bold text-[var(--color-secondary)]"
+            height={724}
+            width={2172}
+            src="/studio-tax-logo.png"
+            alt="Studio Tax"
+            className="h-10 w-auto font-bold text-[var(--color-secondary)]"
           />
         </Link>
 

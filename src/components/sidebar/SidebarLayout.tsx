@@ -192,8 +192,8 @@ const SidebarLayout: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
             <div style={{ width: 50, height: 50, position: 'relative', overflow: 'hidden' }}>
               <Image
               fill
-              src="/logo.png"
-              alt="Logo Aura"
+              src="/studio-tax-icon.png"
+              alt="Studio Tax"
               style={{ objectFit: 'cover', objectPosition: 'left' }}
               sizes="1000px"
               />

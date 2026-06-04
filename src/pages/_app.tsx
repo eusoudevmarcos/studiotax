@@ -107,11 +107,11 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Studio TAX</title>
-        <link rel="icon" href="/logo_simbolo.ico" />
+        <title>Studio Tax Holding</title>
+        <link rel="icon" href="/studio-tax-icon.png" />
         <meta
           name="description"
-          content="Inteligência Juridica e Tributária para te servir. Temos a solução mais assertiva do mercado para você pagar menos impostos e o melhor trabalho de recuperação fiscal"
+          content="Holding especializada em consultoria tributária, jurídica e contabilidade completa para reduzir carga fiscal e recuperar créditos com segurança técnica."
         />
       </Head>
 
