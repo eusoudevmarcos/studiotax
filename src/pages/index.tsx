@@ -311,7 +311,7 @@ export default function Page() {
       <section id="especialidades" className="bg-[#f5f7fa] py-20">
         <div className="mx-auto max-w-7xl px-5 md:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-bold text-[#a96e04]">
+            <p className="text-base font-bold text-[#a96e04] md:text-lg">
               Onde somos especialistas
             </p>
             <h2 className="mt-3 text-4xl font-bold leading-tight text-[#171717] md:text-5xl">
@@ -338,11 +338,11 @@ export default function Page() {
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-[#f7f0df] text-[#a96e04] transition group-hover:bg-[#d8a526] group-hover:text-[#141008]">
                     <Icon size={22} />
                   </span>
-                  <span className="rounded-md bg-[#f5f7fa] px-2.5 py-1 text-xs font-bold text-[#5d6673]">
+                  <span className="rounded-md bg-[#f5f7fa] px-3 py-1.5 text-sm font-bold text-[#5d6673]">
                     {item.badge}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold leading-7 text-[#171717]">
+                <h3 className="text-[1.35rem] font-bold leading-8 text-[#171717] md:text-2xl">
                   {item.title}
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#5d6673]">
