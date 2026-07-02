@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_NEXT_URL || "http://localhost:3000",
+  baseURL:
+    typeof window === "undefined"
+      ? process.env.NEXT_PUBLIC_NEXT_URL || "http://localhost:3000"
+      : undefined,
   withCredentials: true,
   // headers: { /* removed Client-Identity */ },
 });
